@@ -9,6 +9,16 @@ struct Spinlock {
     void unlock() { flag.clear(std::memory_order_release); }
 };
 
+// 思路来自：https://www.boost.org/doc/libs/1_78_0/doc/html/atomic/usage_examples.html
+struct SpinlockV2 {
+    enum State {LOCKED, UNLOCKED};
+    std::atomic<State> _state {UNLOCKED};
+
+    // 如果之前是LOCKED，那就一直busy-wait
+    void lock() { while(_state.exchange(LOCKED, std::memory_order_acquire) == LOCKED);}
+    void unlock() { _state.store(UNLOCKED, std::memory_order_relaxed); }
+};
+
 int gValue {0};
 Spinlock gLock;
 
