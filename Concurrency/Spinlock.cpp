@@ -16,7 +16,7 @@ struct SpinlockV2 {
 
     // 如果之前是LOCKED，那就一直busy-wait
     void lock() { while(_state.exchange(LOCKED, std::memory_order_acquire) == LOCKED);}
-    void unlock() { _state.store(UNLOCKED, std::memory_order_relaxed); }
+    void unlock() { _state.store(UNLOCKED, std::memory_order_release); }
 };
 
 int gValue {0};
