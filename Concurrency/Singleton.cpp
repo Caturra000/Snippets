@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+// TODO 分析TSO下最少必要的ordering
 class Singleton {
 public:
     static Singleton* instance() {
