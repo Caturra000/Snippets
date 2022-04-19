@@ -1,0 +1,3 @@
+sudo grep Pss /proc/[1-9]*/smaps | awk '{total+=$2}; END {print total}'
+
+原理是求单独的Pss
