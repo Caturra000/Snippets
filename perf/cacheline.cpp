@@ -112,7 +112,7 @@ int main() {
     std::cout << "Ratio T1/T2:~ " << 1.*oneCacheLiner_average/twoCacheLiner_average << '\n';
 }
 
-// 本地实测（R7 4750U）
+// 本地实测（R7 4750U 未插电）
 /*
 __cpp_lib_hardware_interference_size is not defined, use 64 as fallback
 hardware_destructive_interference_size == 64
@@ -142,4 +142,36 @@ twoCacheLinerThread() spent 72.89 ms
 Average T2 time: 72 ms
 
 Ratio T1/T2:~ 3.27
+*/
+
+// 已插电
+/*
+__cpp_lib_hardware_interference_size is not defined, use 64 as fallback
+hardware_destructive_interference_size == 64
+hardware_constructive_interference_size == 64
+
+sizeof( OneCacheLiner ) == 64
+sizeof( TwoCacheLiner ) == 128
+
+oneCacheLinerThread() spent 174.81 ms
+oneCacheLinerThread() spent 174.85 ms
+oneCacheLinerThread() spent 176.32 ms
+oneCacheLinerThread() spent 176.56 ms
+oneCacheLinerThread() spent 176.09 ms
+oneCacheLinerThread() spent 176.17 ms
+oneCacheLinerThread() spent 173.81 ms
+oneCacheLinerThread() spent 174.36 ms
+Average T1 time: 174 ms
+
+twoCacheLinerThread() spent 42.65 ms
+twoCacheLinerThread() spent 42.79 ms
+twoCacheLinerThread() spent 43.47 ms
+twoCacheLinerThread() spent 43.60 ms
+twoCacheLinerThread() spent 43.12 ms
+twoCacheLinerThread() spent 43.68 ms
+twoCacheLinerThread() spent 42.41 ms
+twoCacheLinerThread() spent 43.64 ms
+Average T2 time: 42 ms
+
+Ratio T1/T2:~ 4.10
 */
