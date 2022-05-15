@@ -40,6 +40,31 @@ struct Case6 {
     uint8_t c;
 };
 
+// struct Case7 {
+//     char a;
+//     Large<32> b;
+//     char c;
+// };
+
+// struct Case8 {
+//     char a;
+//     uint32_t b;
+//     char c;
+// };
+
+struct Case7 {
+    char a;
+    char b;
+    char c;
+    char d;
+    char e;
+};
+
+struct Case8 {
+    char a;
+    uint32_t b;
+};
+
 int main() {
 
     // 8
@@ -55,5 +80,17 @@ int main() {
     sizeof(Case5);
     // 32
     sizeof(Case6);
+
+    // 期望从Case6和Case7中构造一个非对齐访问的例子
+    // 5
+    sizeof(Case7);
+    // 8
+    sizeof(Case8);
+    Case7 case7;
+    Case8 case8;
+    // 可以尝试改成case7.a对比指令（此时对齐）
+    // - 丢到godbolt可以看出会多了一条指令，也得出非原子访问的结论
+    *((uint32_t*)(&case7.b)) = 1234;
+    case8.b = 1234;
 
 }
