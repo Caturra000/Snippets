@@ -38,7 +38,7 @@ public:
 
 public:
     ThreadPool() = default;
-    ~ThreadPool() { _data->stop = true; _data->cv.notify_all(); };
+    ~ThreadPool();
     ThreadPool(const ThreadPool&) = delete;
     ThreadPool(ThreadPool&&) = default;
     ThreadPool& operator=(const ThreadPool&) = delete;
@@ -71,6 +71,11 @@ private:
     std::once_flag _init;
 };
 
+inline ThreadPool::~ThreadPool() {
+    // forced program order
+    *(volatile bool*)(&_data->stop) = true;
+    _data->cv.notify_all();
+}
 
 inline void ThreadPool::lazyInit() {
     _data = std::make_shared<Data>();
