@@ -8,6 +8,8 @@
 // 1. fixed-size pool (real parallelism by default), while tasks can be overcommited (and run immediately if needed)
 // 2. automatically blocking slow IO for further short-running jobs
 // 3. lazy initialized
+// 4. (TODO) async-notification via event loop (pipe-fd?)
+// 5. (TODO) prepare callback for slow IO
 class ThreadPool {
 public:
     struct FastIO {};
