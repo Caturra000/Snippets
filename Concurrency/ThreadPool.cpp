@@ -63,8 +63,7 @@ private:
         size_t runningSlowIO;
         size_t runningSlowIOThreshold;
         // Note: cannot FORCE stop, all submitted jobs will be done even if stopping
-        // bool stop;
-        std::atomic<bool> stop;
+        bool stop;
     };
 
     std::shared_ptr<Data> _data;
@@ -73,9 +72,17 @@ private:
 };
 
 inline ThreadPool::~ThreadPool() {
+#ifdef __x86_64__
     // forced program order
-    // *(volatile bool*)(&_data->stop) = true;
-    _data->stop.store(true, std::memory_order_relaxed);
+    *(volatile bool*)(&_data->stop) = true;
+#else
+    {
+        // mutex lock is slower than atomic operation
+        // but it does not matter in dtor (not a hot spot)
+        std::lock_guard<std::mutex> guard {_data->mutex};
+        _data->stop = true;
+    }
+#endif
     _data->cv.notify_all();
 }
 
@@ -84,7 +91,7 @@ inline void ThreadPool::lazyInit() {
     _data->size = std::thread::hardware_concurrency();
     _data->runningSlowIO = 0;
     _data->runningSlowIOThreshold = std::max<size_t>(1, _data->size >> 1);
-    _data->stop.store(false, std::memory_order_relaxed);
+    _data->stop = false;
     for(auto iter = _data->size; iter--;) {
         std::thread {&ThreadPool::consume, this}.detach();
     }
@@ -129,8 +136,7 @@ inline void ThreadPool::consume() {
     };
     std::unique_lock<std::mutex> guard {data->mutex};
     for(;;) {
-        while(!data->stop.load(std::memory_order_relaxed)
-                && (data->tasks.empty() || rejectSlowIO())) {
+        while(!data->stop && (data->tasks.empty() || rejectSlowIO())) {
             data->cv.wait(guard);
         }
         // it is guaranteed that all tasks will be done even if (data->stop == true)
@@ -140,7 +146,7 @@ inline void ThreadPool::consume() {
             guard.unlock();
             if(task) task();
             guard.lock();
-        } else if(data->stop.load(std::memory_order_relaxed)) {
+        } else if(data->stop) {
             break;
         }
     }
