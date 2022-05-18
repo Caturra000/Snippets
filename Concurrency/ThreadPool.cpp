@@ -13,7 +13,6 @@
 class ThreadPool {
 public:
     struct FastIO {};
-    // TODO SlowIO == CPU
     struct SlowIO {};
     struct CPU {};
 
@@ -28,7 +27,7 @@ public:
             std::lock_guard<std::mutex> guard {_data->mutex};
             if(std::is_same<Policy, SlowIO>::value) {
                 _data->pendingTasks.emplace(std::move(realTask));
-                realTask = [this] { runSlowMessage() };
+                realTask = [&] { ThreadPool::runSlowMessage(_data); };
             }
             _data->tasks.emplace(std::move(realTask));
         }
@@ -45,12 +44,6 @@ public:
     ThreadPool& operator=(ThreadPool&&) = default;
 
 private:
-    void lazyInit();
-    void runSlowMessage();
-    void consume();
-
-private:
-
     // data shared for all threads, should be protected by shared pointer
     struct Data {
         std::mutex mutex;
@@ -66,6 +59,14 @@ private:
         bool stop;
     };
 
+
+private:
+    void lazyInit();
+    // using static declaration to avoid passing `this` which may be dangerous for lifecycle
+    static void runSlowMessage(const std::shared_ptr<Data> &data);
+    void consume();
+
+private:
     std::shared_ptr<Data> _data;
     // once flag for lazy initialization
     std::once_flag _init;
@@ -97,30 +98,30 @@ inline void ThreadPool::lazyInit() {
     }
 }
 
-inline void ThreadPool::runSlowMessage() {
+inline void ThreadPool::runSlowMessage(const std::shared_ptr<Data> &data) {
     std::function<void()> task;
     {
         // another copy of `_data` is held by worker
-        std::lock_guard<std::mutex> guard {_data->mutex};
-        if(_data->runningSlowIO > _data->runningSlowIOThreshold) {
+        std::lock_guard<std::mutex> guard {data->mutex};
+        if(data->runningSlowIO > data->runningSlowIOThreshold) {
             // try it later
-            _data->tasks.emplace(&ThreadPool::runSlowMessage, this);
+            data->tasks.emplace([&] { ThreadPool::runSlowMessage(data); });
             return;
         }
-        size_t pendings = _data->pendingTasks.size();
+        size_t pendings = data->pendingTasks.size();
         if(pendings == 0) {
             return;
         }
-        _data->runningSlowIO++;
-        task = std::move(_data->pendingTasks.front());
-        _data->pendingTasks.pop();
+        data->runningSlowIO++;
+        task = std::move(data->pendingTasks.front());
+        data->pendingTasks.pop();
         if(pendings > 1) {
-            _data->tasks.emplace(&ThreadPool::runSlowMessage, this);
+            data->tasks.emplace([&] { ThreadPool::runSlowMessage(data); });
         }
     }
     if(task) task();
-    std::lock_guard<std::mutex> guard {_data->mutex};
-    _data->runningSlowIO--;
+    std::lock_guard<std::mutex> guard {data->mutex};
+    data->runningSlowIO--;
 
 
 }
