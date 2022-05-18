@@ -63,7 +63,8 @@ private:
         size_t runningSlowIO;
         size_t runningSlowIOThreshold;
         // Note: cannot FORCE stop, all submitted jobs will be done even if stopping
-        bool stop;
+        // bool stop;
+        std::atomic<bool> stop;
     };
 
     std::shared_ptr<Data> _data;
@@ -73,7 +74,8 @@ private:
 
 inline ThreadPool::~ThreadPool() {
     // forced program order
-    *(volatile bool*)(&_data->stop) = true;
+    // *(volatile bool*)(&_data->stop) = true;
+    _data->stop.store(true, std::memory_order_relaxed);
     _data->cv.notify_all();
 }
 
@@ -82,7 +84,7 @@ inline void ThreadPool::lazyInit() {
     _data->size = std::thread::hardware_concurrency();
     _data->runningSlowIO = 0;
     _data->runningSlowIOThreshold = std::max<size_t>(1, _data->size >> 1);
-    _data->stop = false;
+    _data->stop.store(false, std::memory_order_relaxed);
     for(auto iter = _data->size; iter--;) {
         std::thread {&ThreadPool::consume, this}.detach();
     }
@@ -127,7 +129,8 @@ inline void ThreadPool::consume() {
     };
     std::unique_lock<std::mutex> guard {data->mutex};
     for(;;) {
-        while(!data->stop && (data->tasks.empty() || rejectSlowIO())) {
+        while(!data->stop.load(std::memory_order_relaxed)
+                && (data->tasks.empty() || rejectSlowIO())) {
             data->cv.wait(guard);
         }
         // it is guaranteed that all tasks will be done even if (data->stop == true)
@@ -137,7 +140,7 @@ inline void ThreadPool::consume() {
             guard.unlock();
             if(task) task();
             guard.lock();
-        } else if(data->stop) {
+        } else if(data->stop.load(std::memory_order_relaxed)) {
             break;
         }
     }
