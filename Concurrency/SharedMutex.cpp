@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 
 // 参考6.S081单变量实现
+// 其实应该叫SharedSpin
 class SharedMutex {
 public:
     void lock();
@@ -15,38 +16,34 @@ private:
     std::atomic<int> _n {0};
 };
 
+// 我在这一版的实现还是用了do-while（觉得更适合CAS），可读性可能上一版好一点（实现见上一条commit，更详细注释见上上条commit）
+// 千万记得do-while别用continue，用得少还是掉了坑
 inline void SharedMutex::lockShared() {
-    for(;;) {
-        int old = _n.load(std::memory_order_relaxed);
-        if(old < 0) continue;
-        if(_n.compare_exchange_weak(old, old+1,
-            std::memory_order_acquire, std::memory_order_relaxed)) return;
-    }
+    int old;
+    do {
+        while((old = _n.load(std::memory_order_relaxed)) < 0);
+    } while(!_n.compare_exchange_weak(old, old+1, std::memory_order_acquire, std::memory_order_relaxed));
 }
 
 inline void SharedMutex::unlockShared() {
-    for(;;) {
-        int old = _n.load(std::memory_order_relaxed);
-        if(old <= 0) continue;
-        if(_n.compare_exchange_weak(old, old-1,
-            std::memory_order_release, std::memory_order_relaxed)) return;
-    }
+    int old;
+    do {
+        while((old = _n.load(std::memory_order_relaxed)) <= 0);
+    } while(!_n.compare_exchange_weak(old, old-1, std::memory_order_release, std::memory_order_relaxed));
 }
 
 inline void SharedMutex::lock() {
-    for(;;) {
-        int old = 0;
-        if(_n.compare_exchange_strong(old, -1,
-            std::memory_order_acquire, std::memory_order_relaxed)) return;
-    }
+    int old;
+    do {
+        old = 0;
+    } while(!_n.compare_exchange_strong(old, -1, std::memory_order_acquire, std::memory_order_relaxed));
 }
 
 inline void SharedMutex::unlock() {
-    for(;;) {
-        int old = -1;
-        if(_n.compare_exchange_strong(old, 0,
-            std::memory_order_release, std::memory_order_relaxed)) return;
-    }
+    int old;
+    do {
+        old = -1;
+    } while(!_n.compare_exchange_strong(old, 0, std::memory_order_release, std::memory_order_relaxed));
 }
 
 int main() {
