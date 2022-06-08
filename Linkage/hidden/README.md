@@ -1,0 +1,36 @@
+# HIDDEN
+
+这里测试符号的可见性
+
+## 步骤
+
+分为`file1.cpp`和`file2.cpp`两个文件，也既不同的`object`
+
+通过命令：`g++ --shared -fPIC -o library file1.c file2.c`
+
+生成一个动态库`library`
+
+## 有什么问题
+
+这里特殊在于`file2.cpp`中的`api()`必须用`file1.cpp`的实现`mustBeKnownButNotAnAPI()`
+
+`api()`符号是我期望暴露给调用方的
+
+而`mustBeKnownButNotAnAPI()`我并不希望暴露出去（注意这种情况`static`救不了，我就是要跨`object`调用）
+
+但是矛盾在于，因为`api()`需要调用`mustBeKnownButNotAnAPI()`，但它不在同一个`object`上，因此后者也要暴露出去
+
+## 怎么看
+
+通过命令：`readelf -s library > library_symbol`
+
+生成了ELF中的符号信息，可以看到
+
+```
+    47: 0000000000001119    11 FUNC    GLOBAL DEFAULT   12 _Z22mustBeKnownButNotAnAP
+    48: 0000000000001124    16 FUNC    GLOBAL DEFAULT   12 _Z3apiv
+```
+
+两个符号都是`GLOBAL`绑定，并且可见性都是`DEFAULT`，也就是看得见的意思
+
+很显然，这个`_Z22mustBeKnownButNotAnAP`不应该被外部看到
