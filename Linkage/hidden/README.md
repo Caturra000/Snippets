@@ -34,3 +34,42 @@
 两个符号都是`GLOBAL`绑定，并且可见性都是`DEFAULT`，也就是看得见的意思
 
 很显然，这个`_Z22mustBeKnownButNotAnAP`不应该被外部看到
+
+## 尝试处理
+
+这里试了两种方案：
+- `file3.cpp`和`file4.cpp`，生成`hidden_library`和`hidden_library_symbol`
+- `file5.cpp`和`file6.cpp`，生成`hidden_library2`和`hidden_library2_symbol`
+
+### 方案一
+
+第一种方案是把默认可见性全局设为`HIDDEN`，在`api()`添加`__attribute__((visibility("default")))`
+
+构建命令：`g++ -fvisibility=hidden --shared -fPIC file3.cpp file4.cpp -o hidden_library`
+
+符号输出命令：`readelf -s hidden_library > hidden_library_symbol`
+
+此时在`.dynsym`中已经找不到`_Z22mustBeKnownButNotAnAP`
+
+并且可以在`.symtab`里对比出不同
+
+```
+    42: 00000000000010f9    11 FUNC    LOCAL  DEFAULT   10 _Z22mustBeKnownButNotAnAP
+    46: 0000000000001104    16 FUNC    GLOBAL DEFAULT   10 _Z3apiv
+```
+
+`_Z22mustBeKnownButNotAnAP`的绑定方式是`LOCAL`
+
+（不过不符合预期，本以为是`GLOBAL`加上`HIDDEN`）
+
+### 方案二
+
+其实也差不多，只是在`mustBeKnownButNotAnAPI()`加上`__attribute__((visibility("hidden")))`
+
+构建命令：`g++ --shared -fPIC file5.cpp file6.cpp -o hidden_library2`
+
+符号输出命令：`readelf -s hidden_library2 > hidden_library2_symbol`
+
+结果也是和方案一的输出相同
+
+索然无味。。
