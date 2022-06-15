@@ -25,7 +25,7 @@ void client() {
 
             // 2. 但是添加Note1处的代码后会观测：
             // - 客户端发出FIN,ACK，对端ACK
-            // - 然后客户端不管TW2，直接暴力RST,ACK
+            // - 然后客户端不管FW2，直接暴力RST,ACK
 
             // 3. 不管是shutdown还是close，都可以发出RST
             return nullptr;
