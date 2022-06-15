@@ -24,6 +24,7 @@ int main(int argc, const char *argv[]) {
         .then([&](fluent::Context *context) {
             onFlight--;
             if(noDelay) context->socket.setNoDelay();
+            // FIXME. 还没想好如何复现
             context->send("x");
             fluent::FLUENT_LOG_INFO("[client]", "write 1 byte");
             return nullptr;
