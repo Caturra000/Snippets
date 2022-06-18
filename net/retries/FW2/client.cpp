@@ -13,7 +13,7 @@ int main(int argc, const char *argv[]) {
         std::cout << "disable forced mode" << std::endl;
     }
 
-    fluent::InetAddress address {INADDR_ANY, 2565};
+    fluent::InetAddress address {"127.0.0.1", 2565};
     fluent::Client client;
 
     client.connect(address, [forced](fluent::Context *context) {
