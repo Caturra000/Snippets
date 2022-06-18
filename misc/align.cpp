@@ -94,7 +94,7 @@ int main() {
     //           首先多的指令只是%rax地址偏移，为了可以对(%rax)进行movq
     //           其次开了O3还是能做到直接mov的
     //           还是看SDM手册描述吧，牙膏厂说啥就是啥
-    *((volatile uint32_t*)(&case7.b)) = 1234;
+    *((uint32_t*)(&case7.b)) = 1234;
     case8.b = 1234;
 
 }
