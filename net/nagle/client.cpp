@@ -16,26 +16,35 @@ int main(int argc, const char *argv[]) {
     const uint16_t knownPort = 2560;
 
     bool noDelay = ::atoi(argv[2]);
+    if(noDelay) {
+        std::cout << "enable no_delay" << std::endl;
+    } else {
+        std::cout << "enable nagle" << std::endl;
+    }
 
     fluent::InetAddress address {serverIp, knownPort};
-    fluent::Client client;
-    size_t onFlight = 1;
-    auto future = client.connect(address)
-        .then([&](fluent::Context *context) {
-            onFlight--;
-            if(noDelay) context->socket.setNoDelay();
-            // FIXME. 还没想好如何复现
-            context->send("x");
-            fluent::FLUENT_LOG_INFO("[client]", "write 1 byte");
-            return nullptr;
-        });
 
-    auto nop = fluent::makeFuture(client.looper(), nullptr)
-        .poll([&](nullptr_t) {
-            using namespace std::chrono_literals;
-            if(onFlight) std::this_thread::sleep_for(1s);
-            return false;
-        });
-    client.run();
+    fluent::Socket socket;
+    socket.setBlock();
+    if(noDelay) socket.setNoDelay();
+
+    fluent::FLUENT_LOG_INFO("[client]", "set blocking connect");
+    if(socket.connect(address)) {
+        std::cerr << "connect failed: " << strerror(errno) << std::endl;
+        ::abort();
+    }
+    fluent::FLUENT_LOG_INFO("[client]", "connected");
+
+    for(size_t count {10}; count--;) {
+        char c = 'x';
+        int n = ::write(socket.fd(), &c, 1);
+        fluent::FLUENT_LOG_INFO("[client]", "write byte:", n);
+        if(n < 0) {
+            // 日志只用于跟踪用户层连接和传输的时间点
+            // 错误就不写到日志里了
+            std::cerr << "write failed: " << strerror(errno) << std::endl;
+        }
+    }
+
     return 0;
 }
