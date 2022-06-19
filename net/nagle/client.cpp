@@ -46,5 +46,7 @@ int main(int argc, const char *argv[]) {
         }
     }
 
+    int c;
+    std::cin >> c;
     return 0;
 }

@@ -1,0 +1,13 @@
+2022-06-19 04:20:19.537 I 1420 client.cpp 13          [fluent] [client] log init
+2022-06-19 04:20:19.537 I 1420 client.cpp 31          [fluent] [client] set blocking connect
+2022-06-19 04:20:19.544 I 1420 client.cpp 36          [fluent] [client] connected
+2022-06-19 04:20:19.544 I 1420 client.cpp 41          [fluent] [client] write byte: 1
+2022-06-19 04:20:19.544 I 1420 client.cpp 41          [fluent] [client] write byte: 1
+2022-06-19 04:20:19.544 I 1420 client.cpp 41          [fluent] [client] write byte: 1
+2022-06-19 04:20:19.544 I 1420 client.cpp 41          [fluent] [client] write byte: 1
+2022-06-19 04:20:19.544 I 1420 client.cpp 41          [fluent] [client] write byte: 1
+2022-06-19 04:20:19.544 I 1420 client.cpp 41          [fluent] [client] write byte: 1
+2022-06-19 04:20:19.544 I 1420 client.cpp 41          [fluent] [client] write byte: 1
+2022-06-19 04:20:19.544 I 1420 client.cpp 41          [fluent] [client] write byte: 1
+2022-06-19 04:20:19.544 I 1420 client.cpp 41          [fluent] [client] write byte: 1
+2022-06-19 04:20:19.544 I 1420 client.cpp 41          [fluent] [client] write byte: 1

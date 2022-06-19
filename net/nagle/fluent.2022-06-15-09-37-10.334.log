@@ -1,6 +1,0 @@
-2022-06-15 09:37:10.335 I 996 client.cpp 13          [fluent] [client] log init
-2022-06-15 09:37:13.335 D 996 /Handler.h 125         [fluent] [5, (127.0.0.1:2560)] connecting
-2022-06-15 09:37:13.335 I 996 /Handler.h 136         [fluent] [5, (127.0.0.1:2560)] connected. [HASHCODE] 66555215873
-2022-06-15 09:37:14.336 D 996 /Context.h 180         [fluent] [5, (127.0.0.1:2560)] tries to write 1 bytes
-2022-06-15 09:37:14.336 D 996 /Context.h 182         [fluent] [5, (127.0.0.1:2560)] --> (stream length) 1
-2022-06-15 09:37:14.336 I 996 client.cpp 28          [fluent] [client] write 1 byte
