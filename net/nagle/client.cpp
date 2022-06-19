@@ -2,6 +2,10 @@
 
 #include "../fluent/fluent.hpp"
 
+// 这里包含2个测试：
+// 1. nagle和nodelay的正常行为
+// 2. nagle本身发送是否有时间上的延迟阈值，还是必须等待ack到来
+
 int main(int argc, const char *argv[]) {
     if(argc <= 2) {
         std::cerr << "usage: " << argv[0]
@@ -11,6 +15,8 @@ int main(int argc, const char *argv[]) {
 
     dlog::Log::init();
     fluent::FLUENT_LOG_INFO("[client]", "log init");
+
+    int hang;
 
     const char *serverIp = argv[1];
     const uint16_t knownPort = 2560;
@@ -35,6 +41,11 @@ int main(int argc, const char *argv[]) {
     }
     fluent::FLUENT_LOG_INFO("[client]", "connected");
 
+    // 这里手动hang，可以后期搭配iptables测试，将ESTABLISHED server的ack都拦截下来
+    // 这样就能测出nagle是否会有一个最长的等待合并阈值
+    // TODO
+    std::cin >> hang;
+
     for(size_t count {10}; count--;) {
         char c = 'x';
         int n = ::write(socket.fd(), &c, 1);
@@ -46,7 +57,6 @@ int main(int argc, const char *argv[]) {
         }
     }
 
-    int c;
-    std::cin >> c;
+    std::cin >> hang;
     return 0;
 }
