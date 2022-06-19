@@ -1,0 +1,9 @@
+如果是server主动关闭，那就是client陷入close wait，server看的应该是FW2阶段，我已经测过了，见FW2目录
+
+如果是client主动关闭，那是反过来server陷入CW阶段
+
+不管怎样，被动方不发FIN，超过RTO MAX后由主动关闭方发出RST
+
+因此，并没有所谓的retries
+
+由于实验代码和FW2一模一样，这里就不copy了
