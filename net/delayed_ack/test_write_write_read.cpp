@@ -7,6 +7,8 @@
 
 // 测试结果是lo设备下并不会有delayed ack
 // TODO 看来需要找个内网IP测一下
+// 悲报：内网IP本身延迟就很大了
+// 另外我看作者写的也是本地协议栈测试，可能是kernel早已经改动了？
 
 void server() {
     fluent::InetAddress address {INADDR_ANY, 2569};
