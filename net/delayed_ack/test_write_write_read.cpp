@@ -1,6 +1,13 @@
 #include "bits/stdc++.h"
 #include "../fluent/fluent.hpp"
 
+// 测试write-write-read模型
+// 参考40ms magic number
+// https://www.cnblogs.com/wajika/p/6573028.html
+
+// 测试结果是lo设备下并不会有delayed ack
+// TODO 看来需要找个内网IP测一下
+
 void server() {
     fluent::InetAddress address {INADDR_ANY, 2569};
     fluent::Server server {address};
