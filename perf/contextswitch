@@ -1,0 +1,102 @@
+测试脚本：https://github.com/tsuna/contextswitch
+
+测试顺序为
+runbench() {
+  $* ./timesyscall
+  $* ./timectxsw
+  $* ./timetctxsw
+  $* ./timetctxsw2
+}
+
+关于亲和性
+如果不设置亲和性，测试的抖动非常大
+比如离谱到线程切换比进程切换还慢
+
+关于设备
+手上没啥设备，测了R7 4750U和i7 8700，其中4750U贴了三次结果
+云主机据说有vcpu问题，测试结果没参考价值，待确定
+
+一些简单的结论
+线程切换的成本大概是进程切换的75%-90%左右
+不管是线程还是进程，上下文切换成本量级为~1000ns
+另外，syscall得出的结论和我手写的差不多
+
+FIXME
+有issue提到这种计数不够精准，需要参考其它工具看看
+第二种thread context测试方式是通过sched_yield实现的，为什么差距会如此大？
+
+TODO
+缺一台NUMA机器来测试跨NUMA性能，但是又有谁会送给我呢
+
+./cpubench.sh
+model name : AMD Ryzen 7 PRO 4750U with Radeon Graphics
+1 physical CPUs, 8 cores/CPU, 2 hardware threads/core = 16 hw threads total
+-- No CPU affinity --
+10000000 system calls in 473244400ns (47.3ns/syscall)
+2000000 process context switches in 3463486200ns (1731.7ns/ctxsw)
+2000000  thread context switches in 4846132900ns (2423.1ns/ctxsw)
+2000000  thread context switches in 87559600ns (43.8ns/ctxsw)
+-- With CPU affinity --
+10000000 system calls in 474828400ns (47.5ns/syscall)
+2000000 process context switches in 2309944400ns (1155.0ns/ctxsw)
+2000000  thread context switches in 1740099000ns (870.0ns/ctxsw)
+2000000  thread context switches in 405037700ns (202.5ns/ctxsw)
+-- With CPU affinity to CPU 0 --
+
+
+model name : AMD Ryzen 7 PRO 4750U with Radeon Graphics
+1 physical CPUs, 8 cores/CPU, 2 hardware threads/core = 16 hw threads total
+-- No CPU affinity --
+10000000 system calls in 479926100ns (48.0ns/syscall)
+2000000 process context switches in 4856583100ns (2428.3ns/ctxsw)
+2000000  thread context switches in 4992805400ns (2496.4ns/ctxsw)
+2000000  thread context switches in 83004000ns (41.5ns/ctxsw)
+-- With CPU affinity --
+10000000 system calls in 472078800ns (47.2ns/syscall)
+2000000 process context switches in 2386596400ns (1193.3ns/ctxsw)
+2000000  thread context switches in 1739683300ns (869.8ns/ctxsw)
+2000000  thread context switches in 408558700ns (204.3ns/ctxsw)
+
+
+
+model name : AMD Ryzen 7 PRO 4750U with Radeon Graphics
+1 physical CPUs, 8 cores/CPU, 2 hardware threads/core = 16 hw threads total
+-- No CPU affinity --
+10000000 system calls in 484077200ns (48.4ns/syscall)
+2000000 process context switches in 6011111400ns (3005.6ns/ctxsw)
+2000000  thread context switches in 5156397500ns (2578.2ns/ctxsw)
+2000000  thread context switches in 82552000ns (41.3ns/ctxsw)
+-- With CPU affinity --
+10000000 system calls in 481015900ns (48.1ns/syscall)
+2000000 process context switches in 2308968100ns (1154.5ns/ctxsw)
+2000000  thread context switches in 1748859600ns (874.4ns/ctxsw)
+2000000  thread context switches in 409216600ns (204.6ns/ctxsw)
+
+
+
+
+
+
+
+
+
+
+
+./cpubench.sh
+model name : Intel(R) Core(TM) i7-8700 CPU @ 3.20GHz
+1 physical CPUs, 6 cores/CPU, 2 hardware threads/core = 12 hw threads total
+-- No CPU affinity --
+10000000 system calls in 3066288096ns (306.6ns/syscall)
+2000000 process context switches in 3006343223ns (1503.2ns/ctxsw)
+2000000  thread context switches in 2992150652ns (1496.1ns/ctxsw)
+2000000  thread context switches in 326852376ns (163.4ns/ctxsw)
+-- With CPU affinity --
+10000000 system calls in 3008659242ns (300.9ns/syscall)
+2000000 process context switches in 3521227887ns (1760.6ns/ctxsw)
+2000000  thread context switches in 3220578033ns (1610.3ns/ctxsw)
+2000000  thread context switches in 592992614ns (296.5ns/ctxsw)
+-- With CPU affinity to CPU 0 --
+10000000 system calls in 3003803860ns (300.4ns/syscall)
+2000000 process context switches in 3006083817ns (1503.0ns/ctxsw)
+2000000  thread context switches in 2927207252ns (1463.6ns/ctxsw)
+2000000  thread context switches in 330134184ns (165.1ns/ctxsw)
