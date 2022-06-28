@@ -7,9 +7,11 @@
 
 // 结论：
 // - std::bind和ptr是直接调用函数和lambda的2-3倍差距（O3）
-// - 普通函数的调用大概是0.4ns水平，还得看CPU水平
+// - 普通函数的调用大概是0.4-2ns水平，还得看CPU水平
 // - 但是就整体开销来看，其实用哪一种都不必太在意
 // - （原作者测试结果）如果不使用inline优化，那可能会导致数量级的性能差距
+
+// TODO 添加virtual，使用std::function（不含std::bind）或者custom class
 
 /*
 [device] Ryzen7 5800H
