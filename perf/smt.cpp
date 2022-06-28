@@ -1,5 +1,27 @@
 // 来源：https://github.com/HongweiQin/smt_test/blob/master/src/smt_test.c
-// TODO 由于主机问题，待测试
+
+// i7 8700测试（6核12线程）
+// 结论：在计算密集型中超线程确实有用
+
+// 疑问：那为什么玩游戏会这么拉？负优化是怎么来的？
+// 可能的原因：观察user，SMT下单个线程的效率其实是降低的，不充分使用多线程并发的应用可能就会变慢
+
+/*
+每次执行 time ./smt -f 20000000000 -g 4096
+threads_num=12, fibonacci_max=20000000000, should_set_affinity=0, should_inline=1, alloc_granularity=4096
+
+turn off smt:
+real	0m54.958s
+user	5m27.746s
+sys 	0m0.036s
+
+turn on smt:
+real	0m33.432s
+user	6m39.876s
+sys 	0m0.012s
+*/
+
+// TODO 使用taskset限制核心数，对比真3核和伪6核的情况
 
 #define DEFAULT_NR_THREAD (12)
 #define DEFAULT_FIBONACCI_MAX (100)
