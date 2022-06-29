@@ -300,4 +300,75 @@ average: 285.938ns
 total: 0.017ms
 average: 531.25ns
 done: 618.016ms
+
+
+
+
+[番外篇]
+使用非常原始的mmap和munmap作为分配器来测试
+十分感人，需要把总内存压制到1MB才能测得快点
+===step: 1===
+total: 1552.35ms
+average: 1480.43ns
+===step: 2===
+total: 715.306ms
+average: 1364.34ns
+===step: 4===
+total: 283.96ms
+average: 1083.22ns
+===step: 8===
+total: 142.513ms
+average: 1087.29ns
+===step: 16===
+total: 78.7799ms
+average: 1202.09ns
+===step: 32===
+total: 37.106ms
+average: 1132.39ns
+===step: 64===
+total: 18.8952ms
+average: 1153.27ns
+===step: 128===
+total: 9.8649ms
+average: 1204.21ns
+===step: 256===
+total: 5.3632ms
+average: 1309.38ns
+===step: 512===
+total: 2.5476ms
+average: 1243.95ns
+===step: 1024===
+total: 1.1325ms
+average: 1105.96ns
+===step: 2048===
+total: 0.5542ms
+average: 1082.42ns
+===step: 4096===
+total: 0.2853ms
+average: 1114.45ns
+===step: 8192===
+total: 0.243ms
+average: 1898.44ns
+===step: 16384===
+total: 0.2349ms
+average: 3670.31ns
+===step: 32768===
+total: 0.207ms
+average: 6468.75ns
+===step: 65536===
+total: 0.2535ms
+average: 15843.8ns
+===step: 131072===
+total: 0.1941ms
+average: 24262.5ns
+===step: 262144===
+total: 0.1842ms
+average: 46050ns
+===step: 524288===
+total: 0.1605ms
+average: 80250ns
+===step: 1048576===
+total: 0.1787ms
+average: 178700ns
+done: 2850.31ms
 */
