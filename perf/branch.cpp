@@ -2,6 +2,10 @@
 // sorted: elasped: 429.784ms
 // random: elasped: 1038.77ms
 
+// R7 5800H, -O2 -fno-if-conversion
+// sorted: elasped: 434.395ms
+// random: elasped: 713.43ms
+
 
 #include <algorithm>
 #include <iostream>
