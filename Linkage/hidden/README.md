@@ -6,9 +6,11 @@
 
 分为`file1.cpp`和`file2.cpp`两个文件，也既不同的`object`
 
-通过命令：`g++ --shared -fPIC -o library file1.c file2.c`
+通过命令：`g++ --shared -fPIC -o library file1.cpp file2.cpp`
 
 生成一个动态库`library`
+
+（为了方便，这里跳过分别显式构建`object`再生成动态库）
 
 ## 有什么问题
 
@@ -60,7 +62,11 @@
 
 `_Z22mustBeKnownButNotAnAP`的绑定方式是`LOCAL`
 
-（不过不符合预期，本以为是`GLOBAL`加上`HIDDEN`）
+> 注：
+>
+> 如果仅是生成object而不是直接生成library，则是`GLOBAL`加上`HIDDEN`，见`file3_elf`文件，它是由`file3.o`导出的（同样使用`-fvisibility=hidden`）
+>
+> 也就是说，`object`和`lib`中符号的绑定和可见性是不一样的
 
 ### 方案二
 
