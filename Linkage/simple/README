@@ -1,0 +1,7 @@
+简单看下ELF的生成
+
+test1只含main
+test2不含main
+
+.S指的是readelf -S的输出
+.all指的是readelf -a的输出
