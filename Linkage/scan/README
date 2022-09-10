@@ -1,0 +1,10 @@
+简单的扫描测试：
+* `main`依赖`f1`
+* `f1`依赖`f2`
+
+生成归档：
+$ g++ -c f1.cpp f2.cpp && ar -rcs libf1.a f1.o && ar -rcs libf2.a f2.o
+
+测试：
+g++ main.cpp libf1.a libf2.a
+g++ main.cpp libf2.a libf1.a
