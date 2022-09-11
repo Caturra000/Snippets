@@ -1,1 +1,4 @@
 见讨论：https://www.zhihu.com/question/425920019/answer/2254967131
+
+一键复制：
+g++ -c -fPIC so.cpp && g++ --shared so.o -o libso.so && g++ main.cpp -L. -lso -o main && export LD_LIBRARY_PATH=. && ./main
