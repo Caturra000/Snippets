@@ -1,0 +1,15 @@
+ Section to Segment mapping:
+  Segment Sections...
+   00     
+   01     .interp 
+   02     .interp .note.gnu.property .note.gnu.build-id .note.ABI-tag .gnu.hash .dynsym .dynstr .gnu.version .gnu.version_r .rela.dyn .rela.plt 
+   03     .init .plt .plt.got .plt.sec .text .fini 
+   04     .rodata .eh_frame_hdr .eh_frame .gcc_except_table 
+   05     .init_array .fini_array .data.rel.ro .dynamic .got .data .bss 
+   06     .dynamic 
+   07     .note.gnu.property 
+   08     .note.gnu.build-id .note.ABI-tag 
+   09     .note.gnu.property 
+   10     .eh_frame_hdr 
+   11     
+   12     .init_array .fini_array .data.rel.ro .dynamic .got 

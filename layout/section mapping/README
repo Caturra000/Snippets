@@ -1,0 +1,2 @@
+随便写一个程序然后readelf --segments输出就好了
+像平时常说的data段、bss段这种说法其实不太恰当，它们（作为section）是归类到同一个segment映射（CSAPP里做出了简化）
