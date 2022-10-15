@@ -122,3 +122,21 @@ typeinfo for A:
 typeinfo name for A:
         .string "1A"
 */
+
+/*
+godbolt对于non-virtual thunk并不是很清晰
+
+non-virtual thunk to C::w():
+        subq    $16, %rdi
+        jmp     .LTHUNK0
+
+并不知道LTHUNK0是哪里
+
+而本地用objdump和c++filt输出这个
+
+00000000000012bf <non-virtual thunk to C::w()>:
+    12bf:	f3 0f 1e fa          	endbr64
+    12c3:	48 83 ef 10          	sub    $0x10,%rdi
+    12c7:	eb e7                	jmp    12b0 <C::w()>
+    12c9:	90                   	nop
+*/
