@@ -116,3 +116,28 @@ typeinfo for A:
 typeinfo name for A:
         .string "1A"
 */
+
+/*
+0000000000001261 <virtual thunk to B::f0()>:
+    1261:	f3 0f 1e fa          	endbr64
+    1265:	4c 8b 17             	mov    (%rdi),%r10
+    1268:	49 03 7a e8          	add    -0x18(%r10),%rdi
+    126c:	eb e4                	jmp    1252 <B::f0()>
+
+000000000000127d <virtual thunk to C::f0()>:
+    127d:	f3 0f 1e fa          	endbr64
+    1281:	4c 8b 17             	mov    (%rdi),%r10
+    1284:	49 03 7a e8          	add    -0x18(%r10),%rdi
+    1288:	eb e4                	jmp    126e <C::f0()>
+
+0000000000001299 <virtual thunk to D::f0()>:
+    1299:	f3 0f 1e fa          	endbr64
+    129d:	4c 8b 17             	mov    (%rdi),%r10
+    12a0:	49 03 7a e8          	add    -0x18(%r10),%rdi
+    12a4:	eb e4                	jmp    128a <D::f0()>
+
+00000000000012a6 <non-virtual thunk to D::f0()>:
+    12a6:	f3 0f 1e fa          	endbr64
+    12aa:	48 83 ef 10          	sub    $0x10,%rdi
+    12ae:	eb da                	jmp    128a <D::f0()>
+*/
