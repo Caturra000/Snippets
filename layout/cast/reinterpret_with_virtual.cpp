@@ -35,6 +35,7 @@ int main() {
     println(spb);
 
     // buggy code!
+    // Note: different from C-style cast (B*)(&d)
     auto rpb = reinterpret_cast<B*>(&d);
     println(rpb);
 }
