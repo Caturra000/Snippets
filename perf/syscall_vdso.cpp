@@ -28,15 +28,15 @@ int main(int argc, const char *argv[]) {
 // 4750U简单测试
 /*
 
-$ ./syscall 10000
+$ ./syscall_vdso 10000
 total: 21500ns
 average: 2.15ns
 
-$ ./syscall 1000000
+$ ./syscall_vdso 1000000
 total: 215800ns
 average: 2.158ns
 
-$ ./syscall 100000000
+$ ./syscall_vdso 100000000
 total: 2.2049e+06ns
 average: 2.2049ns
 
