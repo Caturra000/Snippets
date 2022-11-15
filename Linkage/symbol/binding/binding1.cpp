@@ -1,5 +1,5 @@
 // 如果生成.o，那么全部binding方式都是LOCAL（或者不存在这个符号）
-// $ g++ -c binding.cpp --std=c++17 -o binding.o && readelf --symbols binding.o | c++filt > dump
+// $ g++ -c binding1.cpp --std=c++17 -o binding1.o && readelf --symbols binding1.o | c++filt > dump
 
 extern int a;
 
@@ -15,6 +15,7 @@ inline int c2 = 2;
 extern int funca(double);
 
 static int funcb0(double);
+// FUNC    LOCAL  DEFAULT
 static int funcb1(double) {return 0;}
 
 inline int funcc0(double);
