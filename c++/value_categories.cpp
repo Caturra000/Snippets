@@ -10,9 +10,9 @@
 //
 // e: expression
 
-#define IS_LVALUE(e, type)  std::is_same<decltype((e)), type &>::value
-#define IS_XVALUE(e, type)  std::is_same<decltype((e)), type &&>::value
-#define IS_PRVALUE(e, type) std::is_same<decltype((e)), type>::value
+#define IS_LVALUE(e)  std::is_lvalue_reference<decltype((e))>::value
+#define IS_XVALUE(e)  std::is_rvalue_reference<decltype((e))>::value
+#define IS_PRVALUE(e) (!IS_LVALUE(e) && !IS_XVALUE(e))
 
 
 /////////////////////////////
@@ -35,27 +35,26 @@ int main() {
         std::cout << (arg ? "true" : "false") << std::endl; 
     };
 
-    println(IS_PRVALUE(1 + 2, int));
-    println(IS_PRVALUE(Class{}, Class));
-    println(IS_PRVALUE(func(), int));
-    println(IS_PRVALUE(1, int));
-
+    println(IS_PRVALUE(1 + 2));
+    println(IS_PRVALUE(Class{}));
+    println(IS_PRVALUE(func()));
+    println(IS_PRVALUE(1));
+    // println(test_template_parameter_prvalue<1>());
 
     Class object;
     Class *pObject = &object;
 
-    println(IS_LVALUE(object, Class));
-    println(IS_LVALUE(*pObject, Class));
-    using StringLiteral = const char[13];
+    println(IS_LVALUE(object));
+    println(IS_LVALUE(*pObject));
     // Note: 在字面值类型中，字符串字面值是特殊的，并非prvalue
-    println(IS_LVALUE("shabi xiaomi", StringLiteral));
+    println(IS_LVALUE("shabi xiaomi"));
 
 
     int eXpring = 1;
 
-    println(IS_XVALUE(std::move(eXpring), int));
-    // Note: prvalue-to-xvalue是C++17及之后后才允许的
-    //       之前的C++标准会引起编译错误
-    // println(STRONG_IS_XVALUE(std::move(Class{}), Class));
+    println(IS_XVALUE(std::move(eXpring)));
+    // Question: prvalue-to-xvalue应该是C++17及之后后才允许的
+    //           然而这里使用-std=c++11仍然可以编译
+    println(IS_XVALUE(std::move(Class{})));
     return 0;
 }
