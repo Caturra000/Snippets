@@ -49,7 +49,8 @@ bool test_template_parameter_prvalue() {
 
 int main() {
     auto println = [](bool arg) {
-        std::cout << (arg ? "true" : "false") << std::endl; 
+        static char once {(std::cout << std::boolalpha, 'x')};
+        std::cout << arg << std::endl;
     };
 
     println(IS_PRVALUE(1 + 2));
