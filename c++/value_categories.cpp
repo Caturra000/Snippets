@@ -8,7 +8,17 @@
 // 判断value categories的方法
 // 改编自C++ Templates: The Complete Guide第二版，附录B
 //
-// e: expression
+// 关于e（既expression）为什么要用decltype((e))而不是decltype(e)
+//
+// §15.10.2
+// If e is the name of an entity (such as variable, function, enumerator, or data member) or a class member access,
+// decltype(e) yields the declared type of that entity or the denoted class member.
+// Thus, decltype can be used to inspect the type of variable.
+//
+// §B.3
+// The double parentheses in decltype((x)) are needed to avoid producing the declared type of a
+// named entity in case where the expression x does indeed name an entity
+// (in other cases, the parentheses have no effect).
 
 #define IS_LVALUE(e)  std::is_lvalue_reference<decltype((e))>::value
 #define IS_XVALUE(e)  std::is_rvalue_reference<decltype((e))>::value
