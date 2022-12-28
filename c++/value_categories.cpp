@@ -19,15 +19,22 @@
 
 
 int func() { return 1; }
+int& func_lvalue_ref() { return func_lvalue_ref(); }
+int&& func_rvalue_ref()  { return func_rvalue_ref(); }
 
 // uncopyable & unmovable
 class Class {
 public:
+    int member;
     Class() = default;
     Class(const Class&) = delete;
     Class(Class&&) = delete;
 };
 
+template <int I>
+bool test_template_parameter_prvalue() {
+    return IS_PRVALUE(I);
+}
 
 
 int main() {
@@ -37,24 +44,31 @@ int main() {
 
     println(IS_PRVALUE(1 + 2));
     println(IS_PRVALUE(Class{}));
-    println(IS_PRVALUE(func()));
+    println(IS_PRVALUE(&main));
+    println(IS_PRVALUE(main()));
     println(IS_PRVALUE(1));
-    // println(test_template_parameter_prvalue<1>());
+    println(IS_PRVALUE(nullptr));
+    println(test_template_parameter_prvalue<1>());
+    // TODO lambda expression
 
     Class object;
     Class *pObject = &object;
 
     println(IS_LVALUE(object));
     println(IS_LVALUE(*pObject));
+    println(IS_LVALUE(func_lvalue_ref()));
     // Note: 在字面值类型中，字符串字面值是特殊的，并非prvalue
     println(IS_LVALUE("shabi xiaomi"));
+    println(IS_LVALUE(object.member));
 
 
     int eXpring = 1;
 
     println(IS_XVALUE(std::move(eXpring)));
+    println(IS_XVALUE(func_rvalue_ref()));
     // Question: prvalue-to-xvalue应该是C++17及之后后才允许的
     //           然而这里使用-std=c++11仍然可以编译
     println(IS_XVALUE(std::move(Class{})));
+    println(IS_XVALUE(Class{}.member));
     return 0;
 }
