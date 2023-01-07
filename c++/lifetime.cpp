@@ -25,21 +25,33 @@ int main()
 {
     std::cout << "case 1-----------\n";
     {
+        // end-scope
+        // ~wrapper()
+        // ~O()
         auto&& a = wrapper{O()};
         std::cout << "end-scope\n";
     }
     std::cout << "case 2-----------\n";
     {
+        // end-scope
+        // ~O()
+        // ~wrapper()
         auto a = wrapper{O()};
         std::cout << "end-scope\n";
     }
     std::cout << "case 3-----------\n";
     {
+        // ~O()
+        // end-scope
+        // ~wrapper()
         auto&& a = wrapper{f(O())};
         std::cout << "end-scope\n";
     }
     std::cout << "case Ex-----------\n";
     {
+        // ~O()
+        // end-scope
+        // ~wrapperEx()
         auto&& a = wrapperEx{O()};
         std::cout << "end-scope\n";
     }
