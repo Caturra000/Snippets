@@ -1,5 +1,11 @@
-// 使用swap idiom来支持异常安全
-// （但是写起来还是痛苦）
+// case6进一步使用智能指针，以实现更轻松的类设计
+//
+// Note:
+// 容器类其实并不是很推荐底层用智能指针管理，比如难以分离operator new和construct
+// 只是这里案例比较简单
+//
+// 题外话：
+// 这些和异常安全已经没啥关系了啊。。
 
 #include <algorithm>
 #include <stdexcept>
@@ -10,14 +16,14 @@
 template <typename T>
 struct Stack_impl {
     Stack_impl(size_t capacity);
-    ~Stack_impl();
+    // dtor不需要手动实现
+    ~Stack_impl() = default;
     Stack_impl(const Stack_impl &);
     Stack_impl& operator=(const Stack_impl &);
 
-    // 诀窍是swap肯定不抛异常
     void swap(Stack_impl &);
 
-    T *data;
+    std::unique_ptr<T[]> data;
     size_t size;
     size_t capacity;
 };
@@ -45,23 +51,18 @@ private:
 
 template <typename T>
 Stack_impl<T>::Stack_impl(size_t c)
-    : data(new T[c]),
+    : data(std::make_unique<T[]>(c)),
       size(0),
       capacity(c)
 {}
 
 template <typename T>
-Stack_impl<T>::~Stack_impl() {
-    delete[] data;
-}
-
-template <typename T>
 Stack_impl<T>::Stack_impl(const Stack_impl &rhs)
-    : data(new T[rhs.capacity]),
+    : data(std::make_unique<T[]>(rhs.capacity)),
       size(rhs.size),
       capacity(rhs.capacity)
 {
-    std::copy(rhs.data, rhs.data + size, data);
+    std::copy(rhs.data.get(), rhs.data.get() + size, data.get());
 }
 
 template <typename T>
@@ -107,17 +108,13 @@ size_t Stack<T>::size() {
 template <typename T>
 void Stack<T>::push(const T &elem) {
     auto copy_data = [](const Stack_impl<T> &from, Stack_impl<T> &to) {
-        std::copy(from.data, from.data + from.size, to.data);
+        std::copy(from.data.get(), from.data.get() + from.size, to.data.get());
         to.size = from.size;
     };
 
     if(_impl.size == _impl.capacity) {
         Stack_impl<T> impl(_impl.capacity << 1);
         copy_data(_impl, impl);
-        // 需要获取资源的地方只需要swap即可
-        // 与case4不同的是
-        // 从`impl`构造（含）到`impl.swap`前都不需要小心翼翼处理异常
-        // 因为并不影响this
         impl.swap(_impl);
     }
     _impl.data[_impl.size] = elem;
@@ -146,7 +143,7 @@ int main() {
     stk1 = stk0;
 
     size_t size = stk1.size();
-    stk1.push(0b101);
+    stk1.push(0b110);
     int v = stk1.top();
     stk1.pop();
 }
