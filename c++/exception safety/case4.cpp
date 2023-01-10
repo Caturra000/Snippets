@@ -103,7 +103,6 @@ void Stack<T>::pop() {
     if(_size == 0) {
         throw std::runtime_error("pop empty");
     }
-    _data[_size - 1].~T();
     _size--;
 }
 

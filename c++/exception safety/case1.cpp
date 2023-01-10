@@ -1,4 +1,4 @@
-// code01展示一种传统上的异常安全容器的实现方式
+// case1展示一种传统上的异常安全容器的实现方式
 // 不含任何技巧
 
 #include <algorithm>
@@ -29,6 +29,10 @@ Stack<T>::Stack()
     // 并且此时new expression并不会泄露资源
     //
     // 当然也可以try-catch做一些需要现场处理的事情（如日志打印），但异常中立仍需要rethrow
+    //
+    // 题外话：
+    // 这里为了简化容器实现，不分离operator new和construct
+    // 同样，单个元素失效时也不进行destroy
     _data = new T[_capacity];
 
     // Note: 如果抛出异常，是否还需要把_capacity重新设为0？

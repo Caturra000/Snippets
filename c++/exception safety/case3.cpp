@@ -120,7 +120,8 @@ T Stack<T>::pop() {
     }
     T &elem = _data[_size - 1];
     T ret = elem;
-    elem.~T();
+    // 这里化简不做处理
+    // elem.~T();
     _size--;
     return ret;
 }
