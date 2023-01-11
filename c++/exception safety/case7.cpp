@@ -107,6 +107,12 @@ std::shared_ptr<T> Stack<T>::pop() {
     T &elem = _data[_size - 1];
     // 返回的是智能指针，那么外部获取该返回值时不会抛出异常
     // 注意不要std::move(elem)，shared_ptr的构造可能会fail
+    //
+    // Note:
+    // 这里也许可以应用移动语义
+    // 因为shared_ptr的构造过程，涉及到先分配内存再移动内部资源
+    // 如果fail，那也是第一步的事情，此时elem实际上并没有move ctor
+    // 但是也并不能说T类型的move过程是真的noexcept，虽然一般来说没问题
     auto ret = std::make_shared<T>(elem);
     _size--;
     return ret;
