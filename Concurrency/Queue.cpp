@@ -216,18 +216,27 @@ auto Queue_v2<T>::try_pop() -> std::shared_ptr<T> {
 
 
 
+// 一个测试用对象，构造慢，但是移动快
+// （为了抬举v2的性能真是煞费苦心啊，v1版容器使用T而非shared_ptr<T>，内存分配友好对于简单的类型其实性能更优）
+struct HugeObject {
+    std::vector<int> x;
+    size_t y;
+    HugeObject(size_t i): x(100), y(i) {}
+};
 
-
-
-int main() {
-    Queue_v2<size_t> q;
+// 通过构造一个生产者消费者模型来测试
+// 生产者会把HugeObject放入并发队列Q中，消费者则把Q中的元素pop出来，并放入到res中
+// res用于判断实现的正确性
+template <template <typename> typename Q>
+void testQueue() {
+    Q<HugeObject> q;
     auto provider = [&q](size_t count, size_t start) {
         for(size_t i {start}; i < count + start; ++i) {
-            q.push(i);
+            q.push(HugeObject{i});
         }
     };
     // TODO atomic size_t
-    std::vector<size_t> res;
+    std::vector<HugeObject> res;
     std::mutex res_mtx;
     auto consumer = [&](size_t count) {
         for(size_t i {}; i < count;) {
@@ -236,7 +245,7 @@ int main() {
             auto p = q.try_pop(); 
             if(!p) continue;
             std::lock_guard<std::mutex> _ {res_mtx};
-            res.push_back(*p);
+            res.emplace_back(std::move(*p));
             ++i;
         }
     };
@@ -259,22 +268,29 @@ int main() {
     for(auto &&t : provider_threads) t.join();
 
     // check sum
-    auto sum = std::accumulate(res.begin(), res.end(), 0);
+    size_t sum {};
+    for(auto &&o : res) sum += o.y;
     for(size_t i {}; i < count; ++i) sum -=i;
     if(sum) {
         throw std::runtime_error("sum error");
     }
 
     // check [0, count)
-    std::sort(res.begin(), res.end());
-    std::for_each(res.begin(), res.end(), [v=0](auto elem) mutable {
-        if(elem != v) {
+    std::sort(res.begin(), res.end(), [](const auto &a, const auto &b) {
+        return a.y < b.y;
+    });
+    std::for_each(res.begin(), res.end(), [v=0](auto &elem) mutable {
+        if(elem.y != v) {
             throw std::runtime_error("elem error");
         }
         v++;
     });
 
     std::cout << "ok" << std::endl;
+}
+
+int main() {
+    testQueue<Queue_v2>();
     return 0;
 }
 
