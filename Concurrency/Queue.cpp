@@ -94,3 +94,57 @@ bool Queue<T>::empty() const {
     std::lock_guard<std::mutex> _ {_mutex};
     return _container.empty();
 }
+
+int main() {
+    Queue<size_t> q;
+    auto provider = [&q](size_t count) {
+        for(size_t i {}; i < count; ++i) {
+            q.push(i);
+        }
+    };
+    // TODO atomic size_t
+    std::vector<size_t> res;
+    std::mutex res_mtx;
+    auto consumer = [&](size_t count) {
+        for(size_t i {}; i < count; ++i) {
+            for(;;) {
+                auto p = q.try_pop();
+                if(!p) continue;
+                std::lock_guard<std::mutex> _ {res_mtx};
+                res.push_back(*p);
+                break;
+            }
+        }
+    };
+
+    constexpr size_t count = 5e6;
+    constexpr size_t consumers = 5;
+    static_assert(count % consumers == 0);
+
+    std::vector<std::thread> consumer_threads;
+    for(auto _ {consumers}; _--;) {
+        consumer_threads.emplace_back(consumer, count / consumers);
+    }
+    std::thread single_provider_thread {provider, count};
+    single_provider_thread.join();
+    for(auto &&t : consumer_threads) t.join();
+
+    // check sum
+    auto sum = std::accumulate(res.begin(), res.end(), 0);
+    for(size_t i {}; i < count; ++i) sum -=i;
+    if(sum) {
+        throw std::runtime_error("sum error");
+    }
+
+    // check [0, count)
+    std::sort(res.begin(), res.end());
+    std::for_each(res.begin(), res.end(), [v=0](auto elem) mutable {
+        if(elem != v) {
+            throw std::runtime_error("elem error");
+        }
+        v++;
+    });
+
+    std::cout << "ok" << std::endl;
+    return 0;
+}
