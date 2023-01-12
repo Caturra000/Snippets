@@ -176,11 +176,12 @@ auto Queue_v2_helper<Q>::pop_head() {
 template <typename T>
 void Queue_v2<T>::push(T value) {
     auto dummy = std::make_unique<Node>();
+    auto data = std::make_shared<T>(std::move(value));
 
     // no lock here
 
     std::lock_guard<std::mutex> _ {_tail_mutex};
-    _tail->data = std::make_shared<T>(std::move(value));
+    _tail->data = std::move(data);
     _tail->next = std::move(dummy);
     _tail = _tail->next.get();
 }
