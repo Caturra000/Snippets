@@ -108,11 +108,15 @@ bool Queue<T>::empty() const {
 
 
 
-
+template <typename Q>
+struct Queue_v2_helper {
+    auto get_tail_copy();
+    auto pop_head();
+};
 
 // 更细粒度
 template <typename T>
-class Queue_v2 {
+class Queue_v2: private Queue_v2_helper<Queue_v2<T>> {
 public:
     Queue_v2() = default;
     ~Queue_v2() = default;
@@ -142,12 +146,40 @@ private:
     mutable std::mutex _tail_mutex;
     
     std::condition_variable _condition;
+
+    friend class Queue_v2_helper<Queue_v2<T>>;
 };
+
+template <typename Q>
+auto Queue_v2_helper<Q>::get_tail_copy() {
+    auto impl = static_cast<Q*>(this);
+    std::lock_guard<std::mutex> _ {impl->_tail_mutex};
+    return impl->_tail;
+}
+
+template <typename Q>
+auto Queue_v2_helper<Q>::pop_head() {
+    auto impl = static_cast<Q*>(this);
+    std::lock_guard<std::mutex> _ {impl->_head_mutex};
+    auto t = get_tail_copy();
+    // dummy
+    if(impl->_head.get() == t) {
+        return decltype(impl->_head){nullptr};
+    }
+    auto h = std::move(impl->_head);
+    // detach h and h->next
+    impl->_head = std::move(h->next);
+    return h;
+}
+
 
 template <typename T>
 void Queue_v2<T>::push(T value) {
-    std::lock_guard<std::mutex> _ {_tail_mutex};
     auto dummy = std::make_unique<Node>();
+
+    // no lock here
+
+    std::lock_guard<std::mutex> _ {_tail_mutex};
     _tail->data = std::make_shared<T>(std::move(value));
     _tail->next = std::move(dummy);
     _tail = _tail->next.get();
@@ -155,34 +187,20 @@ void Queue_v2<T>::push(T value) {
 
 template <typename T>
 bool Queue_v2<T>::try_pop(T &out) {
-    std::lock_guard<std::mutex> _ {_head_mutex};
-    Node *tail {};
-    {
-        std::lock_guard<std::mutex> __ {_tail_mutex};
-        tail = _tail;
-    }
-    // dummy
-    if(_head.get() == tail) {
-        return false;
-    }
-    out = std::move(*_head->data);
-    _head = std::move(_head->next);
+    auto old = this->pop_head();
+    if(!old) return false;
+
+    // no lock here
+
+    out = std::move(*old->data);
     return true;
 }
 
 template <typename T>
 auto Queue_v2<T>::try_pop() -> std::shared_ptr<T> {
-    std::lock_guard<std::mutex> _ {_head_mutex};
-    Node *tail {};
-    {
-        std::lock_guard<std::mutex> __ {_tail_mutex};
-        tail = _tail;
-    }
-    if(_head.get() == tail) {
-        return nullptr;
-    }
-    auto p = std::make_shared<T>(std::move(*_head->data));
-    _head = std::move(_head->next);
+    auto old = this->pop_head();
+    if(!old) return nullptr;
+    auto p = std::move(old->data);
     return p;
 }
 
