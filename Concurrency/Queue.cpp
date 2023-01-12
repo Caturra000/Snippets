@@ -97,8 +97,8 @@ bool Queue<T>::empty() const {
 
 int main() {
     Queue<size_t> q;
-    auto provider = [&q](size_t count) {
-        for(size_t i {}; i < count; ++i) {
+    auto provider = [&q](size_t count, size_t start) {
+        for(size_t i {start}; i < count + start; ++i) {
             q.push(i);
         }
     };
@@ -119,15 +119,20 @@ int main() {
 
     constexpr size_t count = 5e6;
     constexpr size_t consumers = 5;
+    constexpr size_t providers = 2;
     static_assert(count % consumers == 0);
+    static_assert(count % providers == 0);
 
     std::vector<std::thread> consumer_threads;
+    std::vector<std::thread> provider_threads;
     for(auto _ {consumers}; _--;) {
         consumer_threads.emplace_back(consumer, count / consumers);
     }
-    std::thread single_provider_thread {provider, count};
-    single_provider_thread.join();
+    for(auto i {providers}; i--;) {
+        provider_threads.emplace_back(provider, count / providers, count / providers * i);
+    }
     for(auto &&t : consumer_threads) t.join();
+    for(auto &&t : provider_threads) t.join();
 
     // check sum
     auto sum = std::accumulate(res.begin(), res.end(), 0);
