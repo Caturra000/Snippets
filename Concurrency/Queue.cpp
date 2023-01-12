@@ -106,14 +106,12 @@ int main() {
     std::vector<size_t> res;
     std::mutex res_mtx;
     auto consumer = [&](size_t count) {
-        for(size_t i {}; i < count; ++i) {
-            for(;;) {
-                auto p = q.try_pop();
-                if(!p) continue;
-                std::lock_guard<std::mutex> _ {res_mtx};
-                res.push_back(*p);
-                break;
-            }
+        for(size_t i {}; i < count;) {
+            auto p = (i & 1) ? q.try_pop() : q.wait_and_pop(); 
+            if(!p) continue;
+            std::lock_guard<std::mutex> _ {res_mtx};
+            res.push_back(*p);
+            ++i;
         }
     };
 
