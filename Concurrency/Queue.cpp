@@ -95,8 +95,113 @@ bool Queue<T>::empty() const {
     return _container.empty();
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// 更细粒度
+template <typename T>
+class Queue_v2 {
+public:
+    Queue_v2() = default;
+    ~Queue_v2() = default;
+
+    Queue_v2(const Queue_v2 &) = delete;
+    Queue_v2& operator=(const Queue_v2 &) = delete;
+
+public:
+    void push(T);
+    bool try_pop(T &);
+    auto try_pop() -> std::shared_ptr<T>;
+    // 有空再写
+    // void wait_and_pop(T &);
+    // auto wait_and_pop() -> std::shared_ptr<T>;
+    // bool empty() const;
+
+private:
+    struct Node {
+        std::shared_ptr<T> data;
+        std::unique_ptr<Node> next;
+    };
+
+    std::unique_ptr<Node> _head {std::make_unique<Node>()};
+    Node *_tail {_head.get()};
+
+    mutable std::mutex _head_mutex;
+    mutable std::mutex _tail_mutex;
+    
+    std::condition_variable _condition;
+};
+
+template <typename T>
+void Queue_v2<T>::push(T value) {
+    std::lock_guard<std::mutex> _ {_tail_mutex};
+    auto dummy = std::make_unique<Node>();
+    _tail->data = std::make_shared<T>(std::move(value));
+    _tail->next = std::move(dummy);
+    _tail = _tail->next.get();
+}
+
+template <typename T>
+bool Queue_v2<T>::try_pop(T &out) {
+    std::lock_guard<std::mutex> _ {_head_mutex};
+    Node *tail {};
+    {
+        std::lock_guard<std::mutex> __ {_tail_mutex};
+        tail = _tail;
+    }
+    // dummy
+    if(_head.get() == tail) {
+        return false;
+    }
+    out = std::move(*_head->data);
+    _head = std::move(_head->next);
+    return true;
+}
+
+template <typename T>
+auto Queue_v2<T>::try_pop() -> std::shared_ptr<T> {
+    std::lock_guard<std::mutex> _ {_head_mutex};
+    Node *tail {};
+    {
+        std::lock_guard<std::mutex> __ {_tail_mutex};
+        tail = _tail;
+    }
+    if(_head.get() == tail) {
+        return nullptr;
+    }
+    auto p = std::make_shared<T>(std::move(*_head->data));
+    _head = std::move(_head->next);
+    return p;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 int main() {
-    Queue<size_t> q;
+    Queue_v2<size_t> q;
     auto provider = [&q](size_t count, size_t start) {
         for(size_t i {start}; i < count + start; ++i) {
             q.push(i);
@@ -107,7 +212,9 @@ int main() {
     std::mutex res_mtx;
     auto consumer = [&](size_t count) {
         for(size_t i {}; i < count;) {
-            auto p = (i & 1) ? q.try_pop() : q.wait_and_pop(); 
+            // v2版本没写wait实现
+            // auto p = (i & 1) ? q.try_pop() : q.wait_and_pop();
+            auto p = q.try_pop(); 
             if(!p) continue;
             std::lock_guard<std::mutex> _ {res_mtx};
             res.push_back(*p);
@@ -150,4 +257,21 @@ int main() {
 
     std::cout << "ok" << std::endl;
     return 0;
+}
+
+struct {
+    std::chrono::steady_clock::time_point clock_start, clock_end;
+} global;
+
+[[gnu::constructor]]
+void global_start() {
+    global.clock_start = std::chrono::steady_clock::now();
+}
+
+[[gnu::destructor]]
+void global_end() {
+    global.clock_end = std::chrono::steady_clock::now();
+    using ToMilli = std::chrono::duration<double, std::milli>;
+    auto elapsed = ToMilli{global.clock_end - global.clock_start}.count();
+    std::cout << "elapsed: " << elapsed << "ms" << std::endl;
 }
