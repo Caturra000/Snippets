@@ -17,7 +17,7 @@ struct Wrapped_elem {
 
     // allocator for wrapped_elem
     using Alloc = typename std::allocator_traits<Alloc_for_T>
-        ::template rebind_alloc<Wrapped_elem<T>>;
+        ::template rebind_alloc<Wrapped_elem<T, Alloc_for_T>>;
 }; 
 
 // Alloc: allocator for typename T
@@ -160,6 +160,14 @@ void Freelist<T, Alloc_for_T>::deallocate_impl_safe(T *elem) {
 }
 
 int main() {
-    Freelist<std::string> s(5);
+    std::allocator<std::string> alloc;
+    Freelist<std::string, decltype(alloc)> list;
+    for(int t = 100; t--;) {
+        auto ps1 = list.allocate<false>();
+        alloc.construct(ps1, "abc");
+        std::cout << *ps1 << std::endl;
+        alloc.destroy(ps1);
+        list.deallocate<false>(ps1);
+    }
     return 0;
 }
