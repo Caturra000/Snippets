@@ -39,7 +39,8 @@ struct Tagged_ptr {
     bool operator!=(Tagged_ptr p) { return !operator==(p);}
     constexpr static size_t MASK = (1ull<<48)-1;
     static uint16_t rand() {
-        static thread_local size_t good = 1926'08'17;
+        using std::chrono::steady_clock;
+        static thread_local size_t good = 1926'08'17 ^ steady_clock::now().time_since_epoch().count();
         return good = (good * 998244353) + 12345;
     }
 private:
