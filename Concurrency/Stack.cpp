@@ -351,7 +351,8 @@ struct HugeObject {
     HugeObject(size_t i): x(100), y(i) {}
 };
 
-// 复用Queue的测试样例
+// 使用类似Queue.cpp的测试样例
+// 但是最后验证用的容器也是lockfree Stack
 void testStack() {
     Stack<HugeObject> q;
     
@@ -369,15 +370,13 @@ void testStack() {
             q.push(HugeObject{i});
         }
     };
-    std::vector<HugeObject> res;
-    std::mutex mtx;
+    Stack<HugeObject> receiver;
     auto consumer = [&](size_t count) {
         HugeObject dummy;
         for(size_t i {}; i < count;) {
             if(!q.pop(dummy)) continue;
             ++i;
-            std::lock_guard<std::mutex> _{mtx};
-            res.emplace_back(std::move(dummy));
+            while(!receiver.push(dummy));
         }
     };
 
@@ -391,6 +390,13 @@ void testStack() {
     for(auto &&t : provider_threads) t.join();
     // check sum
     size_t sum {};
+    HugeObject dummy;
+    std::vector<HugeObject> res;
+
+    while(!receiver.empty()) {
+        while(!receiver.pop(dummy));
+        res.emplace_back(std::move(dummy));
+    }
     for(auto &&o : res) sum += o.y;
     for(size_t i {}; i < count; ++i) sum -=i;
     if(sum) {
@@ -429,3 +435,4 @@ void global_end() {
     auto elapsed = ToMilli{global.clock_end - global.clock_start}.count();
     std::cout << "elapsed: " << elapsed << "ms" << std::endl;
 }
+
