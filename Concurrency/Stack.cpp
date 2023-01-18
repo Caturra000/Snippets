@@ -352,11 +352,10 @@ struct HugeObject {
 };
 
 // 复用Queue的测试样例
-// 相比不同的是，这次vector使用预分配，且写入到对应index中，这样可不使用mutex统计
 void testStack() {
     Stack<HugeObject> q;
     
-    constexpr size_t count = 1e6;
+    constexpr size_t count = 5e6;
     constexpr size_t consumers = 5;
     constexpr size_t providers = 2;
     static_assert(count % consumers == 0);
@@ -370,13 +369,15 @@ void testStack() {
             q.push(HugeObject{i});
         }
     };
-    std::vector<HugeObject> res(count);
+    std::vector<HugeObject> res;
+    std::mutex mtx;
     auto consumer = [&](size_t count) {
         HugeObject dummy;
         for(size_t i {}; i < count;) {
             if(!q.pop(dummy)) continue;
-            res[dummy.y] = std::move(dummy);
             ++i;
+            std::lock_guard<std::mutex> _{mtx};
+            res.emplace_back(std::move(dummy));
         }
     };
 
