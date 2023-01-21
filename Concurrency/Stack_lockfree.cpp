@@ -68,7 +68,8 @@ bool Stack<T, Alloc_of_T>::push(Args &&...args) {
     for(;;) {
         Node_ptr new_head {ptr, old_head.get_tag()};
         new_head->next = old_head;
-        if(_head.compare_exchange_weak(old_head, new_head)) {
+        if(_head.compare_exchange_weak(old_head, new_head,
+                std::memory_order_release, std::memory_order_relaxed)) {
             return true;
         }
     }
@@ -81,7 +82,8 @@ std::optional<T> Stack<T, Alloc_of_T>::pop() {
         if(!old_head) return std::nullopt;
         Tagged_ptr<Node> new_head = old_head->next;
         new_head.set_tag(old_head.next_tag());
-        if(_head.compare_exchange_weak(old_head, new_head)) {
+        if(_head.compare_exchange_weak(old_head, new_head,
+                std::memory_order_release, std::memory_order_relaxed)) {
             auto opt = std::make_optional<T>(old_head->data);
             auto ptr = old_head.get_ptr();
             _pool.destroy(ptr);
