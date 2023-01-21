@@ -4,155 +4,110 @@
 
 // 实现lockfree的freelist
 
-
-// 用于保证T的对齐肯定至少有指针大小
-// 仅用于freelist内部
-// 当T完成~T()时，T可以复用为freelist内部的node结点而无需数据域
 template <typename T, typename Alloc_of_T = std::allocator<T>>
 struct Wrapped_elem {
-    alignas(std::ptrdiff_t) T data;
-    Wrapped_elem() = default;
+    using Padding = std::byte[64];
+    union { T data; Padding _; };
+    Wrapped_elem(): data() {}
     template <typename ...Args>
     Wrapped_elem(Args &&...args): data(std::forward<Args>(args)...) {}
+    ~Wrapped_elem() {data.~T();}
 
     // allocator for wrapped_elem
-    using Alloc = typename std::allocator_traits<Alloc_of_T>
+    using Internel_alloc = typename std::allocator_traits<Alloc_of_T>
         ::template rebind_alloc<Wrapped_elem<T, Alloc_of_T>>;
+
+    struct Alloc: private Internel_alloc {
+        T* allocate(size_t n, const void* h = 0) {
+            [](...){}(h); // unused
+            auto ptr = Internel_alloc::allocate(n);
+            return &ptr->data;
+        }
+
+        void deallocate(T *p, size_t n) {
+            Internel_alloc::deallocate(reinterpret_cast<Wrapped_elem*>(p), n);
+        }
+    };
 }; 
 
-
-
-// Alloc: allocator for typename T
-// Wrapped_elem<T, Alloc>::Alloc: workaround for alignment
 template <typename T, typename Alloc = std::allocator<T>>
-class Freelist: Wrapped_elem<T, Alloc>::Alloc {
-public:
-    struct Node;
-    using  Node_ptr = Tagged_ptr<Node>;
+class Freelist: private Wrapped_elem<T, Alloc>::Alloc {
+    struct Node { Tagged_ptr<Node> next; };
 
-    struct Node { Node_ptr next; };
-
-// wrapped T
-private:
-    using Wrapped_Alloc = typename Wrapped_elem<T, Alloc>::Alloc;
+    // 分配T类型时实际使用的allocator
+    using Custom_alloc = typename Wrapped_elem<T, Alloc>::Alloc;
 
 public:
-    Freelist(size_t n = 0);
-
+    Freelist();
     ~Freelist();
 
+// 公开接口全部为线程安全实现
+// 仿造std::allocator的基本接口
 public:
-    template <bool Thread_safe = true>
     T* allocate();
-
-    template <bool Thread_safe = true>
-    void deallocate(T *elem);
+    void deallocate(T* p);
+    template <typename ...Args>
+    void construct(T *p, Args &&...);
+    void destroy(T *p);
 
 private:
-    T* allocate_impl_unsafe();
-
-    T* allocate_impl_safe();
-
-    void deallocate_impl_unsafe(T *elem);
-
-    void deallocate_impl_safe(T *elem);
-
-// extract: ? -> T
-// pack: T -> ?
-private:
-    T* extract(Wrapped_elem<T, Alloc> *w) {
-        return std::launder(reinterpret_cast<T*>(w));
-    }
-    T* extract(Node_ptr n) {
-        return std::launder(reinterpret_cast<T*>(n.get_ptr()));
-    }
-    Node* pack(T *t) {
-        return std::launder(reinterpret_cast<Node*>(t));
-    }
-private:
-    std::atomic<Node_ptr> _pool;
+    std::atomic<Tagged_ptr<Node>> _pool;
 };
 
-template <typename T, typename Alloc_of_T>
-Freelist<T, Alloc_of_T>::Freelist(size_t n): _pool(nullptr) {
-    for(size_t i{}; i < n; ++i) {
-        auto wrapped_ptr = Wrapped_Alloc::allocate(1);
-        deallocate<false>(&wrapped_ptr->data);
-    }
-}
+template <typename T, typename Alloc>
+Freelist<T, Alloc>::Freelist()
+    : _pool{nullptr}
+{}
 
-template <typename T, typename Alloc_of_T>
-Freelist<T, Alloc_of_T>::~Freelist() {
-    Node_ptr cur = _pool.load();
+template <typename T, typename Alloc>
+Freelist<T, Alloc>::~Freelist() {
+    Tagged_ptr<Node> cur = _pool.load();
     while(cur) {
-        Node_ptr tmp = cur->next;
-        deallocate<false>(extract(cur));
-        cur = tmp;
+        auto ptr = cur.get_ptr();
+        if(ptr) cur = ptr->next;
+        Custom_alloc::deallocate(reinterpret_cast<T*>(ptr), 1);
     }
 }
 
-template <typename T, typename Alloc_of_T>
-template <bool Thread_safe>
-T* Freelist<T, Alloc_of_T>::allocate() {
-    if constexpr (Thread_safe) {
-        return allocate_impl_safe();
-    } else {
-        return allocate_impl_unsafe();
-    }
-}
-
-template <typename T, typename Alloc_of_T>
-template <bool Thread_safe>
-void Freelist<T, Alloc_of_T>::deallocate(T *elem) {
-    if constexpr (Thread_safe) {
-        deallocate_impl_safe(elem);
-    } else {
-        deallocate_impl_unsafe(elem);
-    }
-}
-
-template <typename T, typename Alloc_of_T>
-T* Freelist<T, Alloc_of_T>::allocate_impl_unsafe() {
-    Node_ptr old_head = _pool.load(std::memory_order_relaxed);
-    // no cache?
-    if(!old_head) {
-        return extract(Wrapped_Alloc::allocate(1));
-    }
-    // cached?
-    Node_ptr new_head = old_head->next;
-    _pool.store(new_head, std::memory_order_relaxed);
-    return extract(old_head);
-}
-
-template <typename T, typename Alloc_of_T>
-T* Freelist<T, Alloc_of_T>::allocate_impl_safe() {
-    Node_ptr old_head = _pool.load(std::memory_order_acquire);
-    while(1) {
-        if(!old_head) return extract(Wrapped_Alloc::allocate(1));
-        auto new_head = old_head->next;
-        if(_pool.compare_exchange_weak(old_head, new_head)) {
-            return extract(old_head);
+template <typename T, typename Alloc>
+T* Freelist<T, Alloc>::allocate() {
+    Tagged_ptr<Node> old_head = _pool.load(std::memory_order_acquire);
+    for(;;) {
+        if(old_head == nullptr) {
+            return Custom_alloc::allocate(1);
+        }
+        Tagged_ptr<Node> new_head = old_head->next;
+        // Note
+        new_head.set_tag(old_head.next_tag());
+        if(_pool.compare_exchange_weak(old_head, new_head,
+                std::memory_order_release, std::memory_order_relaxed)) {
+            void *ptr = old_head.get_ptr();
+            return reinterpret_cast<T*>(ptr);
         }
     }
 }
 
-template <typename T, typename Alloc_of_T>
-void Freelist<T, Alloc_of_T>::deallocate_impl_unsafe(T *elem) {
-    Node_ptr node = pack(elem);
-    Node_ptr old_head = _pool.load(std::memory_order_relaxed);
-    node->next = old_head;
-    _pool.store(node, std::memory_order_relaxed);
-}
-
-template <typename T, typename Alloc_of_T>
-void Freelist<T, Alloc_of_T>::deallocate_impl_safe(T *elem) {
-    Node_ptr node = pack(elem);
-    Node_ptr old_head = _pool.load(std::memory_order_acquire);
-    while(1) {
-        node->next = old_head;
-        if(_pool.compare_exchange_weak(old_head, node,
+template <typename T, typename Alloc>
+void Freelist<T, Alloc>::deallocate(T *p) {
+    Tagged_ptr<Node> old_head = _pool.load(std::memory_order_acquire);
+    auto new_head_ptr = reinterpret_cast<Node*>(p);
+    for(;;) {
+        Tagged_ptr new_head {new_head_ptr, old_head.get_tag()};
+        new_head->next = old_head;
+        if(_pool.compare_exchange_weak(old_head, new_head,
                 std::memory_order_release, std::memory_order_relaxed)) {
             return;
         }
     }
+}
+
+template <typename T, typename Alloc>
+template <typename ...Args>
+void Freelist<T, Alloc>::construct(T* p, Args &&...args) {
+    new (p) T(std::forward<Args>(args)...);
+}
+
+template <typename T, typename Alloc>
+void Freelist<T, Alloc>::destroy(T *p) {
+    p->~T();
 }

@@ -32,22 +32,9 @@ public:
     template <typename ...Args>
     bool push(Args &&...);
 
-    bool pop(T &);
+    std::optional<T> pop();
 
     bool empty();
-private:
-
-    template <bool Thread_safe, typename ...Args>
-    bool do_push(Args &&...);
-    template <typename ...Args>
-    bool do_push_impl_unsafe(Args &&...);
-    template <typename ...Args>
-    bool do_push_impl_safe(Args &&...);
-
-    template <bool Thread_safe>
-    bool do_pop(T &out);
-    bool do_pop_impl_unsafe(T &out);
-    bool do_pop_impl_safe(T &out);
 
 private:
     // cacheline == 64 bytes
@@ -67,106 +54,46 @@ Stack<T, Alloc_of_T>::Stack()
 
 template <typename T, typename Alloc_of_T>
 Stack<T, Alloc_of_T>::~Stack() {
-    for(T dummy; do_pop<false>(dummy););
+    while(pop());
 }
 
 template <typename T, typename Alloc_of_T>
 template <typename ...Args>
 bool Stack<T, Alloc_of_T>::push(Args &&...args) {
-    return do_push<true>(std::forward<Args>(args)...);
+    Node *ptr = _pool.allocate();
+    // 为了简化，这里并不处理异常安全
+    if(!ptr) return false;
+    _pool.construct(ptr, std::forward<Args>(args)...);
+    Tagged_ptr<Node> old_head = _head.load(std::memory_order_acquire);
+    for(;;) {
+        Node_ptr new_head {ptr, old_head.get_tag()};
+        new_head->next = old_head;
+        if(_head.compare_exchange_weak(old_head, new_head)) {
+            return true;
+        }
+    }
 }
 
 template <typename T, typename Alloc_of_T>
-bool Stack<T, Alloc_of_T>::pop(T &out) {
-    return do_pop<true>(out);
+std::optional<T> Stack<T, Alloc_of_T>::pop() {
+    Tagged_ptr<Node> old_head = _head.load(std::memory_order_acquire);
+    for(;;) {
+        if(!old_head) return std::nullopt;
+        Tagged_ptr<Node> new_head = old_head->next;
+        new_head.set_tag(old_head.next_tag());
+        if(_head.compare_exchange_weak(old_head, new_head)) {
+            auto opt = std::make_optional<T>(old_head->data);
+            auto ptr = old_head.get_ptr();
+            _pool.destroy(ptr);
+            _pool.deallocate(ptr);
+            return opt;
+        }
+    }
 }
 
 template <typename T, typename Alloc_of_T>
 bool Stack<T, Alloc_of_T>::empty() {
     return !_head.load(std::memory_order_relaxed);
-}
-
-template <typename T, typename Alloc_of_T>
-template <bool Thread_safe, typename ...Args>
-bool Stack<T, Alloc_of_T>::do_push(Args &&...args) {
-    if constexpr (Thread_safe) {
-        return do_push_impl_safe(std::forward<Args>(args)...);
-    } else {
-        return do_push_impl_unsafe(std::forward<Args>(args)...);
-    }
-}
-
-template <typename T, typename Alloc_of_T>
-template <typename ...Args>
-bool Stack<T, Alloc_of_T>::do_push_impl_unsafe(Args &&...args) {
-    auto node_ptr = _pool.allocate();
-    // TODO 这里需要异常处理，避免node_ptr泄露
-    // 要不还是别仿造allocator了？
-    new (node_ptr) Node(std::forward<Args>(args)...);
-    if(!node_ptr) return false;
-    Node_ptr new_node(node_ptr);
-    auto old_head = _head.load(std::memory_order_relaxed);
-    new_node->next = old_head;
-    _head.store(new_node, std::memory_order_relaxed);
-    return true;
-}
-
-template <typename T, typename Alloc_of_T>
-template <typename ...Args>
-bool Stack<T, Alloc_of_T>::do_push_impl_safe(Args &&...args) {
-    auto node_ptr = _pool.allocate();
-    new (node_ptr) Node(std::forward<Args>(args)...);
-    if(!node_ptr) return false;
-    Node_ptr new_node(node_ptr);
-    auto old_head = _head.load(std::memory_order_acquire);
-    for(;;) {
-        new_node->next = old_head;
-        if(_head.compare_exchange_weak(old_head, new_node,
-                std::memory_order_release, std::memory_order_relaxed)) {
-            break;
-        }
-    }
-    return true;
-}
-
-template <typename T, typename Alloc_of_T>
-template <bool Thread_safe>
-bool Stack<T, Alloc_of_T>::do_pop(T &out) {
-    if constexpr (Thread_safe) {
-        return do_pop_impl_safe(out);
-    } else {
-        return do_pop_impl_unsafe(out);
-    }
-}
-
-template <typename T, typename Alloc_of_T>
-bool Stack<T, Alloc_of_T>::do_pop_impl_unsafe(T &out) {
-    auto old_head = _head.load(std::memory_order_relaxed);
-    if(!old_head) return false;
-    auto new_head = old_head->next;
-    _head.store(new_head, std::memory_order_relaxed);
-    out = std::move(old_head->data);
-    old_head->~Node();
-    _pool.deallocate(old_head.get_ptr());
-    return true;
-}
-
-template <typename T, typename Alloc_of_T>
-bool Stack<T, Alloc_of_T>::do_pop_impl_safe(T &out) {
-    auto old_head = _head.load(std::memory_order_acquire);
-    for(;;) {
-        // Note: 每次都有可能为nullptr
-        if(!old_head) return false;
-        auto new_head = old_head->next;
-        if(_head.compare_exchange_weak(old_head, new_head,
-                std::memory_order_release, std::memory_order_relaxed)) {
-            out = std::move(old_head->data);
-            old_head->~Node();
-            _pool.deallocate(old_head.get_ptr());
-            break;
-        }
-    }
-    return true;
 }
 
 struct HugeObject {
@@ -197,11 +124,11 @@ void testStack() {
     };
     Stack<HugeObject> receiver;
     auto consumer = [&](size_t count) {
-        HugeObject dummy;
         for(size_t i {}; i < count;) {
-            if(!q.pop(dummy)) continue;
+            auto opt = q.pop();
+            if(!opt) continue;
             ++i;
-            while(!receiver.push(dummy));
+            while(!receiver.push(std::move(*opt)));
         }
     };
 
@@ -215,12 +142,11 @@ void testStack() {
     for(auto &&t : provider_threads) t.join();
     // check sum
     size_t sum {};
-    HugeObject dummy;
     std::vector<HugeObject> res;
 
     while(!receiver.empty()) {
-        while(!receiver.pop(dummy));
-        res.emplace_back(std::move(dummy));
+        std::optional<HugeObject> opt = receiver.pop();
+        res.emplace_back(std::move(*opt));
     }
     for(auto &&o : res) sum += o.y;
     for(size_t i {}; i < count; ++i) sum -=i;
