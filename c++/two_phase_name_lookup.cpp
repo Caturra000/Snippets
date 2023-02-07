@@ -1,6 +1,11 @@
 #include <cstdio>
 
 // 两阶段命名查找：https://zhuanlan.zhihu.com/p/599328180
+//
+// 更多：
+// https://en.cppreference.com/w/cpp/language/lookup
+// https://en.cppreference.com/w/cpp/language/qualified_lookup
+// https://en.cppreference.com/w/cpp/language/unqualified_lookup
 
 void foo(double) { puts("double"); }
 
