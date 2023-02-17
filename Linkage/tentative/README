@@ -1,0 +1,44 @@
+关于COMMON和bss
+
+之前看CSAPP里提到COMMON的概念感觉比较含糊
+知道看了man gcc里的说明才发现这个是C代码特有的tentative definition概念
+
+       -fno-common
+           In C code, this option controls the placement of global
+           variables defined without an initializer, known as tentative
+           definitions in the C standard.  Tentative definitions are
+           distinct from declarations of a variable with the "extern"
+           keyword, which do not allocate storage.
+
+           Unix C compilers have traditionally allocated storage for
+           uninitialized global variables in a common block.  This
+           allows the linker to resolve all tentative definitions of the
+           same variable in different compilation units to the same
+           object, or to a non-tentative definition.  This is the
+           behavior specified by -fcommon, and is the default for GCC on
+           most targets.  On the other hand, this behavior is not
+           required by ISO C, and on some targets may carry a speed or
+           code size penalty on variable references.
+
+           The -fno-common option specifies that the compiler should
+           instead place uninitialized global variables in the BSS
+           section of the object file.  This inhibits the merging of
+           tentative definitions by the linker so you get a multiple-
+           definition error if the same variable is defined in more than
+           one compilation unit.  Compiling with -fno-common is useful
+           on targets for which it provides better performance, or if
+           you wish to verify that the program will work on other
+           systems that always treat uninitialized variable definitions
+
+
+就实例代码来说：
+在case1_c版本下，变量b作为未初始化全局变量是放到COMMON中，而显式赋值为0的变量却放到bss中
+对比case1_cpp，不管是否显式赋值，都放到bss里面，并不存在COMMON
+
+注意，我使用的是gcc-9，如果是gcc-10可能默认是-fno-common，C code表现又会不一样
+因此我在编译命令上都强制-fcommon
+
+某种程度上说明C和C++之间是生殖隔离的
+
+对C感兴趣的话可以看看：http://www.linker-aliens.org/blogs/ali/entry/what_are_tentative_symbols/
+
