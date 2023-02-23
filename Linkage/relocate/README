@@ -1,0 +1,8 @@
+o目录对应 $ g++ -c case.cpp
+o_with_fPIC目录对应 $ g++ -c -fPIC case.cpp
+[TODO] so目录对应 $ g++ -shared case.cpp
+so_with_fPIC目录对应 $ g++ -shared -fPIC case.cpp
+out目录对应 $ g++ case.cpp fix_extern.cpp
+
+现在这种测试方案比较随便
+比如并不能生成不含pic的so（无法处理PC32）

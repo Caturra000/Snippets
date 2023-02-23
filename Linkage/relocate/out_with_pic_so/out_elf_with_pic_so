@@ -1,0 +1,15 @@
+
+Relocation section '.rela.dyn' at offset 0x598 contains 8 entries:
+  Offset          Info           Type           Sym. Value    Sym. Name + Addend
+000000003da8  000000000008 R_X86_64_RELATIVE                    1140
+000000003db0  000000000008 R_X86_64_RELATIVE                    1100
+000000004008  000000000008 R_X86_64_RELATIVE                    4008
+000000003fd8  000200000006 R_X86_64_GLOB_DAT 0000000000000000 _ITM_deregisterTMClone + 0
+000000003fe0  000300000006 R_X86_64_GLOB_DAT 0000000000000000 __libc_start_main@GLIBC_2.2.5 + 0
+000000003fe8  000400000006 R_X86_64_GLOB_DAT 0000000000000000 __gmon_start__ + 0
+000000003ff0  000500000006 R_X86_64_GLOB_DAT 0000000000000000 _ITM_registerTMCloneTa + 0
+000000003ff8  000800000006 R_X86_64_GLOB_DAT 0000000000000000 __cxa_finalize@GLIBC_2.2.5 + 0
+
+Relocation section '.rela.plt' at offset 0x658 contains 1 entry:
+  Offset          Info           Type           Sym. Value    Sym. Name + Addend
+000000003fd0  000100000007 R_X86_64_JUMP_SLO 0000000000000000 _Z13test_relocatev + 0

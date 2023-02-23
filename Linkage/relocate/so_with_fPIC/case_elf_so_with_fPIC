@@ -1,0 +1,17 @@
+
+Relocation section '.rela.dyn' at offset 0x4b0 contains 9 entries:
+  Offset          Info           Type           Sym. Value    Sym. Name + Addend
+000000003e40  000000000008 R_X86_64_RELATIVE                    1130
+000000003e48  000000000008 R_X86_64_RELATIVE                    10f0
+000000004028  000000000008 R_X86_64_RELATIVE                    4028
+000000003fd0  000900000006 R_X86_64_GLOB_DAT 0000000000004030 global_var + 0
+000000003fd8  000100000006 R_X86_64_GLOB_DAT 0000000000000000 __cxa_finalize + 0
+000000003fe0  000300000006 R_X86_64_GLOB_DAT 0000000000000000 _ITM_registerTMCloneTa + 0
+000000003fe8  000400000006 R_X86_64_GLOB_DAT 0000000000000000 _ITM_deregisterTMClone + 0
+000000003ff0  000500000006 R_X86_64_GLOB_DAT 0000000000000000 extern_var + 0
+000000003ff8  000600000006 R_X86_64_GLOB_DAT 0000000000000000 __gmon_start__ + 0
+
+Relocation section '.rela.plt' at offset 0x588 contains 2 entries:
+  Offset          Info           Type           Sym. Value    Sym. Name + Addend
+000000004018  000800000007 R_X86_64_JUMP_SLO 0000000000001144 _Z11global_funcv + 0
+000000004020  000200000007 R_X86_64_JUMP_SLO 0000000000000000 _Z11extern_funcv + 0

@@ -4,6 +4,7 @@ int global_var = 6;
 
 static void static_func() {}
 extern void extern_func();
+void global_func() {}
 
 void test_relocate() {
     static_var = 1;
@@ -12,4 +13,5 @@ void test_relocate() {
 
     static_func();
     extern_func();
+    global_func();
 }

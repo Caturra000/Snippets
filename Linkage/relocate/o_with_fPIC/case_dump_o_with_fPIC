@@ -1,0 +1,38 @@
+
+case.o:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000000000 <_ZL11static_funcv>:
+   0:	f3 0f 1e fa          	endbr64 
+   4:	55                   	push   %rbp
+   5:	48 89 e5             	mov    %rsp,%rbp
+   8:	90                   	nop
+   9:	5d                   	pop    %rbp
+   a:	c3                   	retq   
+
+000000000000000b <_Z11global_funcv>:
+   b:	f3 0f 1e fa          	endbr64 
+   f:	55                   	push   %rbp
+  10:	48 89 e5             	mov    %rsp,%rbp
+  13:	90                   	nop
+  14:	5d                   	pop    %rbp
+  15:	c3                   	retq   
+
+0000000000000016 <_Z13test_relocatev>:
+  16:	f3 0f 1e fa          	endbr64 
+  1a:	55                   	push   %rbp
+  1b:	48 89 e5             	mov    %rsp,%rbp
+  1e:	c7 05 00 00 00 00 01 	movl   $0x1,0x0(%rip)        # 28 <_Z13test_relocatev+0x12>
+  25:	00 00 00 
+  28:	48 8b 05 00 00 00 00 	mov    0x0(%rip),%rax        # 2f <_Z13test_relocatev+0x19>
+  2f:	c7 00 02 00 00 00    	movl   $0x2,(%rax)
+  35:	48 8b 05 00 00 00 00 	mov    0x0(%rip),%rax        # 3c <_Z13test_relocatev+0x26>
+  3c:	c7 00 03 00 00 00    	movl   $0x3,(%rax)
+  42:	e8 b9 ff ff ff       	callq  0 <_ZL11static_funcv>
+  47:	e8 00 00 00 00       	callq  4c <_Z13test_relocatev+0x36>
+  4c:	e8 00 00 00 00       	callq  51 <_Z13test_relocatev+0x3b>
+  51:	90                   	nop
+  52:	5d                   	pop    %rbp
+  53:	c3                   	retq   

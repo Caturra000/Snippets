@@ -1,0 +1,14 @@
+
+Relocation section '.rela.text' at offset 0x388 contains 5 entries:
+  Offset          Info           Type           Sym. Value    Sym. Name + Addend
+000000000020  000400000002 R_X86_64_PC32     0000000000000000 .bss - 8
+00000000002b  000f0000002a R_X86_64_REX_GOTP 0000000000000000 extern_var - 4
+000000000038  000b0000002a R_X86_64_REX_GOTP 0000000000000000 global_var - 4
+000000000048  001000000004 R_X86_64_PLT32    0000000000000000 _Z11extern_funcv - 4
+00000000004d  000c00000004 R_X86_64_PLT32    000000000000000b _Z11global_funcv - 4
+
+Relocation section '.rela.eh_frame' at offset 0x400 contains 3 entries:
+  Offset          Info           Type           Sym. Value    Sym. Name + Addend
+000000000020  000200000002 R_X86_64_PC32     0000000000000000 .text + 0
+000000000040  000200000002 R_X86_64_PC32     0000000000000000 .text + b
+000000000060  000200000002 R_X86_64_PC32     0000000000000000 .text + 16
