@@ -6,3 +6,10 @@ out目录对应 $ g++ case.cpp fix_extern.cpp
 
 现在这种测试方案比较随便
 比如并不能生成不含pic的so（无法处理PC32）
+
+##########
+
+目前完成了PC32的计算推导
+见simple_pc32/README
+
+TODO 其它重定位类型
