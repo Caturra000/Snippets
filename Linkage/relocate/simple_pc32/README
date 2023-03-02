@@ -1,0 +1,43 @@
+## relocatable
+
+在生成的main.o中
+对于符号x有如下重定位信息
+Relocation section '.rela.text' at offset 0x1b8 contains 2 entries:
+  Offset          Info           Type           Sym. Value    Sym. Name + Addend
+000000000006  000800000002 R_X86_64_PC32     0000000000000000 x - 8
+000000000010  000800000002 R_X86_64_PC32     0000000000000000 x - 8
+此时offset是x在main.o文件的偏移偏移量（后续需要修改的地方），重定位类型为PC32
+也注意到是被引用的地方就会生成一个重定位项，因此这里有2个重定位项
+
+注：需要引用它的指令也许待重定位的，这里RIP相对寻址是0
+   4:	c7 05 00 00 00 00 07 	movl   $0x7,0x0(%rip)        # e <main+0xe>
+   b:	00 00 00 
+
+## executable
+
+生成可执行文件main后
+因为已经完成了重定位，因此readelf -r是找不到x符号的
+
+在.symtab中可找到
+    51: 0000000000404028     4 OBJECT  GLOBAL DEFAULT   21 x
+其中index==21为data section
+  [21] .data             PROGBITS         0000000000404018  00003018
+       0000000000000014  0000000000000000  WA       0     0     8
+（当然这是废话）
+重要的是地址确认为0000000000404028（同时也是符号的Value域）
+因此重定位完成后的寻址指令
+  40110a:	c7 05 14 2f 00 00 07 	movl   $0x7,0x2f14(%rip)        # 404028 <x>
+  401111:	00 00 00 
+此时%rip指向401114，增加0x2f14即为404028
+
+## relocation
+
+PC32的重定位计算是按照公式S + A - P得到结果的：
+* S既Symbol.Value
+* A既Addend，用于对齐IP
+* P既决定的已重定位处的虚拟地址
+其实可以把公式看成S - (P - A)
+符号的value我们已经从symtab中得知是0000000000404028
+而P-A的含义刚好等于%rip的值， 既0x40110c + 0x8 = 0x401114
+因此：0x404028 - 0x401114 = 0x2f14
+最终得到 movl   $0x7,0x2f14(%rip)
