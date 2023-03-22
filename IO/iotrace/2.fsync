@@ -1,0 +1,91 @@
+sys_fsync
+   do_fsync
+      __fdget
+         __fget_light
+      vfs_fsync_range
+         ext4_sync_file
+            file_write_and_wait_range
+               file_check_and_advance_wb_err
+            jbd2_trans_will_send_data_barrier
+               _raw_read_lock
+            jbd2_complete_transaction
+               _raw_read_lock
+               jbd2_log_start_commit
+                  _raw_write_lock
+                  __jbd2_log_start_commit
+                     __wake_up
+                        __wake_up_common_lock
+                           _raw_spin_lock_irqsave
+                           __wake_up_common
+                              autoremove_wake_function
+                                 default_wake_function
+                                    try_to_wake_up
+                                       _raw_spin_lock_irqsave
+                                       select_task_rq_fair
+                                          available_idle_cpu
+                                       smp_send_reschedule
+                                          smp_cross_call
+                                             bcm2836_arm_irqchip_send_ipi
+                                       ttwu_stat
+                                       _raw_spin_unlock_irqrestore
+                           _raw_spin_unlock_irqrestore
+               jbd2_log_wait_commit
+                  _raw_read_lock
+                  __wake_up
+                     __wake_up_common_lock
+                        _raw_spin_lock_irqsave
+                        __wake_up_common
+                        _raw_spin_unlock_irqrestore
+                  _cond_resched
+                     rcu_all_qs
+                  init_wait_entry
+                  prepare_to_wait_event
+                     _raw_spin_lock_irqsave
+                     _raw_spin_unlock_irqrestore
+                  schedule
+rcu_note_context_switch
+   rcu_qs
+_raw_spin_lock
+update_rq_clock
+deactivate_task
+   dequeue_task_fair
+      update_curr
+         update_min_vruntime
+         cpuacct_charge
+      __update_load_avg_se
+      __update_load_avg_cfs_rq
+      clear_buddies
+      account_entity_dequeue
+      update_cfs_group
+      update_min_vruntime
+      update_curr
+         __calc_delta
+         update_min_vruntime
+      __update_load_avg_se
+      __update_load_avg_cfs_rq
+      clear_buddies
+      account_entity_dequeue
+      update_cfs_group
+         reweight_entity
+      update_min_vruntime
+      hrtick_update
+pick_next_task_fair
+   __msecs_to_jiffies
+pick_next_task_idle
+   put_prev_task_fair
+      put_prev_entity
+         check_spread
+      put_prev_entity
+         check_spread
+      atomic_notifier_call_chain
+         notifier_call_chain
+            vfp_notifier
+finish_task_switch
+                  prepare_to_wait_event
+                     _raw_spin_lock_irqsave
+                     _raw_spin_unlock_irqrestore
+                  finish_wait
+                     _raw_spin_lock_irqsave
+                     _raw_spin_unlock_irqrestore
+                  _raw_read_lock
+file_check_and_advance_wb_err

@@ -1,0 +1,27 @@
+sys_read
+   ksys_read
+      __fdget_pos
+         __fget_light
+         mutex_lock
+            _cond_resched
+               rcu_all_qs
+      vfs_read
+         rw_verify_area
+         __vfs_read
+            ext4_file_read_iter
+               generic_file_read_iter
+                  _cond_resched
+                     rcu_all_qs
+                  pagecache_get_page
+                     find_get_entry
+                  flush_dcache_page
+                  mark_page_accessed
+_cond_resched
+   rcu_all_qs
+arm_copy_to_user
+                  touch_atime
+                     atime_needs_update
+         __fsnotify_parent
+         fsnotify
+__f_unlock_pos
+   mutex_unlock
