@@ -5,21 +5,34 @@
 #include <cstring>
 #include <cstddef>
 #include <cstdint>
+#include <cmath>
 #include <iostream>
 
+// meminfo_parser
+namespace mp {
+
+
+
 /// interfaces
+
+
 
 constexpr static bool CONFIG_DEBUG_MODE = false;
 
 union Meminfo;
+using Meminfo_field_type = long long;
 
 // if successful, return 0
-inline bool meminfo_parse(union Meminfo *meminfo);
+bool meminfo_parse(union Meminfo *meminfo);
 
+void dump(Meminfo &meminfo, std::ostream &os = std::cout);
+
+void dump_diff(Meminfo &before, Meminfo &after, Meminfo_field_type diff_kb, std::ostream &os = std::cout);
 
 
 
 /// internals
+
 
 
 template <typename ...Ts>
@@ -86,8 +99,6 @@ const char *meminfo_names[] = {
 constexpr static const char MEMINFO_PATH[] = "/proc/meminfo";
 constexpr static const size_t MEMINFO_TYPES = sizeof(meminfo_names) / sizeof(meminfo_names[0]);
 
-using Meminfo_field_type = long long;
-
 union Meminfo {
     struct {
         Meminfo_field_type MemTotal;
@@ -145,9 +156,9 @@ union Meminfo {
     Meminfo_field_type arr[MEMINFO_TYPES];
 };
 
-const char* meminfo_parse_line(Meminfo *meminfo, const char *cursor, size_t arr_index);
+const char* meminfo_parse_line(Meminfo &meminfo, const char *cursor, size_t arr_index);
 
-inline bool meminfo_parse(union Meminfo *meminfo) {
+inline bool meminfo_parse(union Meminfo &meminfo) {
     auto do_syscall = [](auto syscall, auto &&...args) {
         int ret;
         while((ret = syscall(args...)) < 0 && errno == EINTR);
@@ -176,7 +187,7 @@ inline bool meminfo_parse(union Meminfo *meminfo) {
 
     // avoid empty content and real errors
     if(do_syscall(::read, fd, buf, sizeof buf) > 0) {
-        ::memset(meminfo, 0, sizeof (Meminfo));
+        ::memset(&meminfo, 0, sizeof (Meminfo));
         const char *cursor = buf;
         size_t index = 0;
         while(index < MEMINFO_TYPES && (cursor = meminfo_parse_line(meminfo, cursor, index++)));
@@ -189,7 +200,7 @@ inline bool meminfo_parse(union Meminfo *meminfo) {
     return -1;
 }
 
-inline const char* meminfo_parse_line(Meminfo *meminfo, const char *cursor, size_t arr_index) {
+inline const char* meminfo_parse_line(Meminfo &meminfo, const char *cursor, size_t arr_index) {
     if(arr_index >= MEMINFO_TYPES) {
         log(__FUNCTION__, " out of index: ", arr_index);
         return nullptr;
@@ -220,7 +231,7 @@ inline const char* meminfo_parse_line(Meminfo *meminfo, const char *cursor, size
     };
 
     if(verified) {
-        ::sscanf(pos_val, "%lld", &meminfo->arr[arr_index]);
+        ::sscanf(pos_val, "%lld", &meminfo.arr[arr_index]);
 
         // {123 kB} or {0}
         auto nextline = find_first(pos_val, isline);
@@ -234,8 +245,21 @@ inline const char* meminfo_parse_line(Meminfo *meminfo, const char *cursor, size
     return nullptr;
 }
 
-inline void dump(Meminfo *meminfo, std::ostream &os = std::cout) {
+inline void dump(Meminfo &meminfo, std::ostream &os) {
     for(size_t i = 0; i < MEMINFO_TYPES; ++i) {
-        os << meminfo_names[i] << ":\t" << meminfo->arr[i] << " kB" << std::endl;
+        os << meminfo_names[i] << ":\t" << meminfo.arr[i] << " kB" << std::endl;
     }
 }
+
+inline void dump_diff(Meminfo &before, Meminfo &after, Meminfo_field_type diff_kb, std::ostream &os) {
+    if(diff_kb < 0) diff_kb = -diff_kb;
+    for(size_t i = 0; i < MEMINFO_TYPES; ++i) {
+        auto calc = after.arr[i] - before.arr[i];
+        if(calc > diff_kb || calc < -diff_kb) {
+            char op = calc > 0 ? '+' : (calc = -calc, '-');
+            os << op << meminfo_names[i] << ":\t" << calc << " kB" << std::endl;
+        }
+    }
+}
+
+} // namespace mp
