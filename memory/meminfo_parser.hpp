@@ -223,7 +223,7 @@ inline const char* meminfo_parse_line(Meminfo *meminfo, const char *cursor, size
         ::sscanf(pos_val, "%lld", &meminfo->arr[arr_index]);
 
         // {123 kB} or {0}
-        auto nextline = find_first_not(pos_val, ::isdigit, ::isblank, ::isalpha);
+        auto nextline = find_first(pos_val, isline);
         // touch EOF or {\n}
         if(nextline && isline(*nextline)) nextline++;
         // nextline or EOF
