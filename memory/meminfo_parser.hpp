@@ -23,7 +23,7 @@ union Meminfo;
 using Meminfo_field_type = long long;
 
 // if successful, return 0
-bool meminfo_parse(union Meminfo *meminfo);
+bool meminfo_parse(union Meminfo &meminfo);
 
 void dump(Meminfo &meminfo, std::ostream &os = std::cout);
 
