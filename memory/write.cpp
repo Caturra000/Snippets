@@ -10,7 +10,7 @@ int main() {
     mp::Meminfo m[2];
     parse(m[0]);
 
-    int fd = ::open("test_write.bin", O_RDWR | O_CREAT);
+    int fd = ::open("test_write.bin", O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
     if(fd < 0) {
         return 1;
     }
@@ -26,6 +26,7 @@ int main() {
     parse(m[1]);
     std::cout << "write: " << (n / 1024) << "KB" << std::endl;
     mp::dump_diff(m[0], m[1], 100);
+    ::unlink("test_write.bin");
     return 0;
 }
 
