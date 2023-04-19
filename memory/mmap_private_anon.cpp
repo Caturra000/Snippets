@@ -24,7 +24,6 @@ int main() {
 
     parse(m[1]);
 
-    // +Committed_AS:  102832 kB
     mp::dump_diff(m[0], m[1], 100);
     ::puts("==========");
 
@@ -54,28 +53,31 @@ int main() {
     return 0;
 }
 
-// diff m[1] -> m[2]
-// -MemFree:       4236 kB
-// -MemAvailable:  2628 kB
-// +Cached:        2236 kB
-// +Active:        1204 kB
-// +Inactive:      1168 kB
-// +Active(anon):  804 kB
-// +Active(file):  400 kB
-// +Inactive(file):1168 kB
-// +Dirty: 448 kB
-// +AnonPages:     772 kB
-// +Mapped:        168 kB
-// +Slab:  256 kB
-// +SUnreclaim:    180 kB
-// +Committed_AS:  772 kB
-// +AnonHugePages: 8192 kB
+// +Committed_AS:  102400 kB
+// ==========
+// -MemFree:       460 kB
+// -MemAvailable:  444 kB
+// +Active:        128 kB
+// +Inactive:      116 kB
+// +Inactive(anon):236 kB
+// +Active(file):  128 kB
+// -Inactive(file):120 kB
+// +AnonPages:     372 kB
+// ==========
+// -MemFree:       101052 kB
+// -MemAvailable:  101052 kB
+// +Inactive:      102356 kB
+// +Inactive(anon):102356 kB
+// +AnonPages:     102324 kB
 
-// diff m[2] -> m[3]
-// -MemFree:       102108 kB
-// -MemAvailable:  102108 kB
-// +Active:        102672 kB
-// +Active(anon):  102672 kB
-// +AnonPages:     102572 kB
-// +PageTables:    124 kB
-// +AnonHugePages: 24576 kB
+
+// 只测试写
+// +Committed_AS:  102400 kB
+// ==========
+// ==========
+// -MemFree:       104668 kB
+// -MemAvailable:  104668 kB
+// +Inactive:      102304 kB
+// +Inactive(anon):102304 kB
+// +AnonPages:     102556 kB
+// +AnonHugePages: 100352 kB

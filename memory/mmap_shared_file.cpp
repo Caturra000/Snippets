@@ -60,55 +60,55 @@ int main() {
 }
 
 // ==========
-// -MemFree:       106332 kB
-// -MemAvailable:  264 kB
-// +Cached:        105132 kB
-// +Active:        3404 kB
-// +Inactive:      105236 kB
-// +Active(anon):  2772 kB
-// +Active(file):  632 kB
-// +Inactive(file):105236 kB
-// +Dirty: 2024 kB
-// +AnonPages:     3020 kB
-// +Mapped:        102324 kB
-// +KReclaimable:  396 kB
-// +Slab:  580 kB
-// +SReclaimable:  396 kB
-// +SUnreclaim:    184 kB
-// +PageTables:    652 kB
-// +AnonHugePages: 6144 kB
+// -MemFree:       145884 kB
+// -MemAvailable:  10336 kB
+// +Cached:        135668 kB
+// +Active:        1224 kB
+// +Inactive:      145072 kB
+// +Inactive(anon):10856 kB
+// +Active(file):  1220 kB
+// +Inactive(file):134216 kB
+// +Dirty: 1708 kB
+// +AnonPages:     10844 kB
+// +Mapped:        120784 kB
+// +KReclaimable:  224 kB
+// +Slab:  224 kB
+// +SReclaimable:  224 kB
+// +PageTables:    240 kB
+// +Committed_AS:  99076 kB
+// +AnonHugePages: 2048 kB
 // ==========
-// -MemFree:       5544 kB
-// -MemAvailable:  3176 kB
-// +Cached:        1252 kB
-// +Active:        1896 kB
-// +Inactive:      1056 kB
-// +Active(anon):  1888 kB
-// +Inactive(file):1056 kB
-// +Dirty: 103064 kB
-// +AnonPages:     1900 kB
-// +KReclaimable:  2612 kB
-// +Slab:  2612 kB
-// +SReclaimable:  2612 kB
+// -MemFree:       39044 kB
+// -MemAvailable:  8532 kB
+// +Cached:        29296 kB
+// +Active:        564 kB
+// +Inactive:      35944 kB
+// +Inactive(anon):7220 kB
+// +Active(file):  560 kB
+// +Inactive(file):28724 kB
+// +Dirty:         103944 kB
+// +AnonPages:     7260 kB
+// +Mapped:        26320 kB
+// +KReclaimable:  2460 kB
+// +Slab:  2496 kB
+// +SReclaimable:  2460 kB
+// +PageTables:    136 kB
+// +Committed_AS:  768 kB
 
 
 // 如果不测试读，只测试写
 // ==========
 // ==========
-// -MemFree:       110460 kB
-// -MemAvailable:  3880 kB
-// +Cached:        104288 kB
-// +Active:        4044 kB
-// +Inactive:      104276 kB
-// +Active(anon):  3216 kB
-// +Active(file):  828 kB
-// +Inactive(file):104276 kB
-// +Dirty: 103796 kB
-// +AnonPages:     3016 kB
-// +Mapped:        102512 kB
-// +KReclaimable:  2956 kB
-// +Slab:  3124 kB
-// +SReclaimable:  2956 kB
-// +SUnreclaim:    168 kB
-// +PageTables:    264 kB
-// +AnonHugePages: 6144 kB
+// -MemFree:       104792 kB
+// -MemAvailable:  1008 kB
+// +Cached:        102400 kB
+// +Inactive:      102584 kB
+// +Inactive(anon):192 kB
+// +Inactive(file):102392 kB
+// +Dirty:         102388 kB
+// +AnonPages:     160 kB
+// +Mapped:        102328 kB
+// +KReclaimable:  2784 kB
+// +Slab:  2840 kB
+// +SReclaimable:  2784 kB
+// +PageTables:    208 kB

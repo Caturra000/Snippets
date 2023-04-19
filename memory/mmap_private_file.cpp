@@ -38,9 +38,9 @@ int main() {
     // test read
     size_t dummy;
     auto cur = reinterpret_cast<char*>(addr);
-    // for(size_t i = 0; i < len; ++i) {
-    //     dummy += ACCESS_ONCE(cur[i]);
-    // }
+    for(size_t i = 0; i < len; ++i) {
+        dummy += ACCESS_ONCE(cur[i]);
+    }
 
     parse(m[2]);
     mp::dump_diff(m[1], m[2], 100);
@@ -60,49 +60,38 @@ int main() {
 }
 
 
-// +Committed_AS:  102748 kB
+// +Committed_AS:  102400 kB
 // ==========
-// -MemFree:       104196 kB
-// +MemAvailable:  484 kB
-// +Cached:        104948 kB
-// +Active:        852 kB
-// +Inactive:      104148 kB
-// +Active(anon):  480 kB
-// +Active(file):  372 kB
-// +Inactive(file):104148 kB
-// +Dirty: 1448 kB
-// +AnonPages:     556 kB
-// +Mapped:        102568 kB
-// +KReclaimable:  324 kB
-// +Slab:  356 kB
-// +SReclaimable:  324 kB
-// +KernelStack:   112 kB
-// +PageTables:    176 kB
-// +AnonHugePages: 8192 kB
+// -MemFree:       102552 kB
+// -MemAvailable:  148 kB
+// +Cached:        102400 kB
+// +Inactive:      102556 kB
+// +Inactive(anon):168 kB
+// +Inactive(file):102388 kB
+// +AnonPages:     172 kB
+// +Mapped:        102368 kB
+// +PageTables:    204 kB
 // ==========
-// -MemFree:       106000 kB
-// -MemAvailable:  102892 kB
-// +Cached:        2788 kB
-// +Active:        102812 kB
-// +Inactive:      2968 kB
-// +Active(anon):  102708 kB
-// +Active(file):  104 kB
-// +Inactive(file):2968 kB
-// +Dirty: 2788 kB
-// +AnonPages:     102992 kB
-// -Mapped:        101900 kB
+// -MemFree:       102564 kB
+// -MemAvailable:  102564 kB
+// +Inactive:      102236 kB
+// +Inactive(anon):102236 kB
+// +AnonPages:     102236 kB
+// -Mapped:        102236 kB
 
 
 // 如果不测试读，只测试写
-// +Committed_AS:  102880 kB
+// +Committed_AS:  102400 kB
 // ==========
 // ==========
-// -MemFree:       205408 kB
-// -MemAvailable:  103072 kB
-// +Cached:        102492 kB
-// +Active:        102912 kB
-// +Inactive:      102320 kB
-// +Active(anon):  102912 kB
-// +Inactive(file):102320 kB
-// +AnonPages:     102760 kB
-// +Committed_AS:  3132 kB
+// -MemFree:       203856 kB
+// -MemAvailable:  101392 kB
+// +Cached:        102400 kB
+// +Inactive:      204800 kB
+// +Inactive(anon):102400 kB
+// +Inactive(file):102400 kB
+// +AnonPages:     102444 kB
+// +KReclaimable:  128 kB
+// +Slab:  128 kB
+// +SReclaimable:  128 kB
+// +PageTables:    204 kB
