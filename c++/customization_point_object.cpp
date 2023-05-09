@@ -2,7 +2,18 @@
 #include <vector>
 #include <iostream>
 
+// CPO的介绍推荐看这一篇，非常精彩：
 // https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2015/n4381.html
+//
+// 经典ADL用法虽然有高可扩展的能力，但是存在2个问题：
+// 1. 不使用限定词时，出错难以发现
+// 2. concept约束会被跳过，对于库开发并不友好
+//
+// 而CPO则通过在接口层面禁用ADL克服了这两个大难题
+// 当然，它本身比较抽象，因此我在这里写了个demo
+
+// TODO 这个示例还没有concept对比演示，有空加上去
+
 namespace framework {
 
     namespace cpo_detail {
@@ -44,7 +55,7 @@ private:
 
     // User-defined hook
     // A begin-iterator with log
-    friend std::vector<int>::iterator begin(Vector<int> &vec) {
+    friend std::vector<int>::iterator begin(Vector<T> &vec) {
         std::cout << "log" << std::endl;
         return vec._real_vector.begin();
     }
@@ -61,9 +72,25 @@ int main() {
 
     ::puts("===============");
 
+    // STL-begin
+    auto iter2 = std::begin(f);
+    // [1]
+    std::cout << *iter2 << std::endl;
+
+    ::puts("===============");
+
+    // ADL enabled, STL-bypass-begin
+    auto iter3 = begin(f);
+    // [log, 1]
+    std::cout << *iter3 << std::endl;
+
+    ::puts("===============");
+
+    // ADL disabled, since framework::begin is an object
+    //
     // With framework:: prefix, not end_user::
     // `framework` can detect user-defined hook automatically
-    auto iter2 = framework::begin(f);
+    auto iter4 = framework::begin(f);
     // [log, 1]
-    std::cout << *iter2 << std::endl;
+    std::cout << *iter4 << std::endl;
 }
