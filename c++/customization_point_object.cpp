@@ -28,15 +28,31 @@ namespace framework {
 
         struct Begin_Fn {
             template <typename Container>
-            decltype(auto) operator()(Container &&container) {
+            decltype(auto) operator()(Container &&container) const {
                 // !!unqualified name lookup
                 return begin(std::forward<Container>(container));
             }
         };
     }
 
+#if __cplusplus >= 201703L
+
 // A customization point OBJECT.
-inline cpo_detail::Begin_Fn begin {};
+inline constexpr cpo_detail::Begin_Fn begin {};
+
+#else // __cplusplus >= 201703L
+
+// workaroud for C++14
+
+template <typename Cpo>
+constexpr Cpo __static_const {};
+
+namespace {
+    // A customization point OBJECT.
+    constexpr auto &begin = __static_const<cpo_detail::Begin_Fn>;
+}
+
+#endif
 
 } // framework
 
@@ -54,10 +70,11 @@ private:
 
 
     // User-defined hook
-    // A begin-iterator with log
-    friend std::vector<int>::iterator begin(Vector<T> &vec) {
-        std::cout << "log" << std::endl;
-        return vec._real_vector.begin();
+    // A hooked begin-iterator
+    friend auto begin(Vector<T> &vec) {
+        using Hook = std::vector<std::string>;
+        static Hook strings {"hook", "jintianxiaomidaobilema"};
+        return strings.begin();
     }
 };
 
@@ -81,7 +98,7 @@ int main() {
 
     // ADL enabled, STL-bypass-begin
     auto iter3 = begin(f);
-    // [log, 1]
+    // [hook]
     std::cout << *iter3 << std::endl;
 
     ::puts("===============");
@@ -91,6 +108,6 @@ int main() {
     // With framework:: prefix, not end_user::
     // `framework` can detect user-defined hook automatically
     auto iter4 = framework::begin(f);
-    // [log, 1]
+    // [hook]
     std::cout << *iter4 << std::endl;
 }
