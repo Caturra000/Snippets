@@ -68,6 +68,7 @@
 
 // 修改这里来比较不同的case
 constexpr bool enable_cache_miss_case = true;
+constexpr bool enable_virtual_case = true;
 
 using Cacheline_padding = char[enable_cache_miss_case ? 64 : 1];
 constexpr size_t out_of_L3 = 10 * 1e6;
@@ -79,6 +80,7 @@ struct Base {
 
 struct Derived: Base {
     void func() override {}
+    void func_no_override() {}
 private:
     Cacheline_padding _;
 };
@@ -94,7 +96,11 @@ int main() {
 
     for(auto l = loops; l--;) {
         for(auto ptr : ptr_arr) {
-            ptr->func();
+            if constexpr (enable_virtual_case) {
+                ptr->func();
+            } else {
+                static_cast<Derived*>(ptr)->func_no_override();
+            }
         }
     }
 
