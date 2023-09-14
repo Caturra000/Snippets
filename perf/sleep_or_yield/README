@@ -1,0 +1,15 @@
+测试结果都是g++-12 -O0编译得出
+总结：我觉得爱用哪个都行
+
+一些问题：
+* 一个反直观现象是，sleep比yield延迟更低？
+* 可能的原因是yield确实进到内核态了，sleep0被库提前拦截了
+* 前面只是基于perf的采样猜测，有待进一步trace跟踪分析（猴年马月）
+
+相关链接：
+- 古人的探索：https://www.cnblogs.com/schips/p/11002589.html
+- sleep_for的注释：https://en.cppreference.com/w/cpp/thread/sleep_for
+  - 这里对于sleep_for(0ms)其实是**没有**明确说明的
+  - 未尝不是一种UB
+- yield的注释：https://en.cppreference.com/w/cpp/thread/yield
+  - TL;DR: hint to the implementation，约等于没有注释
