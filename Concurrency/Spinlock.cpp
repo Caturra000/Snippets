@@ -46,10 +46,9 @@ struct Spinlock {
     std::atomic<State> _state {UNLOCKED};
 
     void lock() {
-        while(_state.exchange(LOCKED, std::memory_order_acquire) == LOCKED) {
+        if(_state.exchange(LOCKED, std::memory_order_acquire) == LOCKED) {
             while(_state.exchange(LOCKED, std::memory_order_relaxed) == LOCKED);
             std::atomic_thread_fence(std::memory_order_acquire);
-            break;
         }
     }
     void unlock() { _state.store(UNLOCKED, std::memory_order_release); }
@@ -63,11 +62,10 @@ struct Spinlock {
     std::atomic<State> _state {UNLOCKED};
 
     void lock() {
-        while(_state.exchange(LOCKED, std::memory_order_acquire) == LOCKED) {
+        if(_state.exchange(LOCKED, std::memory_order_acquire) == LOCKED) {
             while(_state.exchange(LOCKED, std::memory_order_relaxed) == LOCKED)
                 std::this_thread::yield();
             std::atomic_thread_fence(std::memory_order_acquire);
-            break;
         }
     }
     void unlock() { _state.store(UNLOCKED, std::memory_order_release); }
@@ -126,11 +124,11 @@ int main() {
 }
 
 // 简单的测试结果
-// 11219   ms
-// 10014   ms
-// 11925   ms
-// 9007    ms
-// 4110    ms
-// 4635    ms
+// 10813   ms
+// 10552   ms
+// 11713   ms
+// 9788    ms
+// 4146    ms
+// 4582    ms
 // 看来是TTAS+yield最优
 // atomic flag不仅难用，还不占性能优势
