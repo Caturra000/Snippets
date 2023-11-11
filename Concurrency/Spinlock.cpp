@@ -51,11 +51,11 @@ struct Spinlock {
             std::atomic_thread_fence(std::memory_order_acquire);
         }
     }
-    // or try?
-    // void lock() {
-    //     while(_state.exchange(LOCKED, std::memory_order_relaxed) == LOCKED);
-    //     std::atomic_thread_fence(std::memory_order_acquire);
-    // }
+    // or try relaxed first to avoid broadcast?
+    void lock(std::nullptr_t function_ignored) {
+        while(_state.exchange(LOCKED, std::memory_order_relaxed) == LOCKED);
+        std::atomic_thread_fence(std::memory_order_acquire);
+    }
     void unlock() { _state.store(UNLOCKED, std::memory_order_release); }
 };
 } // V4
