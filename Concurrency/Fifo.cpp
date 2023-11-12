@@ -45,26 +45,37 @@ struct Fifo {
 };
 
 int main() {
+    // Note: stack size is limited.
     using FF = Fifo<size_t, 1 << 20>;
     auto ff = std::make_unique<FF>();
     constexpr size_t count = 1e8;
+    constexpr size_t first_value = 1;
     size_t g_value = 0;
-    std::thread producer {[&] {
-        for(size_t c = 0; c++ < count;) {
+    using namespace std::views;
+    auto produce = [&] {
+        for(auto c : iota(first_value) | take(count)) {
             while(!ff->push(c));
         }
-    }};
-
-    std::thread consumer {[&] {
-        for(size_t c = 0; c++ < count;) {
+    };
+    auto consume = [&] {
+        for(auto c : iota(first_value) | take(count)) {
             std::optional<int> opt;
-            while(!opt) opt = ff->pop();
-            g_value += opt.value();
+            while(!(opt = ff->pop()));
+            auto val = opt.value();
+            static size_t prev = 0;
+            // Checkpoint #1
+            assert(prev+1 == val);
+            prev = val;
+            g_value += val;
+
         }
-    }};
-    producer.join();
-    consumer.join();
+    };
+    std::jthread producer {produce};
+    std::jthread consumer {consume};
+    producer = {};
+    consumer = {};
     constexpr auto sum = (count + 1) * count / 2;
+    // Checkpoint #2
     assert(g_value == sum);
     std::cout << g_value << std::endl;
 }
