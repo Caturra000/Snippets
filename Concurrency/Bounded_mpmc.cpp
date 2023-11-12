@@ -7,12 +7,12 @@ struct Bounded_mpmc {
     constexpr static size_t MASK = SIZE - 1;
     constexpr static size_t SHIFT = std::bit_width(SIZE)-1;
     struct Slot {
-        std::atomic<size_t> seq {};
+        alignas(64) std::atomic<size_t> seq {};
         T val;
     };
     std::array<Slot, SIZE> _buf;
-    std::atomic<size_t> _in {};
-    std::atomic<size_t> _out {};
+    alignas(64) std::atomic<size_t> _in {};
+    alignas(64) std::atomic<size_t> _out {};
 
     size_t seq(int t) { return t >> SHIFT << 1; }
     size_t idx(int t) { return t & MASK; }
