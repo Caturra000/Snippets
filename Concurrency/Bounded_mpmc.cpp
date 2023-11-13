@@ -18,7 +18,7 @@ struct Bounded_mpmc {
     size_t idx(int t) { return t & MASK; }
 
     void push(T elem) {
-        size_t in = _in.fetch_add(1, std::memory_order_relaxed);
+        size_t in = _in.fetch_add(1, std::memory_order_acq_rel);
         auto &slot = _buf[idx(in)];
         while(seq(in) != slot.seq.load(std::memory_order_acquire));
         slot.val = std::move(elem);
@@ -26,7 +26,7 @@ struct Bounded_mpmc {
     }
 
     T pop() {
-        auto out = _out.fetch_add(1, std::memory_order_relaxed);
+        auto out = _out.fetch_add(1, std::memory_order_acq_rel);
         auto &slot = _buf[idx(out)];
         while(seq(out) + 1 != slot.seq.load(std::memory_order_acquire));
         auto val = std::move(slot.val);
