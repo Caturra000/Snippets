@@ -17,58 +17,61 @@ struct Bounded_mpmc {
     size_t seq(int t) { return t >> SHIFT << 1; }
     size_t idx(int t) { return t & MASK; }
 
+    // std::memory_order_too_long is toooooo long.
+    constexpr static auto acq_rel = std::memory_order_acq_rel;
+    constexpr static auto acquire = std::memory_order_acquire;
+    constexpr static auto release = std::memory_order_release;
+    constexpr static auto relaxed = std::memory_order_relaxed;
+
     void push(T elem) {
-        size_t in = _in.fetch_add(1, std::memory_order_acq_rel);
+        size_t in = _in.fetch_add(1, acq_rel);
         auto &slot = _buf[idx(in)];
-        while(seq(in) != slot.seq.load(std::memory_order_acquire));
+        while(seq(in) != slot.seq.load(acquire));
         slot.val = std::move(elem);
-        slot.seq.store(seq(in) + 1, std::memory_order_release);
+        slot.seq.store(seq(in) + 1, release);
     }
 
     T pop() {
-        auto out = _out.fetch_add(1, std::memory_order_acq_rel);
+        auto out = _out.fetch_add(1, acq_rel);
         auto &slot = _buf[idx(out)];
-        while(seq(out) + 1 != slot.seq.load(std::memory_order_acquire));
+        while(seq(out) + 1 != slot.seq.load(acquire));
         auto val = std::move(slot.val);
-        slot.seq.store(seq(out) + 2, std::memory_order_release);
+        slot.seq.store(seq(out) + 2, release);
         return val;
     }
 
     bool try_push(T elem) {
-        size_t in = _in.load(std::memory_order_acquire);
+        size_t in = _in.load(acquire);
         for(;;) {
             auto &slot = _buf[idx(in)];
-            if(seq(in) != slot.seq.load(std::memory_order_acquire)) {
+            if(seq(in) != slot.seq.load(acquire)) {
                 size_t old_in = in;
                 // Advance and update local `in`.
-                in = _in.load(std::memory_order_acquire);
+                in = _in.load(acquire);
                 if(old_in == in) return false;
-            } else if(_in.compare_exchange_weak(in, in+1,
-                        std::memory_order_acq_rel, std::memory_order_relaxed)) {
+            } else if(_in.compare_exchange_weak(in, in+1, acq_rel, relaxed)) {
                 slot.val = std::move(elem);
-                slot.seq.store(seq(in) + 1, std::memory_order_release);
+                slot.seq.store(seq(in) + 1, release);
                 return true;
             }
         }
     }
 
     std::optional<T> try_pop() {
-        size_t out = _out.load(std::memory_order_acquire);
+        size_t out = _out.load(acquire);
         for(;;) {
             auto &slot = _buf[idx(out)];
-            if(seq(out) + 1 != slot.seq.load(std::memory_order_acquire)) {
+            if(seq(out) + 1 != slot.seq.load(acquire)) {
                 size_t old_out = out;
-                out = _out.load(std::memory_order_acquire);
+                out = _out.load(acquire);
                 if(old_out == out) return std::nullopt;
-            } else if(_out.compare_exchange_weak(out, out+1,
-                        std::memory_order_acq_rel, std::memory_order_relaxed)) {
+            } else if(_out.compare_exchange_weak(out, out+1, acq_rel, relaxed)) {
                 auto opt = std::make_optional<T>(std::move(slot.val));
-                slot.seq.store(seq(out) + 2, std::memory_order_release);
+                slot.seq.store(seq(out) + 2, release);
                 return opt;
             }
         }
     }
-
 };
 
 int main() {
