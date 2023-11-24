@@ -1,3 +1,7 @@
+// 推荐阅读：
+// https://en.wikipedia.org/wiki/Alias_method
+// https://zhuanlan.zhihu.com/p/111885669
+
 #include <bits/stdc++.h>
 
 class Alias {
