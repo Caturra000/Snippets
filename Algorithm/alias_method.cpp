@@ -6,8 +6,7 @@
 
 class Alias {
 public:
-    Alias(std::vector<double> probabilities)
-    {
+    Alias(std::vector<double> probabilities) {
         precondition(probabilities);
         std::tie(_probs, _alias) = make_alias_table(std::move(probabilities));
     }
@@ -15,18 +14,21 @@ public:
     /// @brief  Just simply make a random O(1) choice.
     /// @return Index.
     size_t make() {
-    #if 0 // Simple method.
-        std::uniform_int_distribution dis0N {0ul, _alias.size() - 1};
-        std::uniform_real_distribution dis01 {0.0, 1.0};
-        // TODO: single distribution is enough.
-        size_t i = dis0N(_gen);
-        double p = dis01(_gen);
-    #else // Faster (~10%) but harder to write correctly.
         std::uniform_real_distribution dis01 {0.0, 1.0};
         double x = dis01(_gen);
         size_t i = _alias.size() * x; // round down
         double p = _alias.size() * x - i;
-    #endif
+        return p < _probs[i] ? i : _alias[i];
+    }
+
+    /// @deprecated
+    /// __Simple method__ to make a random O(1) choice.
+    /// Use make() instead, which is faster (~10%) but harder to write correctly.
+    size_t make(decltype(std::ignore)...) {
+        std::uniform_int_distribution dis0N {0ul, _alias.size() - 1};
+        std::uniform_real_distribution dis01 {0.0, 1.0};
+        size_t i = dis0N(_gen);
+        double p = dis01(_gen);
         return p < _probs[i] ? i : _alias[i];
     }
 
@@ -42,38 +44,36 @@ private:
         // K: alias table.
         // U: {index, probability} table.
         std::vector<size_t> K(N, N /*uninitialized*/);
-        std::vector<std::tuple<size_t, double>> U[3];
-        enum u_type {OVERFULL=0, FULL, UNDERFULL};
+        enum u_type {OVERFULL, FULL, UNDERFULL, UTYPE_MAX};
+        std::vector<std::tuple<size_t, double>> U[UTYPE_MAX];
+        auto get_type = [&](size_t i, double p) {
+            u_type type = p > 1 ? OVERFULL : UNDERFULL;
+            if(is_one(p)) [[unlikely]] {
+                type = FULL;
+                // Optional, but make less buggy code.
+                // NOTE: FULL or OVERFULL->FULL actually has no alias index.
+                K[i] = i;
+            }
+            return type;
+        };
 
         for(size_t i = 0; i < probabilities.size(); ++i) {
             auto p = probabilities[i];
-            u_type who = p > 1 ? OVERFULL : UNDERFULL;
-
-            if(is_one(p)) [[unlikely]] {
-                who = FULL;
-                // Optional, but make less buggy code.
-                // NOTE: FULL actually has no alias index.
-                K[i] = i;
-            }
-
-            U[who].emplace_back(i, p);
+            u_type type = get_type(i, p);
+            U[type].emplace_back(i, p);
         }
 
         while(!U[OVERFULL].empty() && !U[UNDERFULL].empty()) {
             /// Calculate.
             auto [over_i, over_p] = pop(U[OVERFULL]);
             auto [under_i, under_p] = pop(U[UNDERFULL]);
-            over_p -= (1 - under_p);
+            over_p -= (1.0 - under_p);
             K[under_i] = over_i;
 
             /// Reinsert.
             U[FULL].emplace_back(under_i, under_p);
-            u_type who = over_p > 1 ? OVERFULL : UNDERFULL;
-            if(is_one(over_p)) [[unlikely]] {
-                who = FULL;
-                K[over_i] = over_i;
-            }
-            U[who].emplace_back(over_i, over_p);
+            u_type type = get_type(over_i, over_p);
+            U[type].emplace_back(over_i, over_p);
         }
 
         /// I hate floating points.
@@ -89,18 +89,18 @@ private:
         corner_case(U[OVERFULL]);
         corner_case(U[UNDERFULL]);
 
-        // They are all FULL.
-        std::vector<double> real_u(N);
-        for(auto &&[i, p] : U[FULL]) real_u[i] = p;
-        return std::make_tuple(real_u, K);
+        // Now they are all FULL.
+        std::vector<double> full_u(N);
+        for(auto &&[i, p] : U[FULL]) full_u[i] = p;
+        return std::make_tuple(full_u, K);
     }
 
     // 1. size() > 0
     // 2. \sum probabilities == 1.0
     static
-    void precondition(const auto &probabilities) noexcept {
+    void precondition(const std::vector<double> &probabilities) noexcept {
         assert(!probabilities.empty());
-        double p_sum = 0;
+        [[maybe_unused]] double p_sum = 0;
         for(auto p : probabilities) p_sum += p;
         assert(is_one(p_sum));
     }
@@ -147,16 +147,16 @@ int main() {
     for(size_t i = 0; i < counts.size(); ++i) {
         double distribution = counts[i];
         distribution /= test_round;
-        double delta = (distribution - probabilities[i])/probabilities[i];
-        std::cout << i << ":\t" << distribution << "\t(d=" << delta << ")\n";
+        double delta = (distribution - probabilities[i]) / probabilities[i] * 100;
+        std::cout << i << ":\t" << distribution << "\t(d=" << delta << "%)\n";
     }
 
 }
 
 /***********
-0:      0.399998        (d=-4.425e-06)
-1:      0.300031        (d=0.0001041)
-2:      0.200013        (d=6.57e-05)
-3:      0.0499534       (d=-0.0009322)
-4:      0.050004        (d=8.02e-05)
+0:      0.399994        (d=-0.0015175%)
+1:      0.299967        (d=-0.01113%)
+2:      0.200001        (d=0.0007%)
+3:      0.0500284       (d=0.05686%)
+4:      0.0500096       (d=0.01926%)
 ***********/
