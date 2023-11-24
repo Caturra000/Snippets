@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 
-struct Alias {
-
+class Alias {
+public:
     Alias(std::vector<double> probabilities)
     {
         precondition(probabilities);
@@ -31,76 +31,89 @@ private:
     auto make_alias_table(std::vector<double> probabilities)
     -> std::tuple< std::vector<double>, std::vector<size_t> >
     {
-        constexpr auto EPS = std::numeric_limits<double>::epsilon();
         const auto N = probabilities.size();
         for(auto &p : probabilities) p *= N;
-        std::vector<size_t> k(N, N);
-        /// {index, probability}.
-        std::vector<std::tuple<size_t, double>> u[3];
+
+        // K: alias table.
+        // U: {index, probability} table.
+        std::vector<size_t> K(N, N /*uninitialized*/);
+        std::vector<std::tuple<size_t, double>> U[3];
         enum u_type {OVERFULL=0, FULL, UNDERFULL};
 
         for(size_t i = 0; i < probabilities.size(); ++i) {
             auto p = probabilities[i];
             u_type who = p > 1 ? OVERFULL : UNDERFULL;
 
-            if(fabs(p-1) < EPS) [[unlikely]] {
+            if(is_one(p)) [[unlikely]] {
                 who = FULL;
-                k[i] = i;
+                // Optional, but make less buggy code.
+                // NOTE: FULL actually has no alias index.
+                K[i] = i;
             }
 
-            u[who].emplace_back(i, p);
+            U[who].emplace_back(i, p);
         }
 
-        while(!u[OVERFULL].empty() && !u[UNDERFULL].empty()) {
-            auto over = u[OVERFULL].back();
-            auto under = u[UNDERFULL].back();
-            u[OVERFULL].pop_back();
-            u[UNDERFULL].pop_back();
-
+        while(!U[OVERFULL].empty() && !U[UNDERFULL].empty()) {
             /// Calculate.
-            auto &[over_i, over_p] = over;
-            auto &[under_i, under_p] = under;
+            auto [over_i, over_p] = pop(U[OVERFULL]);
+            auto [under_i, under_p] = pop(U[UNDERFULL]);
             over_p -= (1 - under_p);
-            k[under_i] = over_i;
+            K[under_i] = over_i;
 
             /// Reinsert.
-            u[FULL].emplace_back(under_i, under_p);
+            U[FULL].emplace_back(under_i, under_p);
             u_type who = over_p > 1 ? OVERFULL : UNDERFULL;
-            if(fabs(over_p - 1) < EPS) [[unlikely]] {
+            if(is_one(over_p)) [[unlikely]] {
                 who = FULL;
-                k[over_i] = over_i;
+                K[over_i] = over_i;
             }
-            u[who].emplace_back(over_i, over_p);
+            U[who].emplace_back(over_i, over_p);
         }
 
         /// I hate floating points.
         auto corner_case = [&](auto &ulist) {
             while(!ulist.empty()) {
-                auto elem = ulist.back();
-                ulist.pop_back();
-                auto &[i, p] = elem;
-                assert(fabs(p-1) < EPS);
-                k[i] = i;
-                u[FULL].emplace_back(i, p);
+                auto [i, p] = pop(ulist);
+                assert(is_one(p));
+                K[i] = i;
+                U[FULL].emplace_back(i, p);
             }
         };
 
-        corner_case(u[OVERFULL]);
-        corner_case(u[UNDERFULL]);
+        corner_case(U[OVERFULL]);
+        corner_case(U[UNDERFULL]);
 
         /// Sorted by index.
-        std::ranges::sort(u[FULL]);
+        std::ranges::sort(U[FULL]);
         std::vector<double> real_u;
-        for(auto &&[_, p] : u[FULL]) real_u.emplace_back(p);
-        return std::make_tuple(real_u, k);
+        for(auto &&[_, p] : U[FULL]) real_u.emplace_back(p);
+        return std::make_tuple(real_u, K);
     }
 
+    // 1. size() > 0
+    // 2. \sum probabilities == 1.0
+    static
     void precondition(const auto &probabilities) noexcept {
         assert(!probabilities.empty());
+        // double p_sum = 0;
+        // for(auto p : probabilities) p_sum += p;
+        const auto p_sum
+            = std::accumulate(probabilities.begin(), probabilities.end(), double{});
+        assert(is_one(p_sum));
+    }
+
+    static
+    bool is_one(double x) noexcept {
         constexpr auto EPS = std::numeric_limits<double>::epsilon();
-        double p_sum = 0;
-        for(auto p : probabilities) p_sum += p;
-        assert(fabs(p_sum - 1) < EPS);
+        return fabs(x - 1) < EPS;
+    }
+
+    template <typename T> static
+    T pop(std::vector<T> &ulist) {
+        auto elem = std::move(ulist.back());
+        ulist.pop_back();
+        return elem;
     }
 
 private:
@@ -132,6 +145,8 @@ int main() {
     for(size_t i = 0; i < counts.size(); ++i) {
         double distribution = counts[i];
         distribution /= test_round;
+        double delta = (distribution - probabilities[i])/probabilities[i];
         std::cout <<  i << ":\t" << distribution << '\n';
+        assert(fabs(delta) < 1e-3);
     }
 }
