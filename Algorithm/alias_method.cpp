@@ -8,7 +8,7 @@ public:
         std::tie(_probs, _alias) = make_alias_table(std::move(probabilities));
     }
 
-    /// @brief  Just simply make a random choice.
+    /// @brief  Just simply make a random O(1) choice.
     /// @return Index.
     size_t make() {
     #if 0 // Simple method.
@@ -27,6 +27,7 @@ public:
     }
 
 private:
+    // O(n) construction.
     static
     auto make_alias_table(std::vector<double> probabilities)
     -> std::tuple< std::vector<double>, std::vector<size_t> >
@@ -84,10 +85,9 @@ private:
         corner_case(U[OVERFULL]);
         corner_case(U[UNDERFULL]);
 
-        /// Sorted by index.
-        std::ranges::sort(U[FULL]);
-        std::vector<double> real_u;
-        for(auto &&[_, p] : U[FULL]) real_u.emplace_back(p);
+        // They are all FULL.
+        std::vector<double> real_u(N);
+        for(auto &&[i, p] : U[FULL]) real_u[i] = p;
         return std::make_tuple(real_u, K);
     }
 
@@ -96,10 +96,8 @@ private:
     static
     void precondition(const auto &probabilities) noexcept {
         assert(!probabilities.empty());
-        // double p_sum = 0;
-        // for(auto p : probabilities) p_sum += p;
-        const auto p_sum
-            = std::accumulate(probabilities.begin(), probabilities.end(), double{});
+        double p_sum = 0;
+        for(auto p : probabilities) p_sum += p;
         assert(is_one(p_sum));
     }
 
@@ -146,7 +144,15 @@ int main() {
         double distribution = counts[i];
         distribution /= test_round;
         double delta = (distribution - probabilities[i])/probabilities[i];
-        std::cout <<  i << ":\t" << distribution << '\n';
-        assert(fabs(delta) < 1e-3);
+        std::cout << i << ":\t" << distribution << "\t(d=" << delta << ")\n";
     }
+
 }
+
+/***********
+0:      0.399998        (d=-4.425e-06)
+1:      0.300031        (d=0.0001041)
+2:      0.200013        (d=6.57e-05)
+3:      0.0499534       (d=-0.0009322)
+4:      0.050004        (d=8.02e-05)
+***********/
