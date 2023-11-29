@@ -157,7 +157,9 @@ inline bool Cuckoo<T, N>::lookup(const T &item) const noexcept {
 
 template <typename T, size_t N>
 inline typename Cuckoo<T, N>::fbits Cuckoo<T, N>::fingerprint(const T &x) const noexcept {
-    return std::hash<std::string>()(x) & ~(-1 << 16);
+    constexpr size_t fbits_shift = sizeof(fbits) << 3;
+    constexpr size_t bitmask = ~(static_cast<size_t>(-1) << fbits_shift);
+    return std::hash<std::string>()(x) & bitmask;
 }
 
 template <typename T, size_t N>
@@ -200,7 +202,9 @@ inline void Cuckoo<T, N>::reset_entry(size_t i, size_t e) noexcept {
 
 template <typename T, size_t N>
 inline typename Cuckoo<T, N>::fbits& Cuckoo<T, N>::any_entry(size_t i) noexcept {
-    size_t e = rand() & 3;
+    static std::default_random_engine re{std::random_device{}()};
+    std::uniform_int_distribution<size_t> dis{0, 3};
+    size_t e = dis(re);
     assert(_buckets[i][e] != magic_code);
     return _buckets[i][e];
 }
