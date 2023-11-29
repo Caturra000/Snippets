@@ -79,19 +79,6 @@ private:
     /// 4-way buckets.
     /// TODO: rename to _hashtable.
     fbits _buckets[N][4];
-
-/// For debug.
-public:
-    size_t _debug_relocation {};
-
-    double scan_room() {
-        size_t n = 0;
-        auto cond = [](auto f) { return f != magic_code; };
-        for(auto &&bucket : _buckets) {
-            n += std::ranges::count_if(bucket, cond);
-        }
-        return static_cast<double>(n) / N / 4 * 100;
-    }
 };
 
 
@@ -132,8 +119,6 @@ inline bool Cuckoo<N>::add(const std::string &item) {
         /// Now we need to solve entry relocation (swapped into f).
         i ^= hash(f);
         auto next_e = bucket_has_hole(i);
-
-        _debug_relocation++;
 
         if(next_e != npos) {
             add_entry(i, next_e, f);
@@ -240,21 +225,35 @@ void simple() {
     filter.remove(strings[1]);
     err_n += filter.lookup(strings[1]);
     assert(err_n == 0);
+
+    std::cout << "OK: simple test." << std::endl;
 }
 
-auto random_generate(size_t counts) {
+auto random_generate(size_t icounts, size_t ecounts) {
     std::set<std::string> unique_data;
-    for(auto n = counts; n--;) {
-        std::string gen;
-        int length = rand() % 30 + 1; // [1, 30]
-        while(length--) gen += rand() % 26 + 'a';
-        unique_data.emplace(std::move(gen));
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<size_t> dis_length(20, 50);
+    std::uniform_int_distribution<char> dis_alpha('a', 'z');
+
+    for(auto n = icounts + ecounts; n--;) {
+        std::string str;
+        size_t length = dis_length(gen);
+        while(length--) str += dis_alpha(gen);
+        unique_data.emplace(std::move(str));
     }
-    return std::vector<std::string> {unique_data.begin(), unique_data.end()};
+    std::vector<std::string> included, excluded;
+    for(auto &&v : unique_data) {
+        if(icounts) icounts--, included.emplace_back(std::move(v));
+        else excluded.emplace_back(std::move(v));
+    }
+    return std::make_tuple(std::move(included), std::move(excluded));
 }
 
 template <size_t N = 64>
-void fuzzy(const std::vector<std::string> &included,
+void fuzzy(const char *test_name,
+           const std::vector<std::string> &included,
            const std::vector<std::string> &excluded)
 {
     auto cuckoo_ptr = std::make_unique<Cuckoo<N>>();
@@ -293,6 +292,9 @@ void fuzzy(const std::vector<std::string> &included,
             std::cerr << "AIEEEEE! A NINJA!? WHY THERE'S A NINJA HERE!?" << std::endl;
         }
     }
+
+    std::cout << "OK: fuzzy test (" << test_name << ")\n.";
+    std::cout << "=======================" << std::endl;
 }
 
 int main() {
@@ -302,13 +304,15 @@ int main() {
     std::vector<std::string> foods {"Pizza","Sushi","Burger","Pasta","Tacos","Ice Cream","Chicken Curry","Salad","Steak","Pancakes","Dim Sum","Lasagna","Chocolate Cake","Shrimp Scampi","Ramen","Apple Pie","Fish and Chips","Burrito","Caesar Salad","Chicken Wings","Pad Thai","BBQ Ribs","Nachos","Fried Rice","Clam Chowder","Gyro","Creme Brulee","Lobster Bisque","Hot Dog","Mashed Potatoes","Pho","Goulash","Croissant","Macaroni and Cheese","Guacamole","French Toast","Biryani","Popcorn","Omelette","Tikka Masala","Croque Monsieur","Ceviche","Spring Rolls","Deviled Eggs","Tiramisu","Peking Duck","Quiche","Gumbo","Chicken Parmesan","Cinnamon Roll","Lobster Roll","Ratatouille","Chicken Quesadilla","Hamburger","Chicken Salad","Cabbage Rolls","Empanadas","Fried Chicken","Shish Kebab","Pumpkin Pie","Tom Yum Soup","Cannoli","Lobster Thermidor","Poutine","Cucumber Roll","Philly Cheesesteak","Chicken Tandoori","Miso Soup","Buffalo Wings","Risotto","Chimichanga","Falafel","Onion Rings","Caesar Wrap","Egg Drop Soup","Fettuccine Alfredo","Tandoori Chicken","Chili Con Carne","Spanakopita","Beef Stroganoff","Caprese Salad","Chocolate Mousse","Reuben Sandwich","Chicken Noodle Soup","Paella","Cobb Salad","Lobster Mac and Cheese","Beef and Broccoli","Baklava","Chicken Enchiladas","Minestrone Soup","Bagel with Lox and Cream Cheese","Ratatouille","Muffuletta","Gazpacho","Tom Kha Gai","Shrimp Po' Boy","Avocado Toast","Croque Madame","Clam Bake"};
     std::vector<std::string> people {"Emily Johnson","Alexander Smith","Olivia Davis","Ethan Wilson","Sophia Taylor","Mason Jones","Ava Miller","Liam Anderson","Isabella Brown","Noah Martinez","Emma Davis","Aiden Thomas","Mia Johnson","Lucas White","Harper Lee","Logan Harris","Amelia Clark","Jackson Moore","Grace Turner","Carter Robinson"};
 
-    fuzzy(foods, people);
+    fuzzy("GPT", foods, people);
 
-    constexpr size_t cuckoo_size = 1 << 20;
-    constexpr size_t random_generate_size = cuckoo_size / 10;
-    std::vector<std::string> included = random_generate(random_generate_size);
-    std::vector<std::string> excluded {included.begin(), included.begin() + included.size() / 10};
-    for(auto &&s : excluded) s += '_';
+    for(auto _ : "jintianxiaomidaobilema") {
+        std::ignore = _;
+        constexpr size_t cuckoo_size = 1 << 20;
+        constexpr size_t istrings = cuckoo_size / 10;
+        constexpr size_t estrings = cuckoo_size / 10;
+        auto [included, excluded] = random_generate(istrings, estrings);
 
-    fuzzy<cuckoo_size>(included, excluded);
+        fuzzy<cuckoo_size>("random", included, excluded);
+    }
 }
