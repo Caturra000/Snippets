@@ -3,25 +3,28 @@
 
 #include <bits/stdc++.h>
 
-template <size_t N>
+/// @brief A simple fixed-size cuckoo filter.
+/// @tparam T Type of items.
+/// @tparam N Size of cuckoo filter. Must Be a power of 2.
+template <typename T, size_t N>
 class Cuckoo {
 /// Interfaces.
 public:
-    Cuckoo();
+    Cuckoo() noexcept;
 
     /// @brief Add an item to cuckoo filter.
     /// @param item Any string.
     /// @return Maybe false if no enough space.
-    bool add(const std::string &item);
+    bool add(const T &item) noexcept;
 
     /// @brief Remove an item from cuckoo filter.
     /// @param item Any added string.
-    void remove(const std::string &item);
+    void remove(const T &item) noexcept;
 
     /// @brief Lookup an item from cuckoo filter.
     /// @param item Any string.
     /// @return True if found.
-    bool lookup(const std::string &item);
+    bool lookup(const T &item) const noexcept;
 
 private:
     /// @brief Fingerprint is 16-bit fixed.
@@ -41,58 +44,58 @@ private:
     /// @brief Generate a fingerprint for x.
     /// @return A 16-bit fingerprint.
     /// @todo Add any-bit fingerprint.
-    fbits fingerprint(const std::string &x);
+    fbits fingerprint(const T &x) const noexcept;
 
     /// @brief Hash value of fingerprint.
     /// @param f Fingerprint.
     /// @return A 64-bit remapped value, but restricted below N.
-    size_t hash(fbits f);
+    size_t hash(fbits f) const noexcept;
 
-    size_t hash(const std::string &x);
+    size_t hash(const T &x) const noexcept;
 
 /// Helper functions.
 private:
     /// @brief buckets[i] has fingerprint f?
     /// @return Return entry index or npos.
-    size_t bucket_has(size_t i, fbits f);
+    size_t bucket_has(size_t i, fbits f) const noexcept;
 
     /// @brief buckets[i] has a hole?
     /// @return Return hole-entry index or npos.
-    size_t bucket_has_hole(size_t i);
+    size_t bucket_has_hole(size_t i) const noexcept;
 
     /// @brief Add an entry to bucket <del>randomly</del>.
     /// @param i Bucket index.
     /// @param e Entry index.
     /// @param f Entry value (fingerprint).
-    void add_entry(size_t i, size_t e, fbits f);
+    void add_entry(size_t i, size_t e, fbits f) noexcept;
 
     /// @brief Reset buckets[i][e] to null.
-    void reset_entry(size_t i, size_t e);
+    void reset_entry(size_t i, size_t e) noexcept;
 
     /// @brief Return buckets[i][random()].
-    fbits& any_entry(size_t i);
+    fbits& any_entry(size_t i) noexcept;
 
     /// @todo Currently _buckets is fixed size.
     void rehash() {}
 
 private:
     /// 4-way buckets.
-    /// TODO: rename to _hashtable.
+    /// TODO: Configurable multiway buckets.
     fbits _buckets[N][4];
 };
 
 
 
-template <size_t N>
-inline Cuckoo<N>::Cuckoo() {
+template <typename T, size_t N>
+inline Cuckoo<T, N>::Cuckoo() noexcept {
     static_assert(N == (N&-N), "Cuckoo needs a power of 2.");
     for(auto &bucket : _buckets) {
         std::fill(std::begin(bucket), std::end(bucket), magic_code);
     }
 }
 
-template <size_t N>
-inline bool Cuckoo<N>::add(const std::string &item) {
+template <typename T, size_t N>
+inline bool Cuckoo<T, N>::add(const T &item) noexcept {
     fbits f = fingerprint(item);
     size_t i1 = hash(item);
     size_t i2 = i1 ^ hash(f);
@@ -126,11 +129,11 @@ inline bool Cuckoo<N>::add(const std::string &item) {
         }
     }
     /// Hashtable is considered full.
-    return false;        
+    return false;
 }
 
-template <size_t N>
-inline void Cuckoo<N>::remove(const std::string &item) {
+template <typename T, size_t N>
+inline void Cuckoo<T, N>::remove(const T &item) noexcept {
     fbits f = fingerprint(item);
     size_t i1 = hash(item);
     size_t i2 = i1 ^ hash(f);
@@ -144,59 +147,59 @@ inline void Cuckoo<N>::remove(const std::string &item) {
     assert(false);
 }
 
-template <size_t N>
-inline bool Cuckoo<N>::lookup(const std::string &item) {
+template <typename T, size_t N>
+inline bool Cuckoo<T, N>::lookup(const T &item) const noexcept {
     fbits f = fingerprint(item);
     size_t i1 = hash(item);
     size_t i2 = i1 ^ hash(f);
     return (bucket_has(i1, f) != npos) || (bucket_has(i2, f) != npos);
 }
 
-template <size_t N>
-inline typename Cuckoo<N>::fbits Cuckoo<N>::fingerprint(const std::string &x) {
+template <typename T, size_t N>
+inline typename Cuckoo<T, N>::fbits Cuckoo<T, N>::fingerprint(const T &x) const noexcept {
     return std::hash<std::string>()(x) & ~(-1 << 16);
 }
 
-template <size_t N>
-inline size_t Cuckoo<N>::hash(fbits f) {
+template <typename T, size_t N>
+inline size_t Cuckoo<T, N>::hash(fbits f) const noexcept {
     /// FIXME: std::hash<*trivial*> returns f directly.
     return std::hash<fbits>()(f) % N;
 }
 
-template <size_t N>
-inline size_t Cuckoo<N>::hash(const std::string &x) {
+template <typename T, size_t N>
+inline size_t Cuckoo<T, N>::hash(const T &x) const noexcept {
     return std::hash<std::string>()(x) % N;
 }
 
-template <size_t N>
-inline size_t Cuckoo<N>::bucket_has(size_t i, fbits f) {
+template <typename T, size_t N>
+inline size_t Cuckoo<T, N>::bucket_has(size_t i, fbits f) const noexcept {
     for(size_t j = 0; j < 4; ++j) {
         if(_buckets[i][j] == f) return j;
     }
     return npos;
 }
 
-template <size_t N>
-inline size_t Cuckoo<N>::bucket_has_hole(size_t i) {
+template <typename T, size_t N>
+inline size_t Cuckoo<T, N>::bucket_has_hole(size_t i) const noexcept {
     for(size_t j = 0; j < 4; ++j) {
         if(_buckets[i][j] == magic_code) return j;
     }
     return npos;
 }
 
-template <size_t N>
-inline void Cuckoo<N>::add_entry(size_t i, size_t e, fbits f) {
+template <typename T, size_t N>
+inline void Cuckoo<T, N>::add_entry(size_t i, size_t e, fbits f) noexcept {
     assert(_buckets[i][e] == magic_code);
     _buckets[i][e] = f;
 }
 
-template <size_t N>
-inline void Cuckoo<N>::reset_entry(size_t i, size_t e) {
+template <typename T, size_t N>
+inline void Cuckoo<T, N>::reset_entry(size_t i, size_t e) noexcept {
     _buckets[i][e] = magic_code;
 }
 
-template <size_t N>
-inline typename Cuckoo<N>::fbits& Cuckoo<N>::any_entry(size_t i) {
+template <typename T, size_t N>
+inline typename Cuckoo<T, N>::fbits& Cuckoo<T, N>::any_entry(size_t i) noexcept {
     size_t e = rand() & 3;
     assert(_buckets[i][e] != magic_code);
     return _buckets[i][e];
@@ -217,7 +220,7 @@ void simple() {
         "fenbushiruanzongxiancaozuoxitong"
     };
 
-    Cuckoo<128> filter;
+    Cuckoo<std::string, 128> filter;
     size_t err_n {};
     for(auto &&s : strings) filter.add(s);
     for(auto &&n : not_included) err_n += !!filter.lookup(n);
@@ -230,7 +233,7 @@ void simple() {
 }
 
 auto random_generate(size_t icounts, size_t ecounts) {
-    std::set<std::string> unique_data;
+    std::unordered_set<std::string> unique_data;
 
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -256,7 +259,7 @@ void fuzzy(const char *test_name,
            const std::vector<std::string> &included,
            const std::vector<std::string> &excluded)
 {
-    auto cuckoo_ptr = std::make_unique<Cuckoo<N>>();
+    auto cuckoo_ptr = std::make_unique<Cuckoo<std::string, N>>();
     auto &cuckoo = *cuckoo_ptr.get();
 
     size_t add_failed = 0;
