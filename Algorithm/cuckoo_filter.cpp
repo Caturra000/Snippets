@@ -159,7 +159,7 @@ template <typename T, size_t N>
 inline typename Cuckoo<T, N>::fbits Cuckoo<T, N>::fingerprint(const T &x) const noexcept {
     constexpr size_t fbits_shift = sizeof(fbits) << 3;
     constexpr size_t bitmask = ~(static_cast<size_t>(-1) << fbits_shift);
-    return std::hash<std::string>()(x) & bitmask;
+    return std::hash<T>()(x) & bitmask;
 }
 
 template <typename T, size_t N>
