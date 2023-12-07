@@ -1,228 +1,1031 @@
-测试noexcept的性能，下面都是输出结果
+测试noexcept的性能
+下面是g++-13和clang++-15的输出结果，区分`throw` included和excluded情况
 
 The noexcept benchmark from https://github.com/N-Dekker/noexcept_benchmark
 __FILE__ = /home/caturra/projects/noexcept_benchmark/noexcept_benchmark_main.cpp
 sizeof(void*) = 8 (64-bit)
-__DATE__ = Dec  7 2023
-__TIME__ = 23:50:49
-__VERSION__ = 11.3.0
+__DATE__ = Dec  8 2023
+__TIME__ = 03:25:37
+__VERSION__ = 13.1.0
 NDEBUG ("Not Debug")
 NOEXCEPT_BENCHMARK_NUMBER_OF_ITERATIONS = 10
 NOEXCEPT_BENCHMARK_THROW_EXCEPTION = 1 (`throw exception{}` included by #if)
 
 [Linux GCC][`throw` included][inline function calls, passing literal `false` as argument (N = 2147483647)]
     noexcept       implicit    (durations in seconds)
-    0.00000005  >  0.00000003
+    0.00000006  >  0.00000003
+    0.00000002  <  0.00000003
+    0.00000003  >  0.00000002
+    0.00000002  <  0.00000003
+    0.00000002  <  0.00000003
     0.00000002  =  0.00000002
     0.00000002  <  0.00000003
     0.00000002  <  0.00000003
     0.00000003  >  0.00000002
-    0.00000003  >  0.00000002
-    0.00000002  =  0.00000002
-    0.00000003  >  0.00000002
-    0.00000003  >  0.00000002
-    0.00000002  <  0.00000003
+    0.00000003  =  0.00000003
     ----------     ----------
-    0.00000027  >  0.00000024  (sum of durations)
+    0.00000027  >  0.00000027  (sum of durations)
     0.00000002  =  0.00000002  (shortest durations)
-Ratio sum of durations implicit/noexcept: 0.90 (implicit faster in 5 iterations)
+Ratio sum of durations implicit/noexcept: 1.00 (noexcept faster in 5 iterations)
 In this case, neither implicit nor noexcept specifications always appear faster.
 
 [Linux GCC][`throw` included][inline function calls, passing a volatile false argument (N = 2147483647)]
     noexcept       implicit    (durations in seconds)
-    0.49392093  <  0.49670258
-    0.49723183  >  0.49283141
-    0.49417110  >  0.49087326
-    0.49089407  <  0.49162922
-    0.49664828  >  0.49095057
-    0.49181995  >  0.48968231
-    0.48919081  <  0.49067641
-    0.49247615  >  0.49174108
-    0.49009696  <  0.49209524
-    0.49234632  >  0.49207943
+    0.49848033  <  1.00783330
+    0.49527321  <  0.99341942
+    0.52113860  <  0.99420107
+    0.49552826  <  0.98962624
+    0.49602685  <  0.99097839
+    0.50335021  <  1.04075313
+    0.49708677  <  1.00920740
+    0.49478464  <  0.98786956
+    0.49321395  <  1.00903394
+    0.49317870  <  0.99109607
     ----------     ----------
-    4.92879640  >  4.91926151  (sum of durations)
-    0.48919081  <  0.48968231  (shortest durations)
-Ratio sum of durations implicit/noexcept: 1.00 (implicit faster in 6 iterations)
-In this case, neither implicit nor noexcept specifications always appear faster.
+    4.98806152  <  10.01401853  (sum of durations)
+    0.49317870  <  0.98786956  (shortest durations)
+Ratio sum of durations implicit/noexcept: 2.01 (noexcept faster in 10 iterations)
+In this case, 'noexcept' specifications always appear faster.
 
 [Linux GCC][`throw` included][calls to an inline member function of an exported class (N = 200000000)]
     noexcept       implicit    (durations in seconds)
-    0.00000002  =  0.00000002
-    0.00000002  =  0.00000002
-    0.00000002  =  0.00000002
-    0.00000002  =  0.00000002
     0.00000002  <  0.00000003
-    0.00000002  <  0.00000003
+    0.00000002  =  0.00000002
+    0.00000002  =  0.00000002
+    0.00000002  =  0.00000002
+    0.00000003  >  0.00000002
+    0.00000002  =  0.00000002
     0.00000002  =  0.00000002
     0.00000002  =  0.00000002
     0.00000002  =  0.00000002
     0.00000002  =  0.00000002
     ----------     ----------
-    0.00000020  <  0.00000022  (sum of durations)
+    0.00000021  >  0.00000021  (sum of durations)
     0.00000002  =  0.00000002  (shortest durations)
-Ratio sum of durations implicit/noexcept: 1.10 (noexcept faster in 2 iterations)
+Ratio sum of durations implicit/noexcept: 1.00
 In this case, neither implicit nor noexcept specifications always appear faster.
 
 [Linux GCC][`throw` included][calls to a non-inline member function of an exported class (N = 200000000)]
     noexcept       implicit    (durations in seconds)
-    0.41386090  >  0.41010256
-    0.41442267  <  0.42444660
-    0.41232627  >  0.40905276
-    0.41143329  >  0.40889079
-    0.41238758  >  0.41124426
-    0.41188852  >  0.41092269
-    0.41920958  >  0.41459796
-    0.41398630  >  0.40966916
-    0.41109130  >  0.41025684
-    0.41330111  >  0.41175715
+    0.41500895  >  0.41024100
+    0.41085696  <  0.41424855
+    0.41630977  >  0.41255461
+    0.41004166  <  0.41308898
+    0.41420890  <  0.41621468
+    0.41327875  >  0.41248977
+    0.41580965  >  0.41137839
+    0.41453775  >  0.41340517
+    0.41427998  <  0.41764283
+    0.41377850  >  0.41309117
     ----------     ----------
-    4.13390750  >  4.12094078  (sum of durations)
-    0.41109130  >  0.40889079  (shortest durations)
-Ratio sum of durations implicit/noexcept: 1.00 (implicit faster in 9 iterations)
+    4.13811086  >  4.13435514  (sum of durations)
+    0.41004166  <  0.41024100  (shortest durations)
+Ratio sum of durations implicit/noexcept: 1.00 (implicit faster in 6 iterations)
 In this case, neither implicit nor noexcept specifications always appear faster.
 
 [Linux GCC][`throw` included][exported library function calls (N = 200000000)]
     noexcept       implicit    (durations in seconds)
-    0.41353119  >  0.41123041
-    0.41046707  <  0.41156800
-    0.41293610  >  0.41134201
-    0.41219839  <  0.41379233
-    0.41125020  <  0.41617561
-    0.41315789  >  0.41075715
-    0.41424599  <  0.41434383
-    0.41385795  >  0.40980500
-    0.41260804  <  0.41921387
-    0.41168209  <  0.41362397
+    0.41364633  >  0.41126480
+    0.41502437  >  0.41259613
+    0.42354207  >  0.41523671
+    0.41231392  <  0.41234057
+    0.41487934  >  0.41297092
+    0.41207547  >  0.41183164
+    0.41403107  >  0.41352521
+    0.41403850  >  0.41049680
+    0.41358281  >  0.41186138
+    0.41275805  <  0.41656922
     ----------     ----------
-    4.12593492  <  4.13185218  (sum of durations)
-    0.41046707  >  0.40980500  (shortest durations)
-Ratio sum of durations implicit/noexcept: 1.00 (noexcept faster in 6 iterations)
+    4.14589193  >  4.12869338  (sum of durations)
+    0.41207547  >  0.41049680  (shortest durations)
+Ratio sum of durations implicit/noexcept: 1.00 (implicit faster in 8 iterations)
 In this case, neither implicit nor noexcept specifications always appear faster.
 
 [Linux GCC][`throw` included][catching function calls (N = 10000)]
     noexcept       implicit    (durations in seconds)
-    0.00003568  <  0.00011375
-    0.00002481  <  0.00002802
-    0.00002478  <  0.00002799
-    0.00002477  <  0.00002801
-    0.00002550  <  0.00002880
-    0.00002550  <  0.00002880
-    0.00002549  <  0.00002879
-    0.00002552  <  0.00003069
-    0.00002552  <  0.00003108
-    0.00002554  <  0.00003724
+    0.00002838  <  0.00009328
+    0.00001806  <  0.00002188
+    0.00001804  <  0.00002059
+    0.00001802  <  0.00002063
+    0.00001822  <  0.00002153
+    0.00001824  <  0.00002520
+    0.00001822  <  0.00002087
+    0.00001826  <  0.00003366
+    0.00001826  <  0.00003119
+    0.00001826  <  0.00003210
     ----------     ----------
-    0.00026309  <  0.00038318  (sum of durations)
-    0.00002477  <  0.00002799  (shortest durations)
-Ratio sum of durations implicit/noexcept: 1.46 (noexcept faster in 10 iterations)
+    0.00019200  <  0.00032093  (sum of durations)
+    0.00001802  <  0.00002059  (shortest durations)
+Ratio sum of durations implicit/noexcept: 1.67 (noexcept faster in 10 iterations)
 In this case, 'noexcept' specifications always appear faster.
 
 [Linux GCC][`throw` included][inc `++` and dec `--` (N = 2147483647)]
     noexcept       implicit    (durations in seconds)
-    0.49174087  <  0.49189323
-    0.49399603  >  0.49216886
-    0.49252997  <  0.49415305
-    0.49274396  >  0.49224624
-    0.49270436  <  0.51896298
-    0.49610984  >  0.49065587
-    0.49110080  >  0.48927247
-    0.49364640  >  0.49143263
-    0.49493760  >  0.49123208
-    0.49113103  <  0.49175779
+    0.49424779  <  0.49507147
+    0.49337564  <  0.50172783
+    0.49490607  <  0.50463190
+    0.49546222  >  0.49380078
+    0.49326260  >  0.49264098
+    0.50104931  >  0.49895369
+    0.49505732  <  0.49548783
+    0.49363953  <  0.49439444
+    0.49336822  <  0.49514541
+    0.49544775  >  0.49487668
     ----------     ----------
-    4.93064086  <  4.94377520  (sum of durations)
-    0.49110080  >  0.48927247  (shortest durations)
-Ratio sum of durations implicit/noexcept: 1.00 (implicit faster in 6 iterations)
+    4.94981647  <  4.96673100  (sum of durations)
+    0.49326260  >  0.49264098  (shortest durations)
+Ratio sum of durations implicit/noexcept: 1.00 (noexcept faster in 6 iterations)
 In this case, neither implicit nor noexcept specifications always appear faster.
 
 [Linux GCC][`throw` included][recursive stack unwinding (N = 10000)]
     noexcept       implicit    (durations in seconds)
-    0.00001232  >  0.00000767
-    0.00000649  >  0.00000639
-    0.00000651  >  0.00000638
-    0.00000650  >  0.00000637
-    0.00000648  >  0.00000637
-    0.00000653  >  0.00000636
-    0.00000649  <  0.00000670
-    0.00000648  >  0.00000637
-    0.00000648  >  0.00000635
-    0.00000646  >  0.00000636
+    0.00006576  >  0.00000787
+    0.00000658  >  0.00000637
+    0.00000651  >  0.00000636
+    0.00000651  >  0.00000636
+    0.00000652  >  0.00000637
+    0.00000650  >  0.00000636
+    0.00000652  >  0.00000638
+    0.00000652  >  0.00000636
+    0.00000652  >  0.00000640
+    0.00000651  >  0.00000637
     ----------     ----------
-    0.00007076  >  0.00006534  (sum of durations)
-    0.00000646  >  0.00000635  (shortest durations)
-Ratio sum of durations implicit/noexcept: 0.92 (implicit faster in 9 iterations)
-In this case, neither implicit nor noexcept specifications always appear faster.
+    0.00012447  >  0.00006521  (sum of durations)
+    0.00000650  >  0.00000636  (shortest durations)
+Ratio sum of durations implicit/noexcept: 0.52 (implicit faster in 10 iterations)
+In this case, implicit exception specifications always appear faster.
 
 [Linux GCC][`throw` included][stack unwinding array (N = 1000000)]
     noexcept       implicit    (durations in seconds)
-    0.00045962  <  0.00052742
-    0.00046335  >  0.00026344
-    0.00046332  >  0.00025843
-    0.00046415  >  0.00025111
-    0.00046601  >  0.00025160
-    0.00047150  >  0.00024729
-    0.00047347  >  0.00025544
-    0.00047419  >  0.00025415
-    0.00047150  >  0.00027023
-    0.00051051  >  0.00025407
+    0.00046953  <  0.00060273
+    0.00046338  >  0.00025848
+    0.00046333  >  0.00025980
+    0.00046334  >  0.00025864
+    0.00047244  >  0.00026452
+    0.00047238  >  0.00026009
+    0.00047023  >  0.00026204
+    0.00047429  >  0.00032993
+    0.00049525  >  0.00027384
+    0.00049046  >  0.00026686
     ----------     ----------
-    0.00471763  >  0.00283318  (sum of durations)
-    0.00045962  >  0.00024729  (shortest durations)
-Ratio sum of durations implicit/noexcept: 0.60 (implicit faster in 9 iterations)
+    0.00473462  >  0.00303693  (sum of durations)
+    0.00046333  >  0.00025848  (shortest durations)
+Ratio sum of durations implicit/noexcept: 0.64 (implicit faster in 9 iterations)
 In this case, neither implicit nor noexcept specifications always appear faster.
 
 [Linux GCC][`throw` included][explicitly terminate on any exception (N = 2147483647)]
     noexcept       implicit    (durations in seconds)
-    0.49121286  >  0.48762427
-    0.49296147  >  0.48879828
-    0.49104985  <  0.49303800
-    0.49718531  >  0.49166388
-    0.49633235  >  0.49170196
-    0.49408297  >  0.49233804
-    0.49366143  >  0.48924450
-    0.50978079  >  0.49701073
-    0.49157561  <  0.49249918
-    0.49046087  <  0.49060483
+    0.49544321  <  0.49648327
+    0.50033996  >  0.49671256
+    0.49986467  >  0.49179371
+    0.49413463  <  0.50163590
+    0.49292019  <  0.49459650
+    0.49531085  >  0.49448739
+    0.49547661  >  0.49305177
+    0.49967502  >  0.49793078
+    0.49392209  <  0.51840482
+    0.50162657  >  0.49616271
     ----------     ----------
-    4.94830351  >  4.91452367  (sum of durations)
-    0.49046087  >  0.48762427  (shortest durations)
-Ratio sum of durations implicit/noexcept: 0.99 (implicit faster in 7 iterations)
+    4.96871381  <  4.98125943  (sum of durations)
+    0.49292019  >  0.49179371  (shortest durations)
+Ratio sum of durations implicit/noexcept: 1.00 (implicit faster in 6 iterations)
 In this case, neither implicit nor noexcept specifications always appear faster.
 
 [Linux GCC][`throw` included][explicitly terminate versus noexcept (N = 2147483647)]
     noexcept       implicit    (durations in seconds)
-    0.98622633  >  0.49025401
-    0.99784156  >  0.49301700
-    0.98990697  >  0.49068167
-    0.97870848  >  0.49247905
-    0.99245297  >  0.48803868
-    0.98997161  >  0.49282716
-    0.98284923  >  0.49030825
-    0.98595154  >  0.49041333
-    0.98762159  >  0.48990342
-    0.98808813  >  0.49308426
+    0.99932609  >  0.99352871
+    0.98655027  <  0.99169639
+    1.02449415  >  1.01696658
+    0.99425770  <  0.99706511
+    0.99667129  <  1.00075265
+    1.00081667  >  0.99661697
+    0.99900692  >  0.99793716
+    0.99553510  <  0.99713425
+    1.03350271  >  0.99738304
+    1.01016110  >  1.00325596
     ----------     ----------
-    9.87961842  >  4.91100684  (sum of durations)
-    0.97870848  >  0.48803868  (shortest durations)
-Ratio sum of durations implicit/noexcept: 0.50 (implicit faster in 10 iterations)
-In this case, implicit exception specifications always appear faster.
+    10.04032200  >  9.99233681  (sum of durations)
+    0.98655027  <  0.99169639  (shortest durations)
+Ratio sum of durations implicit/noexcept: 1.00 (implicit faster in 6 iterations)
+In this case, neither implicit nor noexcept specifications always appear faster.
 
 [Linux GCC][`throw` included][std::vector<my_string> reserve (N = 10000000)]
     noexcept       implicit    (durations in seconds)
-    0.01431016  <  0.35999764
-    0.00986186  <  0.34980573
-    0.01062619  <  0.36633402
-    0.00956442  <  0.36226474
-    0.01016382  <  0.36788410
-    0.00964126  <  0.34661141
-    0.00955425  <  0.34579258
-    0.00980860  <  0.37987782
-    0.00972312  <  0.34857353
-    0.00968503  <  0.37197892
+    0.03881970  <  0.41116159
+    0.01008210  <  0.35728364
+    0.01006815  <  0.42774393
+    0.01212538  <  0.35311972
+    0.01048611  <  0.35898880
+    0.00995318  <  0.38113063
+    0.00962186  <  0.35845753
+    0.00989368  <  0.41766162
+    0.01015072  <  0.35269579
+    0.00969292  <  0.37841148
     ----------     ----------
-    0.10293872  <  3.59912048  (sum of durations)
-    0.00955425  <  0.34579258  (shortest durations)
-Ratio sum of durations implicit/noexcept: 34.96 (noexcept faster in 10 iterations)
+    0.13089379  <  3.79665475  (sum of durations)
+    0.00962186  <  0.35269579  (shortest durations)
+Ratio sum of durations implicit/noexcept: 29.01 (noexcept faster in 10 iterations)
+In this case, 'noexcept' specifications always appear faster.
+================================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+The noexcept benchmark from https://github.com/N-Dekker/noexcept_benchmark
+__FILE__ = /home/caturra/projects/noexcept_benchmark/noexcept_benchmark_main.cpp
+sizeof(void*) = 8 (64-bit)
+__DATE__ = Dec  8 2023
+__TIME__ = 03:32:43
+__VERSION__ = 13.1.0
+NDEBUG ("Not Debug")
+NOEXCEPT_BENCHMARK_NUMBER_OF_ITERATIONS = 10
+NOEXCEPT_BENCHMARK_THROW_EXCEPTION = 0 (`throw exception{}` excluded by #if)
+
+[Linux GCC][`throw` excluded][inline function calls, passing literal `false` as argument (N = 2147483647)]
+    noexcept       implicit    (durations in seconds)
+    0.00000007  >  0.00000003
+    0.00000002  <  0.00000002
+    0.00000002  <  0.00000003
+    0.00000002  <  0.00000003
+    0.00000002  <  0.00000003
+    0.00000002  <  0.00000003
+    0.00000003  >  0.00000002
+    0.00000003  =  0.00000003
+    0.00000002  <  0.00000003
+    0.00000003  =  0.00000003
+    ----------     ----------
+    0.00000028  <  0.00000028  (sum of durations)
+    0.00000002  =  0.00000002  (shortest durations)
+Ratio sum of durations implicit/noexcept: 1.01 (noexcept faster in 6 iterations)
+In this case, neither implicit nor noexcept specifications always appear faster.
+
+[Linux GCC][`throw` excluded][inline function calls, passing a volatile false argument (N = 2147483647)]
+    noexcept       implicit    (durations in seconds)
+    0.24860654  >  0.24600549
+    0.24796549  <  0.24822648
+    0.24818596  <  0.25225602
+    0.24867818  <  0.25173420
+    0.24837993  >  0.24814703
+    0.24701782  >  0.24696731
+    0.24917025  >  0.24665545
+    0.24721931  >  0.24550438
+    0.24889852  >  0.24814695
+    0.24728937  >  0.24647453
+    ----------     ----------
+    2.48141137  >  2.48011786  (sum of durations)
+    0.24701782  >  0.24550438  (shortest durations)
+Ratio sum of durations implicit/noexcept: 1.00 (implicit faster in 7 iterations)
+In this case, neither implicit nor noexcept specifications always appear faster.
+
+[Linux GCC][`throw` excluded][calls to an inline member function of an exported class (N = 200000000)]
+    noexcept       implicit    (durations in seconds)
+    0.00000002  <  0.00000003
+    0.00000002  =  0.00000002
+    0.00000002  =  0.00000002
+    0.00000002  =  0.00000002
+    0.00000002  <  0.00000003
+    0.00000002  =  0.00000002
+    0.00000002  <  0.00000003
+    0.00000002  <  0.00000002
+    0.00000002  =  0.00000002
+    0.00000002  <  0.00000003
+    ----------     ----------
+    0.00000020  <  0.00000024  (sum of durations)
+    0.00000002  =  0.00000002  (shortest durations)
+Ratio sum of durations implicit/noexcept: 1.20 (noexcept faster in 5 iterations)
+In this case, neither implicit nor noexcept specifications always appear faster.
+
+[Linux GCC][`throw` excluded][calls to a non-inline member function of an exported class (N = 200000000)]
+    noexcept       implicit    (durations in seconds)
+    0.41745230  >  0.41157965
+    0.41255936  <  0.41664516
+    0.41472068  >  0.41267556
+    0.41666507  >  0.41325618
+    0.41387496  >  0.41324322
+    0.41401442  >  0.41148995
+    0.41597704  >  0.41273538
+    0.41322549  >  0.41246172
+    0.41447478  >  0.41269696
+    0.41498795  >  0.41126275
+    ----------     ----------
+    4.14795205  >  4.12804653  (sum of durations)
+    0.41255936  >  0.41126275  (shortest durations)
+Ratio sum of durations implicit/noexcept: 1.00 (implicit faster in 9 iterations)
+In this case, neither implicit nor noexcept specifications always appear faster.
+
+[Linux GCC][`throw` excluded][exported library function calls (N = 200000000)]
+    noexcept       implicit    (durations in seconds)
+    0.42623743  <  0.43403977
+    0.41835613  <  0.42048089
+    0.43600887  >  0.41868221
+    0.41342161  <  0.41521454
+    0.41582445  >  0.41362212
+    0.41598736  >  0.41247868
+    0.41454576  >  0.41300225
+    0.41217096  <  0.41255300
+    0.41379873  <  0.41440149
+    0.41460129  >  0.41235446
+    ----------     ----------
+    4.18095259  >  4.16682940  (sum of durations)
+    0.41217096  <  0.41235446  (shortest durations)
+Ratio sum of durations implicit/noexcept: 1.00
+In this case, neither implicit nor noexcept specifications always appear faster.
+
+[Linux GCC][`throw` excluded][catching function calls (N = 10000)]
+    noexcept       implicit    (durations in seconds)
+    0.00003172  <  0.00016708
+    0.00002483  <  0.00003759
+    0.00002495  <  0.00003715
+    0.00002509  <  0.00005024
+    0.00002524  <  0.00004994
+    0.00002510  <  0.00005873
+    0.00002510  <  0.00003717
+    0.00002509  <  0.00004218
+    0.00002521  <  0.00003718
+    0.00002509  <  0.00004447
+    ----------     ----------
+    0.00025740  <  0.00056174  (sum of durations)
+    0.00002483  <  0.00003715  (shortest durations)
+Ratio sum of durations implicit/noexcept: 2.18 (noexcept faster in 10 iterations)
+In this case, 'noexcept' specifications always appear faster.
+
+[Linux GCC][`throw` excluded][inc `++` and dec `--` (N = 2147483647)]
+    noexcept       implicit    (durations in seconds)
+    0.24626961  <  0.24957909
+    0.24803570  <  0.25002544
+    0.24898807  <  0.24925559
+    0.24566594  >  0.24520924
+    0.24619433  <  0.24801969
+    0.24695626  <  0.24742261
+    0.24926651  >  0.24671616
+    0.24828261  <  0.24837455
+    0.24719435  <  0.24867254
+    0.24615184  <  0.24898303
+    ----------     ----------
+    2.47300522  <  2.48225796  (sum of durations)
+    0.24566594  >  0.24520924  (shortest durations)
+Ratio sum of durations implicit/noexcept: 1.00 (noexcept faster in 8 iterations)
+In this case, neither implicit nor noexcept specifications always appear faster.
+
+[Linux GCC][`throw` excluded][recursive stack unwinding (N = 10000)]
+    noexcept       implicit    (durations in seconds)
+    0.00004517  >  0.00000762
+    0.00000766  >  0.00000724
+    0.00000791  >  0.00000726
+    0.00000757  >  0.00000725
+    0.00000781  >  0.00000724
+    0.00000795  >  0.00000724
+    0.00000787  >  0.00000724
+    0.00000785  >  0.00000725
+    0.00000777  >  0.00000724
+    0.00000772  >  0.00000723
+    ----------     ----------
+    0.00011528  >  0.00007285  (sum of durations)
+    0.00000757  >  0.00000723  (shortest durations)
+Ratio sum of durations implicit/noexcept: 0.63 (implicit faster in 10 iterations)
+In this case, implicit exception specifications always appear faster.
+
+[Linux GCC][`throw` excluded][stack unwinding array (N = 1000000)]
+    noexcept       implicit    (durations in seconds)
+    0.00024960  >  0.00024928
+    0.00023861  >  0.00023860
+    0.00023959  <  0.00024001
+    0.00024000  =  0.00024000
+    0.00025401  >  0.00024002
+    0.00024000  >  0.00024000
+    0.00023916  >  0.00023856
+    0.00023856  <  0.00023856
+    0.00023856  <  0.00023857
+    0.00023857  >  0.00023857
+    ----------     ----------
+    0.00241667  >  0.00240217  (sum of durations)
+    0.00023856  <  0.00023856  (shortest durations)
+Ratio sum of durations implicit/noexcept: 0.99 (implicit faster in 6 iterations)
+In this case, neither implicit nor noexcept specifications always appear faster.
+
+[Linux GCC][`throw` excluded][explicitly terminate on any exception (N = 2147483647)]
+    noexcept       implicit    (durations in seconds)
+    0.26377149  >  0.24976093
+    0.24942643  >  0.24533620
+    0.24730473  <  0.24741508
+    0.24767806  >  0.24650831
+    0.24978188  >  0.24727483
+    0.24854034  >  0.24399585
+    0.25039826  >  0.24878515
+    0.24753451  >  0.24730954
+    0.25023735  >  0.24860792
+    0.24722484  <  0.24776985
+    ----------     ----------
+    2.50189789  >  2.47276366  (sum of durations)
+    0.24722484  >  0.24399585  (shortest durations)
+Ratio sum of durations implicit/noexcept: 0.99 (implicit faster in 8 iterations)
+In this case, neither implicit nor noexcept specifications always appear faster.
+
+[Linux GCC][`throw` excluded][explicitly terminate versus noexcept (N = 2147483647)]
+    noexcept       implicit    (durations in seconds)
+    0.25037820  >  0.24897012
+    0.24700341  >  0.24573971
+    0.25020823  >  0.24755203
+    0.24760338  >  0.24607451
+    0.24706266  >  0.24697992
+    0.24716248  >  0.24526423
+    0.25939233  >  0.25144881
+    0.26147772  >  0.24861847
+    0.24878567  <  0.24941624
+    0.24631637  <  0.24784055
+    ----------     ----------
+    2.50539044  >  2.47790459  (sum of durations)
+    0.24631637  >  0.24526423  (shortest durations)
+Ratio sum of durations implicit/noexcept: 0.99 (implicit faster in 8 iterations)
+In this case, neither implicit nor noexcept specifications always appear faster.
+
+[Linux GCC][`throw` excluded][std::vector<my_string> reserve (N = 10000000)]
+    noexcept       implicit    (durations in seconds)
+    0.03643273  <  0.43561075
+    0.00994045  <  0.36397455
+    0.01015903  <  0.35151929
+    0.00988976  <  0.40336470
+    0.01442458  <  0.42645943
+    0.00976622  <  0.40055240
+    0.00993001  <  0.35233618
+    0.00964497  <  0.40705167
+    0.01017490  <  0.35365727
+    0.00949082  <  0.39351784
+    ----------     ----------
+    0.12985347  <  3.88804408  (sum of durations)
+    0.00949082  <  0.35151929  (shortest durations)
+Ratio sum of durations implicit/noexcept: 29.94 (noexcept faster in 10 iterations)
+In this case, 'noexcept' specifications always appear faster.
+================================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+The noexcept benchmark from https://github.com/N-Dekker/noexcept_benchmark
+__FILE__ = /home/caturra/projects/noexcept_benchmark/noexcept_benchmark_main.cpp
+sizeof(void*) = 8 (64-bit)
+__DATE__ = Dec  8 2023
+__TIME__ = 03:08:43
+__VERSION__ = Ubuntu Clang 15.0.7
+NDEBUG ("Not Debug")
+NOEXCEPT_BENCHMARK_NUMBER_OF_ITERATIONS = 10
+NOEXCEPT_BENCHMARK_THROW_EXCEPTION = 1 (`throw exception{}` included by #if)
+
+[Linux Clang][`throw` included][inline function calls, passing literal `false` as argument (N = 2147483647)]
+    noexcept       implicit    (durations in seconds)
+    0.00000006  >  0.00000003
+    0.00000003  >  0.00000002
+    0.00000002  <  0.00000003
+    0.00000003  >  0.00000002
+    0.00000003  >  0.00000002
+    0.00000003  >  0.00000002
+    0.00000002  =  0.00000002
+    0.00000003  >  0.00000002
+    0.00000002  <  0.00000003
+    0.00000002  <  0.00000003
+    ----------     ----------
+    0.00000029  >  0.00000024  (sum of durations)
+    0.00000002  =  0.00000002  (shortest durations)
+Ratio sum of durations implicit/noexcept: 0.82 (implicit faster in 6 iterations)
+In this case, neither implicit nor noexcept specifications always appear faster.
+
+[Linux Clang][`throw` included][inline function calls, passing a volatile false argument (N = 2147483647)]
+    noexcept       implicit    (durations in seconds)
+    0.31113411  <  0.36906510
+    0.36508446  <  0.36885470
+    0.30765254  <  0.36990632
+    0.30899246  <  0.36826945
+    0.30808818  <  0.36961511
+    0.31374891  <  0.37142789
+    0.31141496  <  0.37002480
+    0.30883301  <  0.36732502
+    0.30769483  <  0.36852197
+    0.30817572  <  0.37493544
+    ----------     ----------
+    3.15081918  <  3.69794581  (sum of durations)
+    0.30765254  <  0.36732502  (shortest durations)
+Ratio sum of durations implicit/noexcept: 1.17 (noexcept faster in 10 iterations)
+In this case, 'noexcept' specifications always appear faster.
+
+[Linux Clang][`throw` included][calls to an inline member function of an exported class (N = 200000000)]
+    noexcept       implicit    (durations in seconds)
+    0.00000004  >  0.00000002
+    0.00000002  =  0.00000002
+    0.00000002  =  0.00000002
+    0.00000002  =  0.00000002
+    0.00000002  =  0.00000002
+    0.00000002  =  0.00000002
+    0.00000002  =  0.00000002
+    0.00000002  =  0.00000002
+    0.00000002  <  0.00000003
+    0.00000002  =  0.00000002
+    ----------     ----------
+    0.00000022  >  0.00000021  (sum of durations)
+    0.00000002  =  0.00000002  (shortest durations)
+Ratio sum of durations implicit/noexcept: 0.96
+In this case, neither implicit nor noexcept specifications always appear faster.
+
+[Linux Clang][`throw` included][calls to a non-inline member function of an exported class (N = 200000000)]
+    noexcept       implicit    (durations in seconds)
+    0.41042261  >  0.40928060
+    0.41247335  >  0.41244065
+    0.41243764  >  0.41003413
+    0.41236468  >  0.40988494
+    0.41163505  <  0.41200423
+    0.41244107  >  0.41040679
+    0.41212385  >  0.41041869
+    0.41015726  >  0.40972069
+    0.41201077  <  0.41214423
+    0.41429967  >  0.40964731
+    ----------     ----------
+    4.12036594  >  4.10598226  (sum of durations)
+    0.41015726  >  0.40928060  (shortest durations)
+Ratio sum of durations implicit/noexcept: 1.00 (implicit faster in 8 iterations)
+In this case, neither implicit nor noexcept specifications always appear faster.
+
+[Linux Clang][`throw` included][exported library function calls (N = 200000000)]
+    noexcept       implicit    (durations in seconds)
+    0.45733817  >  0.45612536
+    0.45587076  <  0.45910738
+    0.45832745  >  0.45500619
+    0.45712549  >  0.45663892
+    0.45644287  >  0.45587368
+    0.45853847  >  0.45591562
+    0.45719720  >  0.45397698
+    0.45879992  >  0.45594721
+    0.45946742  >  0.45547722
+    0.45844393  >  0.45524299
+    ----------     ----------
+    4.57755167  >  4.55931154  (sum of durations)
+    0.45587076  >  0.45397698  (shortest durations)
+Ratio sum of durations implicit/noexcept: 1.00 (implicit faster in 9 iterations)
+In this case, neither implicit nor noexcept specifications always appear faster.
+
+[Linux Clang][`throw` included][catching function calls (N = 10000)]
+    noexcept       implicit    (durations in seconds)
+    0.00003501  <  0.00014782
+    0.00002704  <  0.00003227
+    0.00002734  <  0.00003228
+    0.00002733  <  0.00003224
+    0.00002735  <  0.00004702
+    0.00002736  <  0.00004721
+    0.00002736  <  0.00004764
+    0.00002735  <  0.00003794
+    0.00002736  <  0.00003960
+    0.00002735  <  0.00003333
+    ----------     ----------
+    0.00028086  <  0.00049736  (sum of durations)
+    0.00002704  <  0.00003224  (shortest durations)
+Ratio sum of durations implicit/noexcept: 1.77 (noexcept faster in 10 iterations)
+In this case, 'noexcept' specifications always appear faster.
+
+[Linux Clang][`throw` included][inc `++` and dec `--` (N = 2147483647)]
+    noexcept       implicit    (durations in seconds)
+    0.30935620  <  0.31067618
+    0.30787820  <  0.30852192
+    0.31033168  >  0.30912142
+    0.30782921  >  0.30737051
+    0.31009292  >  0.30875094
+    0.30978739  <  0.31159612
+    0.31098542  <  0.31208799
+    0.31086382  >  0.30768587
+    0.30969948  >  0.30807051
+    0.31189087  >  0.30696418
+    ----------     ----------
+    3.09871521  >  3.09084565  (sum of durations)
+    0.30782921  >  0.30696418  (shortest durations)
+Ratio sum of durations implicit/noexcept: 1.00 (implicit faster in 6 iterations)
+In this case, neither implicit nor noexcept specifications always appear faster.
+
+[Linux Clang][`throw` included][recursive stack unwinding (N = 10000)]
+    noexcept       implicit    (durations in seconds)
+    0.00005112  >  0.00001155
+    0.00001145  >  0.00001135
+    0.00001132  <  0.00001133
+    0.00001132  <  0.00001134
+    0.00001135  >  0.00001134
+    0.00001132  <  0.00001135
+    0.00001132  <  0.00001135
+    0.00001134  >  0.00001133
+    0.00001136  <  0.00001143
+    0.00001164  <  0.00001167
+    ----------     ----------
+    0.00015355  >  0.00011406  (sum of durations)
+    0.00001132  <  0.00001133  (shortest durations)
+Ratio sum of durations implicit/noexcept: 0.74 (noexcept faster in 6 iterations)
+In this case, neither implicit nor noexcept specifications always appear faster.
+
+[Linux Clang][`throw` included][stack unwinding array (N = 1000000)]
+    noexcept       implicit    (durations in seconds)
+    0.00115842  >  0.00114868
+    0.00116699  <  0.00116914
+    0.00116541  >  0.00115640
+    0.00115164  <  0.00117840
+    0.00115201  >  0.00114591
+    0.00115480  >  0.00115368
+    0.00115251  >  0.00114898
+    0.00115491  >  0.00114504
+    0.00114508  >  0.00114504
+    0.00114505  <  0.00119357
+    ----------     ----------
+    0.01154682  <  0.01158485  (sum of durations)
+    0.00114505  >  0.00114504  (shortest durations)
+Ratio sum of durations implicit/noexcept: 1.00 (implicit faster in 7 iterations)
+In this case, neither implicit nor noexcept specifications always appear faster.
+
+[Linux Clang][`throw` included][explicitly terminate on any exception (N = 2147483647)]
+    noexcept       implicit    (durations in seconds)
+    0.30934660  <  0.31240887
+    0.30790794  >  0.30589200
+    0.30760522  >  0.30615079
+    0.30987140  <  0.30998697
+    0.30862612  <  0.30884925
+    0.30964460  >  0.30816784
+    0.30933298  >  0.30902713
+    0.30751607  <  0.30760275
+    0.30836559  >  0.30686627
+    0.30825292  >  0.30589376
+    ----------     ----------
+    3.08646944  >  3.08084563  (sum of durations)
+    0.30751607  >  0.30589200  (shortest durations)
+Ratio sum of durations implicit/noexcept: 1.00 (implicit faster in 6 iterations)
+In this case, neither implicit nor noexcept specifications always appear faster.
+
+[Linux Clang][`throw` included][explicitly terminate versus noexcept (N = 2147483647)]
+    noexcept       implicit    (durations in seconds)
+    0.31462123  >  0.30927901
+    0.31212471  >  0.30731062
+    0.30938603  <  0.32501648
+    0.30883091  >  0.30869803
+    0.31008788  <  0.31066067
+    0.31112721  >  0.30747168
+    0.31043745  >  0.31022665
+    0.30934734  >  0.30823100
+    0.30864652  >  0.30759319
+    0.31018225  >  0.30853529
+    ----------     ----------
+    3.10479153  >  3.10302261  (sum of durations)
+    0.30864652  >  0.30731062  (shortest durations)
+Ratio sum of durations implicit/noexcept: 1.00 (implicit faster in 8 iterations)
+In this case, neither implicit nor noexcept specifications always appear faster.
+
+[Linux Clang][`throw` included][std::vector<my_string> reserve (N = 10000000)]
+    noexcept       implicit    (durations in seconds)
+    0.02736078  <  0.41247897
+    0.01484843  <  0.35408193
+    0.01482075  <  0.39658124
+    0.01509703  <  0.35374338
+    0.01845292  <  0.40881746
+    0.01919946  <  0.35836980
+    0.01539757  <  0.37978786
+    0.02156820  <  0.35437471
+    0.01514083  <  0.35286729
+    0.01985432  <  0.36111081
+    ----------     ----------
+    0.18174028  <  3.73221346  (sum of durations)
+    0.01482075  <  0.35286729  (shortest durations)
+Ratio sum of durations implicit/noexcept: 20.54 (noexcept faster in 10 iterations)
+In this case, 'noexcept' specifications always appear faster.
+================================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+The noexcept benchmark from https://github.com/N-Dekker/noexcept_benchmark
+__FILE__ = /home/caturra/projects/noexcept_benchmark/noexcept_benchmark_main.cpp
+sizeof(void*) = 8 (64-bit)
+__DATE__ = Dec  8 2023
+__TIME__ = 03:35:39
+__VERSION__ = Ubuntu Clang 15.0.7
+NDEBUG ("Not Debug")
+NOEXCEPT_BENCHMARK_NUMBER_OF_ITERATIONS = 10
+NOEXCEPT_BENCHMARK_THROW_EXCEPTION = 0 (`throw exception{}` excluded by #if)
+
+[Linux Clang][`throw` excluded][inline function calls, passing literal `false` as argument (N = 2147483647)]
+    noexcept       implicit    (durations in seconds)
+    0.00000006  >  0.00000002
+    0.00000002  =  0.00000002
+    0.00000003  >  0.00000002
+    0.00000003  >  0.00000002
+    0.00000002  =  0.00000002
+    0.00000002  <  0.00000003
+    0.00000002  <  0.00000003
+    0.00000002  =  0.00000002
+    0.00000003  >  0.00000002
+    0.00000003  >  0.00000002
+    ----------     ----------
+    0.00000028  >  0.00000022  (sum of durations)
+    0.00000002  =  0.00000002  (shortest durations)
+Ratio sum of durations implicit/noexcept: 0.79 (implicit faster in 5 iterations)
+In this case, neither implicit nor noexcept specifications always appear faster.
+
+[Linux Clang][`throw` excluded][inline function calls, passing a volatile false argument (N = 2147483647)]
+    noexcept       implicit    (durations in seconds)
+    0.16674942  >  0.16494748
+    0.16518768  <  0.16790592
+    0.16555626  >  0.16447374
+    0.16691127  >  0.16258192
+    0.16913415  >  0.16676184
+    0.16691406  >  0.16542812
+    0.16534756  <  0.16767327
+    0.16620983  >  0.16504093
+    0.16515718  >  0.16420304
+    0.16589157  >  0.16470550
+    ----------     ----------
+    1.66305897  >  1.65372175  (sum of durations)
+    0.16515718  >  0.16258192  (shortest durations)
+Ratio sum of durations implicit/noexcept: 0.99 (implicit faster in 8 iterations)
+In this case, neither implicit nor noexcept specifications always appear faster.
+
+[Linux Clang][`throw` excluded][calls to an inline member function of an exported class (N = 200000000)]
+    noexcept       implicit    (durations in seconds)
+    0.00000002  =  0.00000002
+    0.00000002  =  0.00000002
+    0.00000002  =  0.00000002
+    0.00000002  =  0.00000002
+    0.00000002  =  0.00000002
+    0.00000002  =  0.00000002
+    0.00000002  =  0.00000002
+    0.00000002  =  0.00000002
+    0.00000002  =  0.00000002
+    0.00000002  =  0.00000002
+    ----------     ----------
+    0.00000020  =  0.00000020  (sum of durations)
+    0.00000002  =  0.00000002  (shortest durations)
+Ratio sum of durations implicit/noexcept: 1.00
+In this case, neither implicit nor noexcept specifications always appear faster.
+
+[Linux Clang][`throw` excluded][calls to a non-inline member function of an exported class (N = 200000000)]
+    noexcept       implicit    (durations in seconds)
+    0.42103834  >  0.41191545
+    0.41377667  <  0.41385277
+    0.42091957  >  0.41426005
+    0.41181278  >  0.41120221
+    0.41452732  <  0.41769306
+    0.41804152  >  0.41298185
+    0.41346197  >  0.41329554
+    0.41523575  >  0.41309584
+    0.41095028  <  0.41328097
+    0.41552189  >  0.41506243
+    ----------     ----------
+    4.15528609  >  4.13664017  (sum of durations)
+    0.41095028  <  0.41120221  (shortest durations)
+Ratio sum of durations implicit/noexcept: 1.00 (implicit faster in 7 iterations)
+In this case, neither implicit nor noexcept specifications always appear faster.
+
+[Linux Clang][`throw` excluded][exported library function calls (N = 200000000)]
+    noexcept       implicit    (durations in seconds)
+    0.41476468  >  0.41246534
+    0.43446764  >  0.41357133
+    0.42233024  >  0.41573122
+    0.41213769  <  0.41217274
+    0.41272277  <  0.41466673
+    0.41450103  >  0.41354890
+    0.41756406  >  0.41337189
+    0.41591011  >  0.41220373
+    0.41449239  >  0.41377852
+    0.41483831  >  0.41316458
+    ----------     ----------
+    4.17372892  >  4.13467500  (sum of durations)
+    0.41213769  <  0.41217274  (shortest durations)
+Ratio sum of durations implicit/noexcept: 0.99 (implicit faster in 8 iterations)
+In this case, neither implicit nor noexcept specifications always appear faster.
+
+[Linux Clang][`throw` excluded][catching function calls (N = 10000)]
+    noexcept       implicit    (durations in seconds)
+    0.00003248  <  0.00012354
+    0.00002751  <  0.00006287
+    0.00002753  <  0.00004826
+    0.00002751  <  0.00004423
+    0.00002751  <  0.00004762
+    0.00002751  <  0.00004329
+    0.00002752  <  0.00004745
+    0.00002751  <  0.00004169
+    0.00002751  <  0.00003474
+    0.00002767  <  0.00003635
+    ----------     ----------
+    0.00028028  <  0.00053003  (sum of durations)
+    0.00002751  <  0.00003474  (shortest durations)
+Ratio sum of durations implicit/noexcept: 1.89 (noexcept faster in 10 iterations)
+In this case, 'noexcept' specifications always appear faster.
+
+[Linux Clang][`throw` excluded][inc `++` and dec `--` (N = 2147483647)]
+    noexcept       implicit    (durations in seconds)
+    0.17268797  >  0.17113004
+    0.17243167  >  0.16984726
+    0.17299274  >  0.16903371
+    0.17731502  >  0.17469965
+    0.17472554  >  0.16922120
+    0.17622013  >  0.17190748
+    0.17236017  >  0.16825125
+    0.17822544  >  0.16841116
+    0.17665136  >  0.17511584
+    0.17014481  >  0.16607474
+    ----------     ----------
+    1.74375486  >  1.70369233  (sum of durations)
+    0.17014481  >  0.16607474  (shortest durations)
+Ratio sum of durations implicit/noexcept: 0.98 (implicit faster in 10 iterations)
+In this case, implicit exception specifications always appear faster.
+
+[Linux Clang][`throw` excluded][recursive stack unwinding (N = 10000)]
+    noexcept       implicit    (durations in seconds)
+    0.00008930  >  0.00001155
+    0.00001145  >  0.00001142
+    0.00001151  >  0.00001142
+    0.00001142  <  0.00001144
+    0.00001142  <  0.00001144
+    0.00001135  <  0.00001154
+    0.00001142  <  0.00001143
+    0.00001141  <  0.00001144
+    0.00001140  <  0.00001143
+    0.00001152  <  0.00001202
+    ----------     ----------
+    0.00019221  >  0.00011515  (sum of durations)
+    0.00001135  <  0.00001142  (shortest durations)
+Ratio sum of durations implicit/noexcept: 0.60 (noexcept faster in 7 iterations)
+In this case, neither implicit nor noexcept specifications always appear faster.
+
+[Linux Clang][`throw` excluded][stack unwinding array (N = 1000000)]
+    noexcept       implicit    (durations in seconds)
+    0.00023716  =  0.00023716
+    0.00023717  <  0.00024536
+    0.00023717  >  0.00023714
+    0.00023824  <  0.00023855
+    0.00023857  =  0.00023857
+    0.00023856  <  0.00023857
+    0.00023857  >  0.00023806
+    0.00023717  >  0.00023715
+    0.00023716  >  0.00023714
+    0.00023716  <  0.00024115
+    ----------     ----------
+    0.00237694  <  0.00238886  (sum of durations)
+    0.00023716  >  0.00023714  (shortest durations)
+Ratio sum of durations implicit/noexcept: 1.01
+In this case, neither implicit nor noexcept specifications always appear faster.
+
+[Linux Clang][`throw` excluded][explicitly terminate on any exception (N = 2147483647)]
+    noexcept       implicit    (durations in seconds)
+    0.18784417  <  0.19093272
+    0.18720961  >  0.18622269
+    0.18560502  >  0.18357318
+    0.18825584  >  0.18451594
+    0.18873134  >  0.18463757
+    0.18592565  >  0.18515007
+    0.18855607  >  0.18551063
+    0.18595675  >  0.18570344
+    0.18823098  >  0.18619627
+    0.18607081  <  0.18747043
+    ----------     ----------
+    1.87238624  >  1.85991293  (sum of durations)
+    0.18560502  >  0.18357318  (shortest durations)
+Ratio sum of durations implicit/noexcept: 0.99 (implicit faster in 8 iterations)
+In this case, neither implicit nor noexcept specifications always appear faster.
+
+[Linux Clang][`throw` excluded][explicitly terminate versus noexcept (N = 2147483647)]
+    noexcept       implicit    (durations in seconds)
+    0.18673821  >  0.18562134
+    0.18629023  <  0.18734866
+    0.18725310  >  0.18530725
+    0.18595058  >  0.18534489
+    0.18655444  >  0.18478622
+    0.18632906  >  0.18530563
+    0.18696117  >  0.18564230
+    0.18974798  >  0.18534376
+    0.18670656  <  0.18734131
+    0.18969221  >  0.18487379
+    ----------     ----------
+    1.87222352  >  1.85691515  (sum of durations)
+    0.18595058  >  0.18478622  (shortest durations)
+Ratio sum of durations implicit/noexcept: 0.99 (implicit faster in 8 iterations)
+In this case, neither implicit nor noexcept specifications always appear faster.
+
+[Linux Clang][`throw` excluded][std::vector<my_string> reserve (N = 10000000)]
+    noexcept       implicit    (durations in seconds)
+    0.02067143  <  0.37267704
+    0.01526160  <  0.34737028
+    0.01507115  <  0.36721198
+    0.01525146  <  0.41589663
+    0.01526583  <  0.40475678
+    0.01505069  <  0.41725527
+    0.01478749  <  0.42349072
+    0.01537567  <  0.40178753
+    0.01572010  <  0.41516722
+    0.01545113  <  0.36056914
+    ----------     ----------
+    0.15790657  <  3.92618259  (sum of durations)
+    0.01478749  <  0.34737028  (shortest durations)
+Ratio sum of durations implicit/noexcept: 24.86 (noexcept faster in 10 iterations)
 In this case, 'noexcept' specifications always appear faster.
 ================================================================================
