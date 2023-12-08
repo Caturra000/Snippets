@@ -1,0 +1,27 @@
+使用汇编的方式测量系统调用开销
+分别试了传统的int 0x80和正经的syscall
+
+测试方法与../syscall.cpp一样，就是填入非法fd的write(-1, ...)使得系统调用立刻返回
+需要注意系统调用号别填错了，两种方式不一样
+
+====================================================
+
+$ gcc -c int0x80.s
+$ ld -e _start int0x80.o -o int0x80
+
+$ time ./int0x80
+
+real    0m14.467s
+user    0m6.303s
+sys     0m8.163s
+
+====================================================
+
+$ gcc -c syscall.s
+$ ld -e _start syscall.o -o syscall
+
+$ time ./syscall
+
+real    0m4.402s
+user    0m1.561s
+sys     0m2.841s
