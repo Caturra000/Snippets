@@ -1,5 +1,6 @@
 使用汇编的方式测量系统调用开销
 分别试了传统的int 0x80和正经的syscall
+另外加了none，表示除了int/syscall指令以外的开销统计
 
 测试方法与../syscall.cpp一样，就是填入非法fd的write(-1, ...)使得系统调用立刻返回
 需要注意系统调用号别填错了，两种方式不一样
@@ -25,3 +26,14 @@ $ time ./syscall
 real    0m4.402s
 user    0m1.561s
 sys     0m2.841s
+
+====================================================
+
+$ gcc -c none.s
+$ ld -e _start none.o -o none
+
+$ time ./none
+
+real    0m0.031s
+user    0m0.030s
+sys     0m0.000s
