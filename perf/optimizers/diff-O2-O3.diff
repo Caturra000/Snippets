@@ -1,0 +1,60 @@
+55c55
+<   -fgcse-after-reload         		[disabled]
+---
+>   -fgcse-after-reload         		[enabled]
+74c74
+<   -fipa-cp-clone              		[disabled]
+---
+>   -fipa-cp-clone              		[enabled]
+105c105
+<   -floop-interchange          		[disabled]
+---
+>   -floop-interchange          		[enabled]
+108c108
+<   -floop-unroll-and-jam       		[disabled]
+---
+>   -floop-unroll-and-jam       		[enabled]
+124c124
+<   -fpeel-loops                		[disabled]
+---
+>   -fpeel-loops                		[enabled]
+128c128
+<   -fpredictive-commoning      		[disabled]
+---
+>   -fpredictive-commoning      		[enabled]
+180,181c180,181
+<   -fsplit-loops               		[disabled]
+<   -fsplit-paths               		[disabled]
+---
+>   -fsplit-loops               		[enabled]
+>   -fsplit-paths               		[enabled]
+217c217
+<   -ftree-loop-distribution    		[disabled]
+---
+>   -ftree-loop-distribution    		[enabled]
+222c222
+<   -ftree-loop-vectorize       		[disabled]
+---
+>   -ftree-loop-vectorize       		[enabled]
+225c225
+<   -ftree-partial-pre          		[disabled]
+---
+>   -ftree-partial-pre          		[enabled]
+232c232
+<   -ftree-slp-vectorize        		[disabled]
+---
+>   -ftree-slp-vectorize        		[enabled]
+242c242
+<   -funroll-completely-grow-size 	[disabled]
+---
+>   -funroll-completely-grow-size 	[enabled]
+245c245
+<   -funswitch-loops            		[disabled]
+---
+>   -funswitch-loops            		[enabled]
+252,253c252,253
+<   -fvect-cost-model=[unlimited|dynamic|cheap|very-cheap] 	cheap
+<   -fversion-loops-for-strides 		[disabled]
+---
+>   -fvect-cost-model=[unlimited|dynamic|cheap|very-cheap] 	dynamic
+>   -fversion-loops-for-strides 		[enabled]
