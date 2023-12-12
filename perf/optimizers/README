@@ -30,3 +30,154 @@ TL;DR: 可以用gcc -c -Q -O3 --help=optimizers来查看具体使用了什么优
                    gcc -c -Q -O3 --help=optimizers > /tmp/O3-opts
                    gcc -c -Q -O2 --help=optimizers > /tmp/O2-opts
                    diff /tmp/O2-opts /tmp/O3-opts | grep enabled
+
+
+
+
+========================================================================
+NOTE: 补充man文档里直接说明的部分
+
+
+       -O
+       -O1 Optimize.  Optimizing compilation takes somewhat more time,
+           and a lot more memory for a large function.
+
+           With -O, the compiler tries to reduce code size and execution
+           time, without performing any optimizations that take a great
+           deal of compilation time.
+
+           -O turns on the following optimization flags:
+
+           -fauto-inc-dec -fbranch-count-reg -fcombine-stack-adjustments
+           -fcompare-elim -fcprop-registers -fdce -fdefer-pop
+           -fdelayed-branch -fdse -fforward-propagate
+           -fguess-branch-probability -fif-conversion -fif-conversion2
+           -finline-functions-called-once -fipa-profile -fipa-pure-const
+           -fipa-reference -fipa-reference-addressable -fmerge-constants
+           -fmove-loop-invariants -fomit-frame-pointer -freorder-blocks
+           -fshrink-wrap -fshrink-wrap-separate -fsplit-wide-types
+           -fssa-backprop -fssa-phiopt -ftree-bit-ccp -ftree-ccp
+           -ftree-ch -ftree-coalesce-vars -ftree-copy-prop -ftree-dce
+           -ftree-dominator-opts -ftree-dse -ftree-forwprop -ftree-fre
+           -ftree-phiprop -ftree-pta -ftree-scev-cprop -ftree-sink
+           -ftree-slsr -ftree-sra -ftree-ter -funit-at-a-time
+
+       -O2 Optimize even more.  GCC performs nearly all supported
+           optimizations that do not involve a space-speed tradeoff.  As
+           compared to -O, this option increases both compilation time
+           and the performance of the generated code.
+
+           -O2 turns on all optimization flags specified by -O.  It also
+           turns on the following optimization flags:
+
+           -falign-functions  -falign-jumps -falign-labels
+           -falign-loops -fcaller-saves -fcode-hoisting -fcrossjumping
+           -fcse-follow-jumps  -fcse-skip-blocks
+           -fdelete-null-pointer-checks -fdevirtualize
+           -fdevirtualize-speculatively -fexpensive-optimizations -fgcse
+           -fgcse-lm -fhoist-adjacent-loads -finline-small-functions
+           -findirect-inlining -fipa-bit-cp  -fipa-cp  -fipa-icf
+           -fipa-ra  -fipa-sra  -fipa-vrp
+           -fisolate-erroneous-paths-dereference -flra-remat
+           -foptimize-sibling-calls -foptimize-strlen -fpartial-inlining
+           -fpeephole2 -freorder-blocks-algorithm=stc
+           -freorder-blocks-and-partition  -freorder-functions
+           -frerun-cse-after-loop -fschedule-insns  -fschedule-insns2
+           -fsched-interblock  -fsched-spec -fstore-merging
+           -fstrict-aliasing -fthread-jumps -ftree-builtin-call-dce
+           -ftree-pre -ftree-switch-conversion  -ftree-tail-merge
+           -ftree-vrp
+
+           Please note the warning under -fgcse about invoking -O2 on
+           programs that use computed gotos.
+
+       -O3 Optimize yet more.  -O3 turns on all optimizations specified
+           by -O2 and also turns on the following optimization flags:
+
+           -fgcse-after-reload -finline-functions -fipa-cp-clone
+           -floop-interchange -floop-unroll-and-jam -fpeel-loops
+           -fpredictive-commoning -fsplit-paths
+           -ftree-loop-distribute-patterns -ftree-loop-distribution
+           -ftree-loop-vectorize -ftree-partial-pre -ftree-slp-vectorize
+           -funswitch-loops -fvect-cost-model
+           -fversion-loops-for-strides
+
+       -O0 Reduce compilation time and make debugging produce the
+           expected results.  This is the default.
+
+       -Os Optimize for size.  -Os enables all -O2 optimizations except
+           those that often increase code size:
+
+           -falign-functions  -falign-jumps -falign-labels
+           -falign-loops -fprefetch-loop-arrays
+           -freorder-blocks-algorithm=stc
+
+           It also enables -finline-functions, causes the compiler to
+           tune for code size rather than execution speed, and performs
+           further optimizations designed to reduce code size.
+
+       -Ofast
+           Disregard strict standards compliance.  -Ofast enables all
+           -O3 optimizations.  It also enables optimizations that are
+           not valid for all standard-compliant programs.  It turns on
+           -ffast-math and the Fortran-specific -fstack-arrays, unless
+           -fmax-stack-var-size is specified, and -fno-protect-parens.
+
+       -Og Optimize debugging experience.  -Og should be the
+           optimization level of choice for the standard edit-compile-
+           debug cycle, offering a reasonable level of optimization
+           while maintaining fast compilation and a good debugging
+           experience.  It is a better choice than -O0 for producing
+           debuggable code because some compiler passes that collect
+           debug information are disabled at -O0.
+
+           Like -O0, -Og completely disables a number of optimization
+           passes so that individual options controlling them have no
+           effect.  Otherwise -Og enables all -O1 optimization flags
+           except for those that may interfere with debugging:
+
+           -fbranch-count-reg  -fdelayed-branch -fif-conversion
+           -fif-conversion2 -finline-functions-called-once
+           -fmove-loop-invariants  -fssa-phiopt -ftree-bit-ccp
+           -ftree-pta  -ftree-sra
+
+       If you use multiple -O options, with or without level numbers,
+       the last such option is the one that is effective.
+
+
+
+
+========================================================================
+NOTE: 再补充优化器与调试器的关联，简单来说调试使用-Og -g是最佳选择
+
+
+   Options for Debugging Your Program
+       To tell GCC to emit extra information for use by a debugger, in
+       almost all cases you need only to add -g to your other options.
+
+       GCC allows you to use -g with -O.  The shortcuts taken by
+       optimized code may occasionally be surprising: some variables you
+       declared may not exist at all; flow of control may briefly move
+       where you did not expect it; some statements may not be executed
+       because they compute constant results or their values are already
+       at hand; some statements may execute in different places because
+       they have been moved out of loops.  Nevertheless it is possible
+       to debug optimized output.  This makes it reasonable to use the
+       optimizer for programs that might have bugs.
+
+       If you are not using some other optimization option, consider
+       using -Og with -g.  With no -O option at all, some compiler
+       passes that collect information useful for debugging do not run
+       at all, so that -Og may result in a better debugging experience.
+
+       -g  Produce debugging information in the operating system's
+           native format (stabs, COFF, XCOFF, or DWARF).  GDB can work
+           with this debugging information.
+
+           On most systems that use stabs format, -g enables use of
+           extra debugging information that only GDB can use; this extra
+           information makes debugging work better in GDB but probably
+           makes other debuggers crash or refuse to read the program.
+           If you want to control for certain whether to generate the
+           extra information, use -gstabs+, -gstabs, -gxcoff+, -gxcoff,
+           or -gvms (see below).
