@@ -1,0 +1,32 @@
+节选自man gcc
+TL;DR: 可以用gcc -c -Q -O3 --help=optimizers来查看具体使用了什么优化选项
+
+
+           If the -Q option appears on the command line before the
+           --help= option, then the descriptive text displayed by
+           --help= is changed.  Instead of describing the displayed
+           options, an indication is given as to whether the option is
+           enabled, disabled or set to a specific value (assuming that
+           the compiler knows this at the point where the --help= option
+           is used).
+
+           Here is a truncated example from the ARM port of gcc:
+
+                     % gcc -Q -mabi=2 --help=target -c
+                     The following options are target specific:
+                     -mabi=                                2
+                     -mabort-on-noreturn                   [disabled]
+                     -mapcs                                [disabled]
+
+           The output is sensitive to the effects of previous command-
+           line options, so for example it is possible to find out which
+           optimizations are enabled at -O2 by using:
+
+                   -Q -O2 --help=optimizers
+
+           Alternatively you can discover which binary optimizations are
+           enabled by -O3 by using:
+
+                   gcc -c -Q -O3 --help=optimizers > /tmp/O3-opts
+                   gcc -c -Q -O2 --help=optimizers > /tmp/O2-opts
+                   diff /tmp/O2-opts /tmp/O3-opts | grep enabled
