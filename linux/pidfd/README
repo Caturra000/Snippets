@@ -1,0 +1,8 @@
+实现跨进程传递fd——使用更现代的pidfd系统调用
+不要再用sendmsg那种恶心操作了
+
+写了个简单的测试：
+需要2个终端，一个启动callee，另一个启动caller
+callee启动，提示pid给你，然后等待
+caller输入callee pid，然后会获取callee的标准输出对应fd，写一个字符串过去
+如果成功，显然是对面callee的终端有输出
