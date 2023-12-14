@@ -28,5 +28,7 @@ int main() {
 
     printf("Done.\n");
     syscall(SYS_pidfd_send_signal, pidfd, SIGINT, NULL, 0);
+    close(remote_fd);
+    close(pidfd);
     return 0;
 }
