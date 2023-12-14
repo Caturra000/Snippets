@@ -10,5 +10,5 @@ int main() {
         abort();
     }
     printf("Start: %d\n", pid);
-    while(1);
+    pause();
 }
