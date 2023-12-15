@@ -6,3 +6,5 @@
 callee启动，提示pid给你，然后等待
 caller输入callee pid，然后会获取callee的标准输出对应fd，写一个字符串过去
 如果成功，显然是对面callee的终端有输出
+
+链接: https://zhuanlan.zhihu.com/p/672314758
