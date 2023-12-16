@@ -8,15 +8,25 @@
 #include <source_location>
 #include <ranges>
 
-// print debug info
+// debug info
 constexpr bool debug = true;
 constexpr const char debug_prefix[] = "\033[34;1m";
 constexpr const char debug_suffix[] = "\033[0m";
 
-// custom points
+// customization points
 constexpr bool initial_suspend_never = false;
 constexpr bool final_suspend_never = true;
 constexpr bool yield_value_suspend_never = false;
+
+// helper function for CPs
+template <auto never>
+constexpr auto suspend_never_if_true() {
+    if constexpr (never) {
+        return std::suspend_never{};
+    } else {
+        return std::suspend_always{};
+    }
+}
 
 template <typename ...Args>
 void print_debug(Args &&...args) {
@@ -51,7 +61,6 @@ public:
         std::swap(*this, rhs);
         return *this;
     }
-    
 
     // user api
     T& next() {
@@ -83,20 +92,12 @@ struct generator<T>::promise_type {
 
 template <typename T>
 auto generator<T>::promise_type::initial_suspend() const {
-    if constexpr (initial_suspend_never) {
-        return std::suspend_never{};
-    } else {
-        return std::suspend_always{};
-    }
+    return suspend_never_if_true<initial_suspend_never>();
 }
 
 template <typename T>
 auto generator<T>::promise_type::final_suspend() const noexcept {
-    if constexpr (final_suspend_never) {
-        return std::suspend_never{};
-    } else {
-        return std::suspend_always{};
-    }
+    return suspend_never_if_true<final_suspend_never>();
 };
 
 template <typename T>
@@ -120,11 +121,7 @@ auto generator<T>::promise_type::yield_value(T arg) {
 
     result.emplace(std::move(arg));
 
-    if constexpr (yield_value_suspend_never) {
-        return std::suspend_never{};
-    } else {
-        return std::suspend_always{};
-    }
+    return suspend_never_if_true<yield_value_suspend_never>();
 }
 
 // C++ coroutines are special functions
