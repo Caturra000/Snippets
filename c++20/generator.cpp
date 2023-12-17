@@ -20,7 +20,7 @@ constexpr bool yield_value_suspend_never = false;
 
 // helper function for CPs
 template <auto never>
-constexpr auto suspend_never_if_true() {
+constexpr auto suspend_never_if() {
     if constexpr (never) {
         return std::suspend_never{};
     } else {
@@ -92,12 +92,12 @@ struct generator<T>::promise_type {
 
 template <typename T>
 auto generator<T>::promise_type::initial_suspend() const {
-    return suspend_never_if_true<initial_suspend_never>();
+    return suspend_never_if<initial_suspend_never>();
 }
 
 template <typename T>
 auto generator<T>::promise_type::final_suspend() const noexcept {
-    return suspend_never_if_true<final_suspend_never>();
+    return suspend_never_if<final_suspend_never>();
 };
 
 template <typename T>
@@ -121,7 +121,7 @@ auto generator<T>::promise_type::yield_value(T arg) {
 
     result.emplace(std::move(arg));
 
-    return suspend_never_if_true<yield_value_suspend_never>();
+    return suspend_never_if<yield_value_suspend_never>();
 }
 
 // C++ coroutines are special functions
