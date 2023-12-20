@@ -45,6 +45,11 @@ private:
 
 template <typename T>
 struct My_generator<T>::promise_type {
+#ifdef __INTELLISENSE__
+    // make IntelliSense happy
+    promise_type() = default;
+#endif
+
     explicit constexpr
       promise_type(size_t count) noexcept(noexcept(T())): count(count) {}
     auto initial_suspend() noexcept { return std::suspend_always{}; }
