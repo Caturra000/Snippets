@@ -7,27 +7,6 @@
 // * 添加了Awaiter类型
 // * yield_value改为返回Awaiter对象
 
-
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-struct Awaiter {
-    bool await_ready() {
-        std::cout << "ready?" << std::endl;
-        return false;
-    }
-    auto await_suspend(std::coroutine_handle<> handle) {
-        std::cout << "suspend!" << std::endl;
-        std::cout << handle.address() << std::endl;
-        return void();
-        // return false;
-        // return true;
-        // return /*next_handle*/;
-    }
-    void await_resume() {
-        std::cout << "resume!" << std::endl;
-    }
-};
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
 template <typename T>
 class My_generator {
 public:
@@ -99,6 +78,23 @@ template <typename T>
 auto My_generator<T>::promise_type::yield_value(auto &&value) {
     result = std::forward<decltype(value)>(value);
     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    struct Awaiter {
+        bool await_ready() {
+            std::cout << "ready?" << std::endl;
+            return false;
+        }
+        auto await_suspend(std::coroutine_handle<> handle) {
+            std::cout << "suspend!" << std::endl;
+            std::cout << handle.address() << std::endl;
+            return void();
+            // return false;
+            // return true;
+            // return /*next_handle*/;
+        }
+        void await_resume() {
+            std::cout << "resume!" << std::endl;
+        }
+    };
     return Awaiter{};
     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 }
