@@ -1,0 +1,94 @@
+26,27c26,27
+<   -fcombine-stack-adjustments 		[disabled]
+<   -fcompare-elim              		[disabled]
+---
+>   -fcombine-stack-adjustments 		[enabled]
+>   -fcompare-elim              		[enabled]
+29c29
+<   -fcprop-registers           		[disabled]
+---
+>   -fcprop-registers           		[enabled]
+35c35
+<   -fdefer-pop                 		[disabled]
+---
+>   -fdefer-pop                 		[enabled]
+50c50
+<   -fforward-propagate         		[disabled]
+---
+>   -fforward-propagate         		[enabled]
+61c61
+<   -fguess-branch-probability  		[disabled]
+---
+>   -fguess-branch-probability  		[enabled]
+67c67
+<   -finline                    		[disabled]
+---
+>   -finline                    		[enabled]
+79c79
+<   -fipa-profile               		[disabled]
+---
+>   -fipa-profile               		[enabled]
+81c81
+<   -fipa-pure-const            		[disabled]
+---
+>   -fipa-pure-const            		[enabled]
+83,84c83,84
+<   -fipa-reference             		[disabled]
+<   -fipa-reference-addressable 		[disabled]
+---
+>   -fipa-reference             		[enabled]
+>   -fipa-reference-addressable 		[enabled]
+116c116
+<   -fomit-frame-pointer        		[disabled]
+---
+>   -fomit-frame-pointer        		[enabled]
+137c137
+<   -freorder-blocks            		[disabled]
+---
+>   -freorder-blocks            		[enabled]
+173c173
+<   -fshrink-wrap               		[disabled]
+---
+>   -fshrink-wrap               		[enabled]
+182c182
+<   -fsplit-wide-types          		[disabled]
+---
+>   -fsplit-wide-types          		[enabled]
+200c200
+<   -ftoplevel-reorder          		[disabled]
+---
+>   -ftoplevel-reorder          		[enabled]
+205,209c205,209
+<   -ftree-builtin-call-dce     		[disabled]
+<   -ftree-ccp                  		[disabled]
+<   -ftree-ch                   		[disabled]
+<   -ftree-coalesce-vars        		[disabled]
+<   -ftree-copy-prop            		[disabled]
+---
+>   -ftree-builtin-call-dce     		[enabled]
+>   -ftree-ccp                  		[enabled]
+>   -ftree-ch                   		[enabled]
+>   -ftree-coalesce-vars        		[enabled]
+>   -ftree-copy-prop            		[enabled]
+211,212c211,212
+<   -ftree-dce                  		[disabled]
+<   -ftree-dominator-opts       		[disabled]
+---
+>   -ftree-dce                  		[enabled]
+>   -ftree-dominator-opts       		[enabled]
+215c215
+<   -ftree-fre                  		[disabled]
+---
+>   -ftree-fre                  		[enabled]
+231c231
+<   -ftree-sink                 		[disabled]
+---
+>   -ftree-sink                 		[enabled]
+233c233
+<   -ftree-slsr                 		[disabled]
+---
+>   -ftree-slsr                 		[enabled]
+237c237
+<   -ftree-ter                  		[disabled]
+---
+>   -ftree-ter                  		[enabled]
