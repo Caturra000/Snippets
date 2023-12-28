@@ -9,8 +9,7 @@
 // 我目前测试【并不符合】这个结论，起码本机已经分配了700000000+个region了，还没结束，不测了
 
 int main() {
-
-    auto mmap_nofail =[](auto &&mmap_nofail, const auto &...args) {
+    auto mmap_nofail = [](auto &&mmap_nofail, const auto &...args) {
         auto ret = ::mmap(args...);
         if(ret != MAP_FAILED) return ret;
         if(errno == EINTR) return mmap_nofail(mmap_nofail, args...);
