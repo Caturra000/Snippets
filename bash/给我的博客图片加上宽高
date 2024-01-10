@@ -1,0 +1,25 @@
+背景是我的博客如果不加上图片宽高数据的话，未加载完全时文章目录的跳转并不对齐
+所以要把：
+![ababa](address)
+改成
+![ababa](address){: width="${1}" height="${2}"}
+
+可行做法就是sed配合identify
+
+需要注意路径的细节，图片一般是/images/...，它认为根是博客目录
+为了避免出错都加上.，或者手动指定博客目录，这样才是合法的
+
+特别感谢GPT帮我排查问题
+
+for input_file in "./_posts/2023/"*.md; do
+    sed -n 's/\(.*\)!\[\(.*\)\](\(.*\))/\3/p' $input_file | while read -r image_path; do
+        height=$(identify -format "%h" .$image_path)
+        width=$(identify -format "%w" .$image_path)
+        if [ $? -ne 0 ]; then
+            continue
+        fi
+        echo "Found image: $image_path"
+        echo "${width}x${height}"
+        sed -i "s|(${image_path})|(${image_path}){: width=\"${width}\" height=\"${height}\"}|g" "$input_file"
+    done
+done
