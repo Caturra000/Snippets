@@ -18,7 +18,7 @@ int fb(const char *cursor)
 }
 
 std::string s(4*1024*1024, 'a');
-constexpr size_t testround = 100;
+constexpr size_t testround = 4000;
 
 int main() {
     s.back() = '\"';
