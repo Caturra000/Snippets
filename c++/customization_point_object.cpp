@@ -15,47 +15,44 @@
 // TODO 这个示例还没有concept对比演示，有空加上去
 // TODO tag_invoke
 
-namespace framework {
 
-    namespace cpo_detail {
+namespace library {
 
-        // Generic begin function templates
+    // Best practice: provide a separate namespace for each CP class.
+    namespace begin_cpo_detail {
+        // Generic default begin function template(s).
+        // TODO: array types...
         template <typename T>
-        decltype(auto) begin(T &&obj) {
+        decltype(auto) begin(T &&obj) /*noexcept(noexcept(...))*/ {
             return std::forward<T>(obj).begin();
         }
 
-        // TODO array...
-
-        struct Begin_Fn {
-            template <typename Container>
+        struct Begin_fn {
+            template <typename /*👈concept is better*/ Container>
             decltype(auto) operator()(Container &&container) const {
-                // !!unqualified name lookup
+                // Internal ADL here!
                 return begin(std::forward<Container>(container));
             }
         };
     }
 
+    // All CPOs should be wrapped into this inline namespace.
+    inline namespace _cpo {
 #if __cplusplus >= 201703L
-
-// A customization point OBJECT.
-inline constexpr cpo_detail::Begin_Fn begin {};
-
+        // A customization point OBJECT.
+        inline constexpr begin_cpo_detail::Begin_fn begin {};
 #else // __cplusplus >= 201703L
+        // Workaround for C++14.
+        template <typename Cpo>
+        constexpr Cpo _static_const {};
 
-// workaroud for C++14
-
-template <typename Cpo>
-constexpr Cpo __static_const {};
-
-namespace {
-    // A customization point OBJECT.
-    constexpr auto &begin = __static_const<cpo_detail::Begin_Fn>;
-}
-
+        namespace {
+            // A customization point "OBJECT".
+            constexpr auto &begin = _static_const<begin_cpo_detail::Begin_fn>;
+        }
 #endif
-
-} // framework
+    } // _cpo
+} // library
 
 
 namespace end_user {
@@ -64,14 +61,14 @@ template <typename T>
 class Vector {
 public:
     Vector(std::initializer_list<T> il): _real_vector(il) {}
-    // Framework-defined begin() function
+    // Library-defined begin() function.
     auto begin() { return _real_vector.begin(); }
+
 private:
     std::vector<T> _real_vector;
 
-
-    // User-defined hook
-    // A hooked begin-iterator
+    // User-defined hook.
+    // A hooked begin-iterator (with hidden friend again).
     friend auto begin(Vector<T> &vec) {
         using Hook = std::vector<std::string>;
         static Hook strings {"hook", "jintianxiaomidaobilema"};
@@ -90,25 +87,26 @@ int main() {
 
     ::puts("===============");
 
-    // STL-begin
+    // STL-begin.
     auto iter2 = std::begin(f);
     // [1]
     std::cout << *iter2 << std::endl;
 
     ::puts("===============");
 
-    // ADL enabled, STL-bypass-begin
+    // ADL enabled, STL-bypass-begin.
     auto iter3 = begin(f);
     // [hook]
     std::cout << *iter3 << std::endl;
 
     ::puts("===============");
 
-    // ADL disabled, since framework::begin is an object
+    // **CPO is here.**
+    // ADL disabled, since library::begin is an object.
     //
-    // With framework:: prefix, not end_user::
-    // `framework` can detect user-defined hook automatically
-    auto iter4 = framework::begin(f);
+    // With library:: prefix, not end_user::,
+    // `library` can detect user-defined hooks automatically.
+    auto iter4 = library::begin(f);
     // [hook]
     std::cout << *iter4 << std::endl;
 }
