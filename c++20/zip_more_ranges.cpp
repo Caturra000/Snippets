@@ -8,19 +8,18 @@
 
 template <std::ranges::input_range ...Views>
 class Zip_view : public std::ranges::view_interface<Zip_view<Views...>> {
-/// Nested classes.
 public:
     struct iterator;
-    struct sentinel; // TODO
+    struct sentinel;
 
 public:
     Zip_view() = default;
-    Zip_view(Views ...vs): _views(vs...) {}
+    Zip_view(Views ...vs) noexcept: _views(vs...) {}
     constexpr auto begin() {
         return std::apply([&](Views &...views) { return iterator(views...); }, _views);
     }
     constexpr auto end() requires (std::ranges::random_access_range<Views> && ...) {
-        return begin()[size()];
+        return sentinel{this};
     }
     constexpr auto size() const requires (std::ranges::sized_range<Views> && ...) {
         return std::apply([&](auto &&...views) { return std::min({std::ranges::size(views)...}); }, _views);
@@ -32,6 +31,7 @@ private:
 
 template <std::ranges::input_range ...Views>
 struct Zip_view<Views...>::iterator {
+    friend struct sentinel;
     // TODO: flexible iterator_concepts.
     using iterator_concept = std::random_access_iterator_tag;
     using iterator_category = std::input_iterator_tag;
@@ -40,10 +40,8 @@ struct Zip_view<Views...>::iterator {
 
     iterator() = default;
     constexpr iterator(Views ...views): _currents{std::ranges::begin(views)...} {}
-    // constexpr iterator(Zip_view<Views...> this_zip,Views ...views, difference_type n)
-    //     : _this_zip(this_zip), _currents{(std::ranges::begin(views) + n)...} {}
 
-    constexpr decltype(auto) operator*() {
+    constexpr auto operator*() const {
         return std::apply([&](auto &&...iters) {
             return std::tuple<std::ranges::range_value_t<Views>&...>((*iters)...);
         }, _currents);
@@ -73,11 +71,25 @@ struct Zip_view<Views...>::iterator {
         return *this;
     }
 
-    friend constexpr bool operator<=>(const iterator &x, const iterator &y) = default;
+    friend constexpr auto operator<=>(const iterator &x, const iterator &y) = default;
 
 private:
-    // Zip_view<Views...> *_this_zip;
     std::tuple<std::ranges::iterator_t<Views>...> _currents;
+};
+
+template <std::ranges::input_range ...Views>
+struct Zip_view<Views...>::sentinel {
+    sentinel() = default;
+    constexpr sentinel(Zip_view *this_zip) noexcept: _this_zip(this_zip) {}
+
+    friend bool operator==(const iterator &x, const sentinel &y) {
+        return [&]<auto ...Is>(std::index_sequence<Is...>) {
+            return ((std::get<Is>(x._currents) == std::ranges::end(std::get<Is>(y._this_zip->_views))) || ...); 
+        }(std::make_index_sequence<sizeof...(Views)>{});
+    }
+
+private:
+    Zip_view *_this_zip;
 };
 
 inline constexpr struct Zip_fn {
