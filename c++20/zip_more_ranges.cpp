@@ -45,7 +45,7 @@ struct Zip_view<Views...>::iterator {
 
     constexpr decltype(auto) operator*() {
         return std::apply([&](auto &&...iters) {
-            return std::tuple<std::ranges::range_value_t<Views>...>((*iters)...);
+            return std::tuple<std::ranges::range_value_t<Views>&...>((*iters)...);
         }, _currents);
     }
 
