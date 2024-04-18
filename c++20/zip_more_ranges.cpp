@@ -6,6 +6,8 @@
 #include <vector>
 #include <format>
 
+namespace punipuni {
+
 template <std::ranges::input_range ...Views>
 class Zip_view : public std::ranges::view_interface<Zip_view<Views...>> {
 public:
@@ -42,8 +44,12 @@ struct Zip_view<Views...>::iterator {
     constexpr iterator(Views ...views): _currents{std::ranges::begin(views)...} {}
 
     constexpr auto operator*() const {
+        auto may_be_referenced = [](auto &iter) -> decltype(auto) { return *iter; };
         return std::apply([&](auto &&...iters) {
-            return std::tuple<std::ranges::range_value_t<Views>&...>((*iters)...);
+            // No decay!
+            // Example: zip(views::iota(1, 5), named_vector_of_int).
+            // Return: std::tuple<int, int&>.
+            return std::tuple<decltype(may_be_referenced(iters))...>((*iters)...);
         }, _currents);
     }
 
@@ -99,18 +105,24 @@ inline constexpr struct Zip_fn {
         if constexpr (sizeof...(rs) == 0) {
             return std::views::empty<std::tuple<>>;
         } else {
-            return Zip_view<std::views::all_t<decltype((rs))>...>(rs...);
+            return Zip_view<std::views::all_t<Rs>...>(std::forward<Rs>(rs)...);
         }
     }
 } zip;
 
-int main() {
-    std::array arr1 {1, 2, 3, 4, 5, 6, 7};
-    std::array arr2 {'a', 'b', 'c', 'd', 'e'};
-    std::vector arr3 {"aha", "hola", "kokona"};
+} // namespace punipuni
 
-    for(auto [i, c, s] : zip(arr1, arr2, arr3 | std::views::drop(1))) {
-        std::cout << std::format("[{}|{}|{}] ", i, c, s);
+int main() {
+    using namespace std::literals;
+    std::vector vec1 {"Ave"s, "Mujica"s, "Haruhikage"s};
+    std::array arr2 {'a', 'b', 'c', 'd', 'e'};
+    std::array arr3 {1, 2, 3, 4, 5, 6, 7};
+
+    for(auto [s, c, i, A] : punipuni::zip(vec1,
+                                          arr2,
+                                          arr3 | std::views::drop(1),
+                                          std::views::iota('A', 'Z'))) {
+        std::cout << std::format("[{}|{}|{}|{}] ", s, c, i, A);
     }
     std::cout << std::endl;
 }
