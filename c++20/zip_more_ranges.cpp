@@ -16,7 +16,8 @@ public:
 
 public:
     Zip_view() = default;
-    Zip_view(Views ...vs) noexcept: _views(vs...) {}
+    // Views are cheap to copy, but owning views cannot be done. (= delete)
+    Zip_view(Views ...vs) noexcept: _views(std::move(vs)...) {}
     constexpr auto begin() {
         return std::apply([&](Views &...views) { return iterator(views...); }, _views);
     }
@@ -41,7 +42,7 @@ struct Zip_view<Views...>::iterator {
     using difference_type = std::common_type_t<std::ranges::range_difference_t<Views>...>;
 
     iterator() = default;
-    constexpr iterator(Views ...views): _currents{std::ranges::begin(views)...} {}
+    constexpr iterator(Views &...views): _currents{std::ranges::begin(views)...} {}
 
     constexpr auto operator*() const {
         auto may_be_referenced = [](auto &iter) -> decltype(auto) { return *iter; };
@@ -113,16 +114,18 @@ inline constexpr struct Zip_fn {
 } // namespace punipuni
 
 int main() {
-    using namespace std::literals;
-    std::vector vec1 {"Ave"s, "Mujica"s, "Haruhikage"s};
+    std::vector vec1 {"Ave", "Mujica", "Haruhikage"};
     std::array arr2 {'a', 'b', 'c', 'd', 'e'};
     std::array arr3 {1, 2, 3, 4, 5, 6, 7};
+    using namespace std::literals;
+    std::vector eXpiring {"Chino"s, "Cocoa"s, "Rize"s, "Syaro"s, "Chiya"s};
 
-    for(auto [s, c, i, A] : punipuni::zip(vec1,
+    for(auto [s, c, i, A, X] : punipuni::zip(vec1,
                                           arr2,
                                           arr3 | std::views::drop(1),
-                                          std::views::iota('A', 'Z'))) {
-        std::cout << std::format("[{}|{}|{}|{}] ", s, c, i, A);
+                                          std::views::iota('A', 'Z'),
+                                          std::move(eXpiring))) {
+        std::cout << std::format("[{}|{}|{}|{}|{}] ", s, c, i, A, X);
     }
     std::cout << std::endl;
 }
