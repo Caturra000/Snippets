@@ -45,12 +45,11 @@ struct Zip_view<Views...>::iterator {
     constexpr iterator(Views &...views): _currents{std::ranges::begin(views)...} {}
 
     constexpr auto operator*() const {
-        auto may_be_referenced = [](auto &iter) -> decltype(auto) { return *iter; };
         return std::apply([&](auto &&...iters) {
-            // No decay!
+            // No <auto> decay!
             // Example: zip(views::iota(1, 5), named_vector_of_int).
             // Return: std::tuple<int, int&>.
-            return std::tuple<decltype(may_be_referenced(iters))...>((*iters)...);
+            return std::tuple<decltype(*iters)...>((*iters)...);
         }, _currents);
     }
 
