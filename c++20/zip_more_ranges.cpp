@@ -17,7 +17,7 @@ public:
 public:
     Zip_view() = default;
     // Views are cheap to copy, but owning views cannot be done. (= delete)
-    Zip_view(Views ...vs) noexcept: _views(std::move(vs)...) {}
+    constexpr Zip_view(Views ...vs) noexcept: _views(std::move(vs)...) {}
     constexpr auto begin() {
         return std::apply([&](Views &...views) { return iterator(views...); }, _views);
     }
