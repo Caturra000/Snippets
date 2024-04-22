@@ -9,22 +9,10 @@
 #include <memory>
 #include <algorithm>
 #include <cassert>
-
-void check(int cond, std::string_view reason) {
-    if(!cond) return;
-    perror(reason.data());
-    abort();
-}
-
-auto defer(auto func) {
-    // Make STL happy.
-    auto dummy = reinterpret_cast<void*>(0x1);
-    return std::unique_ptr<void, decltype(func)>{dummy, std::move(func)};
-}
+#include "utils.h"
 
 // Return {fd, size_bytes} for regular files.
 auto get_file_info(std::string_view file_path) {
-    // TODO: fd lifetime.
     auto fd = open(file_path.data(), O_RDONLY);
     check(fd < 0, "open");
 
