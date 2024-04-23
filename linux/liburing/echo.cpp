@@ -25,22 +25,18 @@ enum OP: uint32_t {
 };
 
 int make_listen(int port) {
-    int socket_fd = socket(AF_INET, SOCK_STREAM, 0);
-    check(socket_fd < 0, "socket");
+    int socket_fd = socket(AF_INET, SOCK_STREAM, 0) | nofail("socket");
     int enable = 1;
-    int opt_ret = setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int));
-    check(opt_ret < 0, "setsockopt");
+    setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) | nofail("setsockopt");
 
     sockaddr_in addr {};
     addr.sin_family = AF_INET;
     addr.sin_port = htons(port);
     addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-    int bind_ret = bind(socket_fd, std::bit_cast<const sockaddr *>(&addr), sizeof(addr));
-    check(bind_ret < 0, "bind");
+    bind(socket_fd, std::bit_cast<const sockaddr *>(&addr), sizeof(addr)) | nofail("bind");
 
-    int listen_ret = listen(socket_fd, 128);
-    check(listen_ret, "listen");
+    listen(socket_fd, 128) | nofail("listen");
 
     return socket_fd;
 }
@@ -102,8 +98,7 @@ int main() {
     // ACCEPT -> READ
     //        -> ACCEPT
     handlers[OP_ACCEPT] = [&](io_uring_cqe *cqe, auto) {
-        auto client_fd = cqe->res;
-        check(client_fd < 0, "accept");
+        auto client_fd = cqe->res | nofail("accept");
         auto &buf = buf_map[client_fd];
         async_read(&uring, client_fd, buf);
         // New customers are welcome.
@@ -112,8 +107,7 @@ int main() {
 
     // READ -> WRITE
     handlers[OP_READ] = [&](io_uring_cqe *cqe, uint32_t client_fd) {
-        auto size_bytes = cqe->res;
-        check(size_bytes < 0, "read");
+        auto size_bytes = cqe->res | nofail("read");
         auto &buf = buf_map[client_fd];
         auto printer = std::ostream_iterator<char>{std::cout};
         // Print to stdout.
@@ -123,8 +117,7 @@ int main() {
 
     // WRITE -> CLOSE|READ
     handlers[OP_WRITE] = [&](io_uring_cqe *cqe, uint32_t client_fd) {
-        auto size_bytes = cqe->res;
-        check(size_bytes < 0, "write");
+        auto size_bytes = cqe->res | nofail("write");
         auto &buf = buf_map[client_fd];
         // Close check. (Zz-)
         if(size_bytes > 2 && buf[0] == 'Z' && buf[1] == 'z') {
@@ -140,9 +133,7 @@ int main() {
     async_accept(&uring, server_fd);
     for(;;) {
         io_uring_cqe *cqe;
-        auto wait_ret = io_uring_wait_cqe(&uring, &cqe);
-        check(wait_ret < 0, "io_uring_wait_cqe");
-        check(cqe->res < 0, "event");
+        io_uring_wait_cqe(&uring, &cqe) | nofail("io_uring_wait_cqe");
         auto cqe_cleanup = defer([&](...) { io_uring_cqe_seen(&uring, cqe); });
 
         auto [op, user_data] = data_unpack(cqe->user_data);

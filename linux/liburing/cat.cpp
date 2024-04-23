@@ -13,12 +13,10 @@
 
 // Return {fd, size_bytes} for regular files.
 auto get_file_info(std::string_view file_path) {
-    auto fd = open(file_path.data(), O_RDONLY);
-    check(fd < 0, "open");
+    auto fd = open(file_path.data(), O_RDONLY) | nofail("open");
 
     struct stat stat;
-    auto stat_ret = fstat(fd, &stat);
-    check(stat_ret < 0, "fstat");
+    fstat(fd, &stat) | nofail("fstat");
 
     return std::tuple(fd, stat.st_size);
 }
@@ -79,14 +77,12 @@ int main(int argc, char *argv[]) {
         // Synchronized.
         // io_uring_submit_and_wait(&uring, 1);
 
-        auto submitted = io_uring_submit(&uring);
-        check(submitted <= 0, "io_uring_submit");
+        io_uring_submit(&uring) | nofail<std::less_equal<int>>("io_uring_submit");
 
         // Still synchronized...
         io_uring_cqe *cqe;
-        auto ret = io_uring_wait_cqe(&uring, &cqe);
-        check(ret < 0, "io_uring_wait_cqe");
-        check(cqe->res < 0, "readv");
+        io_uring_wait_cqe(&uring, &cqe) | nofail("io_uring_wait_cqe");
+        cqe->res | nofail("readv");
         auto cqe_cleanup = defer([&](...) { io_uring_cqe_seen(&uring, cqe); });
 
         print_to_stdout(iovecs, cqe->res, CHUNK_SIZE);
