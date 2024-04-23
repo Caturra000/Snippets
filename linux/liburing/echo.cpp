@@ -20,6 +20,7 @@ enum OP: uint32_t {
     OP_ACCEPT = 1,
     OP_READ,
     OP_WRITE,
+    OP_CLOSE,
 
     OP_MAX
 };
@@ -54,26 +55,34 @@ auto data_unpack(auto data) {
     return std::tuple(low32, high32);
 }
 
-void async_accept(io_uring *uring, int server_fd) {
+// This template makes `args...` passing the same as synchronous functions.
+void async_operation(io_uring *uring, auto user_data, auto uring_prep_fn, auto &&...args) {
     auto sqe = io_uring_get_sqe(uring);
-    // Anon address.
-    io_uring_prep_accept(sqe, server_fd, nullptr, nullptr, 0);
-    io_uring_sqe_set_data(sqe, data_pack(0, OP_ACCEPT));
-    io_uring_submit(uring);
+    // Equivalent to sync_fn(args...).
+    uring_prep_fn(sqe, std::forward<decltype(args)>(args)...);
+    io_uring_sqe_set_data(sqe, user_data);
+    io_uring_submit(uring) | nofail<std::less_equal<int>>("io_uring_submit");
+}
+
+void async_accept(io_uring *uring, int server_fd) {
+    async_operation(uring, data_pack(0, OP_ACCEPT),
+        // Anon address.
+        io_uring_prep_accept, server_fd, nullptr, nullptr, 0);
 }
 
 void async_read(io_uring *uring, int client_fd, auto &buf) {
-    auto sqe = io_uring_get_sqe(uring);
-    io_uring_prep_read(sqe, client_fd, buf.data(), std::size(buf), 0);
-    io_uring_sqe_set_data(sqe, data_pack(client_fd, OP_READ));
-    io_uring_submit(uring);
+    async_operation(uring, data_pack(client_fd, OP_READ),
+        io_uring_prep_read, client_fd, buf.data(), std::size(buf), 0);
 }
 
 void async_write(io_uring *uring, int client_fd, const auto &buf, size_t size_bytes) {
-    auto sqe = io_uring_get_sqe(uring);
-    io_uring_prep_write(sqe, client_fd, buf.data(), size_bytes, 0);
-    io_uring_sqe_set_data(sqe, data_pack(client_fd, OP_WRITE));
-    io_uring_submit(uring);
+    async_operation(uring, data_pack(client_fd, OP_WRITE),
+        io_uring_prep_write, client_fd, buf.data(), size_bytes, 0);
+}
+
+void async_close(io_uring *uring, int client_fd) {
+    async_operation(uring, data_pack(client_fd, OP_CLOSE),
+        io_uring_prep_close, client_fd);
 }
 
 int main() {
@@ -119,15 +128,19 @@ int main() {
     handlers[OP_WRITE] = [&](io_uring_cqe *cqe, uint32_t client_fd) {
         auto size_bytes = cqe->res | nofail("write");
         auto &buf = buf_map[client_fd];
-        // Close check. (Zz-)
-        if(size_bytes > 2 && buf[0] == 'Z' && buf[1] == 'z') {
-            close(client_fd);
+        // Zz-.
+        bool close_proactive = size_bytes > 2 && buf[0] == 'Z' && buf[1] == 'z';
+        // Zero-flag has written to client.
+        bool close_reactive = (size_bytes == 0);
+        if(close_reactive || close_proactive) {
+            async_close(&uring, client_fd);
             buf_map.erase(client_fd);
-        // Echo again.
-        } else {
-            async_read(&uring, client_fd, buf);
+            return;
         }
+        async_read(&uring, client_fd, buf);
     };
+
+    handlers[OP_CLOSE] = [](...) {};
 
     // Kick off!
     async_accept(&uring, server_fd);
