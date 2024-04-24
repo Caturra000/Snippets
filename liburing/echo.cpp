@@ -17,7 +17,9 @@
 #include "utils.h"
 
 enum OP: uint32_t {
-    OP_ACCEPT = 1,
+    OP_TRAP,
+
+    OP_ACCEPT,
     OP_READ,
     OP_WRITE,
     OP_CLOSE,
@@ -102,7 +104,7 @@ int main() {
     using Handler = std::function<void(io_uring_cqe*, uint32_t)>;
     std::array<Handler, OP_MAX> handlers;
 
-    handlers[0] = [&](...) { exit(998244353); };
+    handlers[OP_TRAP] = [&](...) { std::terminate(); };
 
     // ACCEPT -> READ
     //        -> ACCEPT
@@ -140,8 +142,6 @@ int main() {
         async_read(&uring, client_fd, buf);
     };
 
-    handlers[OP_CLOSE] = [](...) {};
-
     // Kick off!
     async_accept(&uring, server_fd);
     for(;;) {
@@ -150,7 +150,8 @@ int main() {
         auto cqe_cleanup = defer([&](...) { io_uring_cqe_seen(&uring, cqe); });
 
         auto [op, user_data] = data_unpack(cqe->user_data);
-
-        handlers[op](cqe, user_data);
+        if(auto &handler = handlers[op]; handler) {
+            handler(cqe, user_data);
+        }
     }
 }

@@ -25,7 +25,8 @@ struct nofail {
     };
 };
 
-// Go-style defer.
+// Go-style, movable defer.
+[[nodiscard("defer() is not allowed to be temporary.")]]
 inline auto defer(auto func) {
     // Make STL happy.
     auto dummy = reinterpret_cast<void*>(0x1);
