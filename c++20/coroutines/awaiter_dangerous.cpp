@@ -25,6 +25,9 @@ auto switch_to_new_thread(std::jthread& out)
                 throw std::runtime_error("Output jthread parameter not empty");
             out = std::jthread([h] { h.resume(); });
             using namespace std::chrono_literals;
+            // current睡眠中，同时out先走了await_resume()，所以整个resuming_on_new_thread()也完成了
+            // 此时awaiter已经被销毁（越过了co_await范围），但是current过1s后才醒来继续往该该函数下面走
+            // 因此*this的访问是不安全的
             std::this_thread::sleep_for(+1s);
             if constexpr (run_safe) {
                 // This is OK
