@@ -5,6 +5,10 @@
 #include <coroutine>
 #include <queue>
 #include <utility>
+#include <thread>
+#include <chrono>
+#include <algorithm>
+#include <ranges>
 #include "utils.h"
 
 struct Task {
@@ -69,7 +73,6 @@ struct Async_operation {
     void await_suspend(std::coroutine_handle<> h) {
         user_data.h = h;
         io_uring_sqe_set_data(user_data.sqe, &user_data);
-        // TODO: lazy submit.
         io_uring_submit(user_data.uring) | nofail<std::less_equal<int>>("io_uring_submit");
     }
     // TODO: Don't return cqe->res directly.
@@ -91,31 +94,49 @@ inline auto async_operation(io_uring *uring, auto uring_prep_fn, auto &&...args)
 }
 
 // A quite simple io_context.
-struct Io_context {
+class Io_context {
+public:
     Io_context(io_uring &uring): uring(uring) {}
     void run() {
-        while(true) {
-            if(!_operations.empty()) {
+        constexpr auto PLUG_MAX = 32;
+        auto runtime_plug = [&] { return std::min<int>(PLUG_MAX, _operations.size()); };
+        for(;;) {
+            for(auto plug : std::views::iota(0, runtime_plug())) {
+                std::ignore = plug;
                 auto h = _operations.front();
                 _operations.pop();
                 h.resume();
             }
             io_uring_cqe *cqe;
-            // TODO: batch, yield.
-            if(!io_uring_peek_cqe(&uring, &cqe)) {
+            unsigned head;
+            unsigned done = 0;
+            io_uring_for_each_cqe(&uring, head, cqe) {
+                done++;
                 auto user_data = std::bit_cast<Async_user_data*>(cqe->user_data);
                 user_data->cqe = cqe;
-                auto raii = defer([&](...) {io_uring_cqe_seen(&uring, cqe);});
                 user_data->h.resume();
             }
+            done ? io_uring_cq_advance(&uring, done) : hang();
         }
     }
-    io_uring &uring;
-    std::queue<std::coroutine_handle<>> _operations;
 
     friend void co_spawn(Io_context &io_context, Task &&task) {
         io_context._operations.emplace(task._handle);
     }
+
+private:
+    void hang() {
+        // TODO: config option, event driven.
+        constexpr bool ENABLE_BUSY_LOOP = false;
+        if constexpr (!ENABLE_BUSY_LOOP) {
+            // FIXME: yield() in a single thread makes no sense.
+            using namespace std::chrono_literals;
+            std::this_thread::sleep_for(1ns);
+        }
+    }
+
+    io_uring &uring;
+    std::queue<std::coroutine_handle<>> _operations;
 };
 
 inline auto async_accept(io_uring *uring, int server_fd,
