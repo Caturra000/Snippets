@@ -40,6 +40,7 @@ struct Task::promise_type {
     std::coroutine_handle<> _parent {std::noop_coroutine()};
 };
 
+// Multi-task support.
 inline auto operator co_await(Task &&task) noexcept {
     struct awaiter {
         bool await_ready() const noexcept { return !_handle || _handle.done(); }
@@ -71,7 +72,7 @@ struct Async_operation {
         // TODO: lazy submit.
         io_uring_submit(user_data.uring) | nofail<std::less_equal<int>>("io_uring_submit");
     }
-    // TODO: overload. Don't return cqe->res directly.
+    // TODO: Don't return cqe->res directly.
     auto await_resume() const noexcept {
         return user_data.cqe->res;
     }
@@ -84,14 +85,14 @@ struct Async_operation {
     Async_user_data user_data;
 };
 
-auto async_operation(io_uring *uring, auto uring_prep_fn, auto &&...args) {
+inline auto async_operation(io_uring *uring, auto uring_prep_fn, auto &&...args) {
     using Result = std::invoke_result_t<decltype(uring_prep_fn), io_uring_sqe*, decltype(args)...>;
     return Async_operation<Result>(uring, uring_prep_fn, std::forward<decltype(args)>(args)...);
 }
 
 // A quite simple io_context.
 struct Io_context {
-    Io_context(io_uring &uring): uring(uring) {};
+    Io_context(io_uring &uring): uring(uring) {}
     void run() {
         while(true) {
             if(!_operations.empty()) {
@@ -117,23 +118,29 @@ struct Io_context {
     }
 };
 
-auto async_accept(io_uring *uring, int server_fd) {
+inline auto async_accept(io_uring *uring, int server_fd,
+        sockaddr *addr, socklen_t *addrlen, int flags = 0) {
     return async_operation(uring,
-        // Anon address.
-        io_uring_prep_accept, server_fd, nullptr, nullptr, 0);
+        io_uring_prep_accept, server_fd, addr, addrlen, flags);
 }
 
-auto async_read(io_uring *uring, int fd, void *buf, size_t n) {
+inline auto async_accept(io_uring *uring, int server_fd, int flags = 0) {
     return async_operation(uring,
-        io_uring_prep_read, fd, buf, n, 0);
+        io_uring_prep_accept, server_fd, nullptr, nullptr, flags);
 }
 
-auto async_write(io_uring *uring, int fd, const void *buf, size_t n) {
+inline auto async_read(io_uring *uring, int fd, void *buf, size_t n, int flags = 0) {
     return async_operation(uring,
-        io_uring_prep_write, fd, buf, n, 0);
+        io_uring_prep_read, fd, buf, n, flags);
 }
 
-auto async_close(io_uring *uring, int fd) {
+
+inline auto async_write(io_uring *uring, int fd, const void *buf, size_t n, int flags = 0) {
+    return async_operation(uring,
+        io_uring_prep_write, fd, buf, n, flags);
+}
+
+inline auto async_close(io_uring *uring, int fd) {
     return async_operation(uring,
         io_uring_prep_close, fd);
 }
