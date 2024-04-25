@@ -15,10 +15,15 @@ struct Task {
     struct promise_type;
     Task() = default;
     constexpr Task(std::coroutine_handle<promise_type> handle) noexcept: _handle(handle) {}
-    ~Task() { (_handle && _handle.done()) ? _handle.destroy() : void(); }
+    // Task is not intended to be a lvalue and handle/promise is already allocated whenenver used.
+    // But in the default dtor, we cannot handle this case, so it results in a memory leak.
+    // NOTE: co_await operator is not allowed to aceept lvalue Task, so why are you doing this?
+    ~Task() = default;
     // No move/copy.
     Task(const Task&) = delete;
+    Task(Task&&) = delete;
     Task& operator=(const Task&) = delete;
+    Task& operator=(Task&&) = delete;
 
     std::coroutine_handle<promise_type> _handle;
 };
@@ -34,8 +39,12 @@ struct Task::promise_type {
     struct Final_suspend {
         constexpr bool await_ready() const noexcept { return false; }
         auto await_suspend(auto h) const noexcept {
-            return h.promise()._parent;
+            auto next = h.promise()._parent;
+            // Started task (at least once) will kill itself in final_suspend.
+            h.destroy();
+            return next;
         }
+        // Never reached.
         constexpr auto await_resume() const noexcept {}
     };
     constexpr auto final_suspend() const noexcept { return Final_suspend{}; }
@@ -50,6 +59,7 @@ inline auto operator co_await(Task &&task) noexcept {
         bool await_ready() const noexcept { return !_handle || _handle.done(); }
         auto await_suspend(std::coroutine_handle<> current) noexcept {
             _handle.promise().push(current);
+            // Multi-tasks are considered as a single operation in io_contexts.
             return _handle;
         }
         constexpr auto await_resume() const noexcept {}
@@ -100,16 +110,23 @@ public:
     void run() {
         constexpr auto PLUG_MAX = 32;
         auto runtime_plug = [&] { return std::min<int>(PLUG_MAX, _operations.size()); };
-        for(;;) {
+        while(!_stop || (_stop && (!_operations.empty()))) {
             for(auto plug : std::views::iota(0, runtime_plug())) {
                 std::ignore = plug;
                 auto h = _operations.front();
                 _operations.pop();
                 h.resume();
             }
+
+            // Some operations are in-flight,
+            // even if we currently have no any h.resume().
+            // Just continue along the path!
+
             io_uring_cqe *cqe;
             unsigned head;
             unsigned done = 0;
+            // Reap one operation / multiple operations.
+            // NOTE: One operation can also generate multiple cqes (awaiters).
             io_uring_for_each_cqe(&uring, head, cqe) {
                 done++;
                 auto user_data = std::bit_cast<Async_user_data*>(cqe->user_data);
@@ -120,8 +137,13 @@ public:
         }
     }
 
+    // Some in-flight operations will be suspended when calling stop().
+    // It is the responsibility of users to ensure the correctness of this function.
+    // Or you can re-run() agagin to get thing done.
+    void done() { _stop = true; }
+
     friend void co_spawn(Io_context &io_context, Task &&task) {
-        io_context._operations.emplace(task._handle);
+        io_context._operations.emplace(std::exchange(task._handle, {}));
     }
 
 private:
@@ -137,6 +159,7 @@ private:
 
     io_uring &uring;
     std::queue<std::coroutine_handle<>> _operations;
+    bool _stop {false};
 };
 
 inline auto async_accept(io_uring *uring, int server_fd,
