@@ -27,23 +27,6 @@ enum OP: uint32_t {
     OP_MAX
 };
 
-int make_listen(int port) {
-    int socket_fd = socket(AF_INET, SOCK_STREAM, 0) | nofail("socket");
-    int enable = 1;
-    setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) | nofail("setsockopt");
-
-    sockaddr_in addr {};
-    addr.sin_family = AF_INET;
-    addr.sin_port = htons(port);
-    addr.sin_addr.s_addr = htonl(INADDR_ANY);
-
-    bind(socket_fd, std::bit_cast<const sockaddr *>(&addr), sizeof(addr)) | nofail("bind");
-
-    listen(socket_fd, 128) | nofail("listen");
-
-    return socket_fd;
-}
-
 // For cqe->user_data.
 void* data_pack(uint32_t high32, uint32_t low32) {
     return reinterpret_cast<void*>(
@@ -88,7 +71,7 @@ void async_close(io_uring *uring, int client_fd) {
 }
 
 int main() {
-    auto server_fd = make_listen(8848);
+    auto server_fd = make_server(8848);
     auto server_fd_cleanup = defer([&](...) { close(server_fd); });
 
     io_uring uring;
