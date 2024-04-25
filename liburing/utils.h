@@ -16,7 +16,7 @@ template <typename Comp = std::less<int>, auto V = 0>
 struct nofail {
     std::string_view reason;
 
-    // Example:
+    // Examples:
     // fstat(...) | nofail("fstat");        // Forget the if-statement and ret!
     // int fd = open(...) | nofail("open"); // If actually need a ret, here you are!
     friend decltype(auto) operator|(auto &&ret, nofail nf) {
@@ -24,6 +24,9 @@ struct nofail {
         return std::forward<decltype(ret)>(ret);
     };
 };
+
+// Make clang happy.
+nofail(...) -> nofail<std::less<int>, 0>;
 
 // Go-style, movable defer.
 [[nodiscard("defer() is not allowed to be temporary.")]]
