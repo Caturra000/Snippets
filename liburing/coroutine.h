@@ -26,6 +26,8 @@ struct Task {
     Task& operator=(Task&&) = delete;
     auto detach() { return std::exchange(_handle, {}); }
 
+    friend auto operator co_await(Task) noexcept;
+private:
     std::coroutine_handle<promise_type> _handle;
 };
 
@@ -55,7 +57,16 @@ struct Task::promise_type {
 };
 
 // Multi-task support.
-inline auto operator co_await(Task &&task) noexcept {
+// NOTE: Tasks are unmovale and uncopyable.
+// Examples:
+//   GOOD:
+//     co_await make_task(...);
+//   BAD:
+//     Task task = make_task(...); // Compilable but meaningless.
+//     co_await task;
+//     // or
+//     co_await std::move(task);
+inline auto operator co_await(Task task) noexcept {
     struct awaiter {
         bool await_ready() const noexcept { return !_handle || _handle.done(); }
         auto await_suspend(std::coroutine_handle<> current) noexcept {
