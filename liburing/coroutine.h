@@ -24,6 +24,7 @@ struct Task {
     Task(Task&&) = delete;
     Task& operator=(const Task&) = delete;
     Task& operator=(Task&&) = delete;
+    auto detach() { return std::exchange(_handle, {}); }
 
     std::coroutine_handle<promise_type> _handle;
 };
@@ -107,43 +108,53 @@ inline auto async_operation(io_uring *uring, auto uring_prep_fn, auto &&...args)
 class Io_context {
 public:
     Io_context(io_uring &uring): uring(uring) {}
-    void run() {
-        constexpr auto PLUG_MAX = 32;
-        auto runtime_plug = [&] { return std::min<int>(PLUG_MAX, _operations.size()); };
-        while(!_stop || (_stop && (!_operations.empty()))) {
-            for(auto plug : std::views::iota(0, runtime_plug())) {
-                std::ignore = plug;
-                auto h = _operations.front();
-                _operations.pop();
-                h.resume();
-            }
 
-            // Some operations are in-flight,
-            // even if we currently have no any h.resume().
-            // Just continue along the path!
+    void run() { for(_stop = false; running(); run_once()); }
 
-            io_uring_cqe *cqe;
-            unsigned head;
-            unsigned done = 0;
-            // Reap one operation / multiple operations.
-            // NOTE: One operation can also generate multiple cqes (awaiters).
-            io_uring_for_each_cqe(&uring, head, cqe) {
-                done++;
-                auto user_data = std::bit_cast<Async_user_data*>(cqe->user_data);
-                user_data->cqe = cqe;
-                user_data->h.resume();
-            }
-            done ? io_uring_cq_advance(&uring, done) : hang();
+    // Once = submit + reap.
+    template <bool Exactly_once = false>
+    void run_once() {
+        auto loop_count = Exactly_once ? runtime_once() : runtime_plug();
+        for(auto _ : std::views::iota(0, loop_count)) {
+            auto h = _operations.front();
+            _operations.pop();
+            h.resume();
+            // Unused.
+            [](...){}(_);
         }
+
+        // Some operations are in-flight,
+        // even if we currently have no any h.resume().
+        // Just continue along the path!
+
+        io_uring_cqe *cqe;
+        unsigned head;
+        unsigned done = 0;
+        // Reap one operation / multiple operations.
+        // NOTE: One operation can also generate multiple cqes (awaiters).
+        io_uring_for_each_cqe(&uring, head, cqe) {
+            done++;
+            auto user_data = std::bit_cast<Async_user_data*>(cqe->user_data);
+            user_data->cqe = cqe;
+            user_data->h.resume();
+        }
+        done ? io_uring_cq_advance(&uring, done) : hang();
     }
 
+    // Only affect the run() interface.
+    // The stop flag will be reset upon re-run().
+    //
     // Some in-flight operations will be suspended when calling stop().
     // It is the responsibility of users to ensure the correctness of this function.
     // Or you can re-run() agagin to get thing done.
-    void done() { _stop = true; }
+    void stop() { _stop = true; }
+    bool stopped() const { return _stop && _operations.empty(); }
+    bool running() const { return !stopped(); }
+    size_t pending() const { return _operations.size(); }
+    // TODO: inflight();
 
     friend void co_spawn(Io_context &io_context, Task &&task) {
-        io_context._operations.emplace(std::exchange(task._handle, {}));
+        io_context._operations.emplace(task.detach());
     }
 
 private:
@@ -155,6 +166,15 @@ private:
             using namespace std::chrono_literals;
             std::this_thread::sleep_for(1ns);
         }
+    }
+
+    int runtime_plug() const {
+        constexpr size_t /*same type*/ PLUG_MAX = 32;
+        return std::min(PLUG_MAX, _operations.size());
+    }
+
+    int runtime_once() const {
+        return !_operations.empty();
     }
 
     io_uring &uring;
