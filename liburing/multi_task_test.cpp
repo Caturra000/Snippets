@@ -14,21 +14,10 @@ Task mywrite_v2(auto uring, int fd, char c) {
     co_await async_write(uring, fd, buf.data(), buf.size());
 }
 
-bool countdown() {
-    static int round = 100;
-    return !!--round;
-}
-
-// For valgrind test.
-void drain(Io_context &io_context) {
-    for(auto _ : std::views::iota(0, 1000)) {
-        [](...){}(_);
-        io_context.run_once();
-    }
-}
-
 Task multitask(auto uring, auto &io_context, int fd) {
-    for(; countdown();) for(auto c : std::views::iota('A', 'Z')) {
+    auto countdown = std::views::iota(0, 100);
+    auto digits = std::views::iota('A', 'Z');
+    for(auto _ : countdown) for(auto c : digits) {
         // Random order.
         co_spawn(io_context, mywrite_v2(uring, fd, c));
 
@@ -36,8 +25,19 @@ Task multitask(auto uring, auto &io_context, int fd) {
         // co_await mywrite_v2(uring, fd, c);
 
         co_await mywrite(uring, fd, c - 'A' + 'a');
+
+        // Unused.
+        [](...){}(_);
     }
+    co_await mywrite(uring, fd, '\n');
     io_context.stop();
+}
+
+// For valgrind test.
+void drain(Io_context &io_context) {
+    while(!io_context.drained()) {
+        io_context.run_once();
+    }
 }
 
 int main() {

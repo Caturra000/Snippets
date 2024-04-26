@@ -9,6 +9,7 @@
 #include <chrono>
 #include <algorithm>
 #include <ranges>
+#include <cassert>
 #include "utils.h"
 
 struct Task {
@@ -33,8 +34,8 @@ private:
 
 struct Task::promise_type {
     constexpr auto initial_suspend() const noexcept { return std::suspend_always{}; }
-    constexpr void return_void() const noexcept {}
-    void unhandled_exception() {/*TODO*/}
+    constexpr void return_void() const noexcept { /*exception_ptr...*/ }
+    void unhandled_exception() { /*exception_ptr...*/ }
     Task get_return_object() noexcept {
         auto h = std::coroutine_handle<promise_type>::from_promise(*this);
         return {h};
@@ -91,20 +92,31 @@ struct Async_user_data {
 // Currently `Result` is unused.
 template <typename Result>
 struct Async_operation {
-    constexpr bool await_ready() const noexcept { return false; }
+    constexpr bool await_ready() const noexcept {
+        if(!user_data.sqe) [[unlikely]] {
+            return true;
+        }
+        return false;
+    }
     void await_suspend(std::coroutine_handle<> h) {
         user_data.h = h;
         io_uring_sqe_set_data(user_data.sqe, &user_data);
-        io_uring_submit(user_data.uring) | nofail<std::less_equal<int>>("io_uring_submit");
+        // Eager? Lazy? SQPOLL?
+        // io_uring_submit(user_data.uring);
     }
     // TODO: Don't return cqe->res directly.
     auto await_resume() const noexcept {
+        if(!user_data.sqe) [[unlikely]] {
+            return -ENOMEM;
+        }
         return user_data.cqe->res;
     }
     Async_operation(io_uring *uring, auto uring_prep_fn, auto &&...args) {
         user_data.uring = uring;
-        user_data.sqe = io_uring_get_sqe(uring);
-        uring_prep_fn(user_data.sqe, std::forward<decltype(args)>(args)...);
+        // If !sqe, return -ENOMEM immediately. (await_ready() => true.)
+        if((user_data.sqe = io_uring_get_sqe(uring))) [[likely]] {
+            uring_prep_fn(user_data.sqe, std::forward<decltype(args)>(args)...);
+        }
     }
 
     Async_user_data user_data;
@@ -118,7 +130,9 @@ inline auto async_operation(io_uring *uring, auto uring_prep_fn, auto &&...args)
 // A quite simple io_context.
 class Io_context {
 public:
-    Io_context(io_uring &uring): uring(uring) {}
+    explicit Io_context(io_uring &uring): uring(uring) {}
+    Io_context(const Io_context &) = delete;
+    Io_context& operator=(const Io_context &) = delete;
 
     void run() { for(_stop = false; running(); run_once()); }
 
@@ -134,7 +148,13 @@ public:
             [](...){}(_);
         }
 
-        // Some operations are in-flight,
+        // TODO: SQPOLL.
+        if((_inflight += io_uring_submit(&uring)) == 0) {
+            hang();
+            return;
+        }
+
+        // Some cqes are in-flight,
         // even if we currently have no any h.resume().
         // Just continue along the path!
 
@@ -150,19 +170,30 @@ public:
             user_data->h.resume();
         }
         done ? io_uring_cq_advance(&uring, done) : hang();
+
+        assert(_inflight >= done);
+        _inflight -= done;
     }
+
+    // Some observable IO statistics.
+    // These APIs are not affected by stop flag.
+    auto pending() const { return _operations.size(); }
+    auto inflight() const noexcept { return _inflight; }
+    bool drained() const { return !pending() && !inflight(); }
 
     // Only affect the run() interface.
     // The stop flag will be reset upon re-run().
     //
     // Some in-flight operations will be suspended when calling stop().
-    // It is the responsibility of users to ensure the correctness of this function.
-    // Or you can re-run() agagin to get thing done.
-    void stop() { _stop = true; }
-    bool stopped() const { return _stop && _operations.empty(); }
+    // This provides the opportunity to do fire-and-forget tasks.
+    //
+    // So it is the responsibility of users to ensure the correctness of this function.
+    // What users can do if they want to complete all tasks:
+    // 1. blocking method: re-run() agagin.
+    // 2. non-blocking method: while(!drained()) run_once();
+    void stop() noexcept { _stop = true; }
+    bool stopped() const { return _stop && !pending(); }
     bool running() const { return !stopped(); }
-    size_t pending() const { return _operations.size(); }
-    // TODO: inflight();
 
     friend void co_spawn(Io_context &io_context, Task &&task) {
         io_context._operations.emplace(task.detach());
@@ -190,7 +221,9 @@ private:
 
     io_uring &uring;
     std::queue<std::coroutine_handle<>> _operations;
+    size_t _inflight {};
     bool _stop {false};
+    // TODO: work_guard;
 };
 
 inline auto async_accept(io_uring *uring, int server_fd,
@@ -208,7 +241,6 @@ inline auto async_read(io_uring *uring, int fd, void *buf, size_t n, int flags =
     return async_operation(uring,
         io_uring_prep_read, fd, buf, n, flags);
 }
-
 
 inline auto async_write(io_uring *uring, int fd, const void *buf, size_t n, int flags = 0) {
     return async_operation(uring,
