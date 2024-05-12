@@ -14,36 +14,25 @@
 #include <ranges>
 #include <syncstream>
 
-// C++-style check for syscall.
-// Failed on ret < 0 by default.
-//
-// INT_ASYNC_CHECK: helper for liburing (-ERRNO) and other syscalls (-1).
-// It may break generic programming (forced to int).
-template <typename Comp = std::less<int>, auto V = 0, bool INT_ASYNC_CHECK = true>
+// A check helper for syscall.
+template <typename Comp = std::less<int>, auto V = 0>
 struct nofail {
     std::string_view reason;
 
     // Examples:
     // fstat(...) | nofail("fstat");        // Forget the if-statement and ret!
     // int fd = open(...) | nofail("open"); // If actually need a ret, here you are!
-    friend decltype(auto) operator|(auto &&ret, nofail nf) {
+    friend auto operator|(std::integral auto ret, nofail nf) {
         if(Comp{}(ret, V)) [[unlikely]] {
-            // Hack errno.
-            if constexpr (INT_ASYNC_CHECK) {
-                using T = std::decay_t<decltype(ret)>;
-                static_assert(std::is_convertible_v<T, int>);
-                // -ERRNO
-                if(ret != -1) errno = -ret;
-            }
             perror(nf.reason.data());
             std::terminate();
         }
-        return std::forward<decltype(ret)>(ret);
+        return ret;
     };
 };
 
 // Make clang happy.
-nofail(...) -> nofail<std::less<int>, 0, true>;
+nofail(...) -> nofail<std::less<int>, 0>;
 
 // Go-style, move-safe defer.
 [[nodiscard("defer() is not allowed to be temporary.")]]
