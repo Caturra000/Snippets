@@ -6,7 +6,7 @@ ALL_BIN = $(patsubst %.cpp,%,$(ALL_CPP))
 
 %: %.cpp
 	@mkdir -p $(DIR)
-	-$(CXX) -std=c++20 $^ -o $(DIR)/$@
+	-$(CXX) -std=c++20 -Wall -Wextra $^ -o $(DIR)/$@
 
 all: $(ALL_BIN)
 

@@ -4,10 +4,9 @@
 
 int main() {
     auto server_fd = make_server({.port=8848, .nonblock=false, .reuseport=true});
-    auto server_fd_cleanup = defer([=](...) {close(server_fd);});
 
     int epfd = epoll_create1({}) | nofail("epoll_create");
-    epoll_event watch_accept {.events = EPOLLIN};
+    epoll_event watch_accept {.events = EPOLLIN, .data = {}};
     epoll_ctl(epfd, EPOLL_CTL_ADD, server_fd, &watch_accept) | nofail("epoll_ctl");
 
     constexpr int fork_count = 5;

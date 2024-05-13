@@ -3,7 +3,6 @@
 
 int main() {
     auto server_fd = make_server({.port=8848, .nonblock=false});
-    auto server_fd_cleanup = defer([=](...) {close(server_fd);});
 
     constexpr int thread_count = 5;
 

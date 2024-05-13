@@ -1,5 +1,7 @@
 #pragma once
 #include <unistd.h>
+#include <signal.h>
+#include <sys/wait.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -15,13 +17,13 @@
 #include <syncstream>
 
 // A check helper for syscall.
+// Examples:
+// fstat(...) | nofail("fstat");
+// int fd = open(...) | nofail("open");
 template <typename Comp = std::less<int>, auto V = 0>
 struct nofail {
     std::string_view reason;
 
-    // Examples:
-    // fstat(...) | nofail("fstat");        // Forget the if-statement and ret!
-    // int fd = open(...) | nofail("open"); // If actually need a ret, here you are!
     friend auto operator|(std::integral auto ret, nofail nf) {
         if(Comp{}(ret, V)) [[unlikely]] {
             perror(nf.reason.data());
@@ -30,17 +32,6 @@ struct nofail {
         return ret;
     };
 };
-
-// Make clang happy.
-nofail(...) -> nofail<std::less<int>, 0>;
-
-// Go-style, move-safe defer.
-[[nodiscard("defer() is not allowed to be temporary.")]]
-inline auto defer(auto func) {
-    // Make STL happy.
-    auto dummy = reinterpret_cast<void*>(0x1);
-    return std::unique_ptr<void, decltype(func)>{dummy, std::move(func)};
-}
 
 // For make_server().
 struct make_server_option_t {
