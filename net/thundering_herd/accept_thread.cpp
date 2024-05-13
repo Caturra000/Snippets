@@ -17,3 +17,5 @@ int main() {
     auto threads = make_jthreads(thread_count - 1, work, false);
     work(true);
 }
+
+// accept已不存在惊群

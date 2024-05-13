@@ -20,3 +20,5 @@ int main() {
         println("{} continued.", getpid());
     }
 }
+
+// 多进程共享epoll实例，即使REUSEPORT（不使用负载均衡）也存在惊群

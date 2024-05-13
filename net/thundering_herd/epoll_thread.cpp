@@ -23,3 +23,5 @@ int main() {
     auto threads = make_jthreads(thread_count, work);
     work();
 }
+
+// 多线程共享epoll实例，存在惊群

@@ -20,3 +20,5 @@ int main() {
         println("{} continued.", getpid());
     }
 }
+
+// 每进程独占epoll实例，使用REUSEPORT负载均衡不存在惊群

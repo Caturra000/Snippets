@@ -20,3 +20,5 @@ int main() {
         println("{} continued.", getpid());
     }
 }
+
+// 多进程共享epoll实例，存在惊群

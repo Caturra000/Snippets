@@ -20,3 +20,8 @@ int main() {
         println("{} continued.", getpid());
     }
 }
+
+// 每进程独占epoll实例，使用EPOLLEXCLUSIVE不存在惊群
+// 可对比：
+// 共享epoll，使用EPOLLEXCLUSIVE：epoll_process_exclusive
+// 独占epoll，不使用EPOLLEXCLUSIVE：epoll_process2
