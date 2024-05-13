@@ -3,7 +3,7 @@
 #include "utils.h"
 
 int main() {
-    auto server_fd = make_server({.port=8848, .nonblock=false});
+    auto server_fd = make_server({.port=8848});
 
     int epfd = epoll_create1({}) | nofail("epoll_create");
     epoll_event watch_accept {.events = EPOLLIN, .data = {}};

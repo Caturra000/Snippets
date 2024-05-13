@@ -6,7 +6,7 @@ int main() {
     constexpr int fork_count = 5;
     fork_and_forget(fork_count);
 
-    auto server_fd = make_server({.port=8848, .nonblock=false, .reuseport=true});
+    auto server_fd = make_server({.port=8848, .reuseport=true});
 
     int epfd = epoll_create1({}) | nofail("epoll_create");
     epoll_event watch_accept {.events = EPOLLIN, .data = {}};

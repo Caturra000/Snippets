@@ -4,7 +4,7 @@
 
 int main() {
     auto work = [] {
-        auto server_fd = make_server({.port=8848, .nonblock=false, .reuseport=true});
+        auto server_fd = make_server({.port=8848, .reuseport=true});
         int epfd = epoll_create1({}) | nofail("epoll_create");
         epoll_event watch_accept {.events = EPOLLIN | EPOLLEXCLUSIVE, .data = {}};
         epoll_ctl(epfd, EPOLL_CTL_ADD, server_fd, &watch_accept) | nofail("epoll_ctl");

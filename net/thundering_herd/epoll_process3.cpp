@@ -3,8 +3,8 @@
 #include "utils.h"
 
 int main() {
-    auto master_fd = make_server({.port=8848, .nonblock=false});
-    auto slave_fd = make_server({.port=8849, .nonblock=false});
+    auto master_fd = make_server({.port=8848});
+    auto slave_fd = make_server({.port=8849});
 
     int epfd = epoll_create1({}) | nofail("epoll_create");
 

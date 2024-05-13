@@ -2,7 +2,7 @@
 #include "utils.h"
 
 int main() {
-    auto server_fd = make_server({.port=8848, .nonblock=false});
+    auto server_fd = make_server({.port=8848});
 
     constexpr int thread_count = 5;
 
