@@ -1,0 +1,32 @@
+--bind_port=8848
+
+0 socket(AF_INET, SOCK_STREAM, 0) = 3
++0 setsockopt(3, SOL_SOCKET, SO_REUSEADDR, [1], 4) = 0
++0 bind(3, ..., ...) = 0
++0 listen(3, 128) = 0
+
++.1 < S 0:0(0) win 1000
++.0 > S. 0:0(0) ack 1 <...>
++.1 < . 1:1(0) ack 1 win 1000
++0 accept(3, ..., ...) = 4
+
+// 为了避免报文难于区分，在前面关掉了tcp重试特性（奇怪的是，设为0也会至少重试一遍）
++0 `cat /proc/sys/net/ipv4/tcp_retries2 > tmp_file_old_retries`
++0 `echo save tcp_retries2=$(cat /proc/sys/net/ipv4/tcp_retries2) to tmp_file_old_retries`
++0 `echo 0 > /proc/sys/net/ipv4/tcp_retries2`
+
++.1 shutdown(4, SHUT_WR) = 0
+
+// 和shutdown-WR.pkt一样，产生FIN
+
+// 尝试shutdown后继续close
++5 close(4) = 0
+
+// 实际上不会有任何报文产生
+
+// 恢复参数，如果提前中断程序，那就自行找文件手动恢复，这个值一般是15
++1 `echo $(cat tmp_file_old_retries) > /proc/sys/net/ipv4/tcp_retries2`
++0 `rm tmp_file_old_retries`
++0 `echo restore tcp_retries2 and delete tmp_file_old_retries`
+
++0 `sleep 1000000`
