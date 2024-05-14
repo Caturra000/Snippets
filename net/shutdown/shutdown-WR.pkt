@@ -1,0 +1,31 @@
+--bind_port=8848
+
+0 socket(AF_INET, SOCK_STREAM, 0) = 3
++0 setsockopt(3, SOL_SOCKET, SO_REUSEADDR, [1], 4) = 0
++0 bind(3, ..., ...) = 0
++0 listen(3, 128) = 0
+
+// 三次握手
++.1 < S 0:0(0) win 1000
++.0 > S. 0:0(0) ack 1 <...>
++.1 < . 1:1(0) ack 1 win 1000
++0 accept(3, ..., ...) = 4
+
+// 17:01:01.680781 tun0  In  IP 192.0.2.1.40047 > 192.168.184.68.8848: Flags [S], seq 0, win 1000, length 0
+// 17:01:01.680840 tun0  Out IP 192.168.184.68.8848 > 192.0.2.1.40047: Flags [S.], seq 3501734483, ack 1, win 64240, options [mss 1460], length 0
+// 17:01:01.784750 tun0  In  IP 192.0.2.1.40047 > 192.168.184.68.8848: Flags [.], ack 1, win 1000, length 0
+
++.1 shutdown(4, SHUT_WR) = 0
+
+// 不断重发FIN
+// 17:01:01.888610 tun0  Out IP 192.168.184.68.8848 > 192.0.2.1.40047: Flags [F.], seq 1, ack 1, win 64240, length 0
+// 17:01:02.227812 tun0  Out IP 192.168.184.68.8848 > 192.0.2.1.40047: Flags [F.], seq 1, ack 1, win 64240, length 0
+// 17:01:02.892349 tun0  Out IP 192.168.184.68.8848 > 192.0.2.1.40047: Flags [F.], seq 1, ack 1, win 64240, length 0
+// 17:01:04.243525 tun0  Out IP 192.168.184.68.8848 > 192.0.2.1.40047: Flags [F.], seq 1, ack 1, win 64240, length 0
+// 17:01:06.882807 tun0  Out IP 192.168.184.68.8848 > 192.0.2.1.40047: Flags [F.], seq 1, ack 1, win 64240, length 0
+// 17:01:12.177434 tun0  Out IP 192.168.184.68.8848 > 192.0.2.1.40047: Flags [F.], seq 1, ack 1, win 64240, length 0
+//
+// 主动发出，所以进入FW1
+// tcp        0      1 192.168.184.68:8848     192.0.2.1:40047         FIN_WAIT1
+
++0 `sleep 1000000`

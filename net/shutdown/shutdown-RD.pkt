@@ -1,0 +1,23 @@
+--bind_port=8848
+
+0 socket(AF_INET, SOCK_STREAM, 0) = 3
++0 setsockopt(3, SOL_SOCKET, SO_REUSEADDR, [1], 4) = 0
++0 bind(3, ..., ...) = 0
++0 listen(3, 128) = 0
+
+// 三次握手
++.1 < S 0:0(0) win 1000
++.0 > S. 0:0(0) ack 1 <...>
++.1 < . 1:1(0) ack 1 win 1000
++0 accept(3, ..., ...) = 4
+
+// 17:04:10.379948 tun0  In  IP 192.0.2.1.35889 > 192.168.239.215.8848: Flags [S], seq 0, win 1000, length 0
+// 17:04:10.380012 tun0  Out IP 192.168.239.215.8848 > 192.0.2.1.35889: Flags [S.], seq 3281853660, ack 1, win 64240, options [mss 1460], length 0
+// 17:04:10.484043 tun0  In  IP 192.0.2.1.35889 > 192.168.239.215.8848: Flags [.], ack 1, win 1000, length 0
+
++.1 shutdown(4, SHUT_RD) = 0
+
+// 没有发出任何报文，仍保持ESTABLISHED
+// tcp        0      0 192.168.239.215:8848    192.0.2.1:35889         ESTABLISHED
+
++0 `sleep 1000000`
