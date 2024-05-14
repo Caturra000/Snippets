@@ -1,0 +1,38 @@
+--bind_port=8848
+
+0 socket(AF_INET, SOCK_STREAM, 0) = 3
++0 setsockopt(3, SOL_SOCKET, SO_REUSEADDR, [1], 4) = 0
++0 bind(3, ..., ...) = 0
+// backlog设为2
++0 listen(3, 2) = 0
+
++.1 < 9991>8848 S 0:0(0) win 1000
++.1 < 9992>8848 S 0:0(0) win 1000
++.1 < 9993>8848 S 0:0(0) win 1000
++.1 < 9994>8848 S 0:0(0) win 1000
++.1 < 9995>8848 S 0:0(0) win 1000
+
+
+// 很显然的输出
+// 16:49:54.937249 tun0  In  IP 192.0.2.1.9991 > 192.168.38.233.8848: Flags [S], seq 0, win 1000, length 0
+// 16:49:54.937311 tun0  Out IP 192.168.38.233.8848 > 192.0.2.1.9991: Flags [S.], seq 3377170713, ack 1, win 64240, options [mss 1460], length 0
+// 16:49:55.037235 tun0  In  IP 192.0.2.1.9992 > 192.168.38.233.8848: Flags [S], seq 0, win 1000, length 0
+// 16:49:55.037291 tun0  Out IP 192.168.38.233.8848 > 192.0.2.1.9992: Flags [S.], seq 810474711, ack 1, win 64240, options [mss 1460], length 0
+// 16:49:55.137003 tun0  In  IP 192.0.2.1.9993 > 192.168.38.233.8848: Flags [S], seq 0, win 1000, length 0
+// 16:49:55.137070 tun0  Out IP 192.168.38.233.8848 > 192.0.2.1.9993: Flags [S.], seq 1204005179, ack 1, win 64240, options [mss 1460], length 0
+// 16:49:55.235813 tun0  In  IP 192.0.2.1.9994 > 192.168.38.233.8848: Flags [S], seq 0, win 1000, length 0
+// 16:49:55.235844 tun0  Out IP 192.168.38.233.8848 > 192.0.2.1.9994: Flags [S.], seq 3313807781, ack 1, win 64240, options [mss 1460], length 0
+// 16:49:55.334474 tun0  In  IP 192.0.2.1.9995 > 192.168.38.233.8848: Flags [S], seq 0, win 1000, length 0
+// 16:49:55.334503 tun0  Out IP 192.168.38.233.8848 > 192.0.2.1.9995: Flags [S.], seq 4173166489, ack 1, win 64240, options [mss 1460], length 0
+// 16:49:55.967926 tun0  Out IP 192.168.38.233.8848 > 192.0.2.1.9991: Flags [S.], seq 3377170713, ack 1, win 64240, options [mss 1460], length 0
+// 16:49:56.046590 tun0  Out IP 192.168.38.233.8848 > 192.0.2.1.9992: Flags [S.], seq 810474711, ack 1, win 64240, options [mss 1460], length 0
+// 16:49:58.050537 tun0  Out IP 192.168.38.233.8848 > 192.0.2.1.9991: Flags [S.], seq 3377170713, ack 1, win 64240, options [mss 1460], length 0
+// 16:49:58.126581 tun0  Out IP 192.168.38.233.8848 > 192.0.2.1.9992: Flags [S.], seq 810474711, ack 1, win 64240, options [mss 1460], length 0
+// 16:50:02.152114 tun0  Out IP 192.168.38.233.8848 > 192.0.2.1.9991: Flags [S.], seq 3377170713, ack 1, win 64240, options [mss 1460], length 0
+// 16:50:02.204846 tun0  Out IP 192.168.38.233.8848 > 192.0.2.1.9992: Flags [S.], seq 810474711, ack 1, win 64240, options [mss 1460], length 0
+//
+//
+// tcp        0      0 192.168.38.233:8848     192.0.2.1:9992          SYN_RECV
+// tcp        0      0 192.168.38.233:8848     192.0.2.1:9991          SYN_RECV
+
++0 `sleep 1000000`
