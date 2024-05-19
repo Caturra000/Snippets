@@ -1,0 +1,37 @@
+--bind_port=8848
+
+0 socket(AF_INET, SOCK_STREAM, 0) = 3
++0 setsockopt(3, SOL_SOCKET, SO_REUSEADDR, [1], 4) = 0
++0 bind(3, ..., ...) = 0
++0 listen(3, 128) = 0
+
+// 显式禁止协议栈发出MSS整数倍的包
++0 `ethtool -K tun0 gro off gso off tso off`
+
+// 这里限制了MSS大小
++.1 < S 0:0(0) win 1000 <mss 50>
++.0 > S. 0:0(0) ack 1 <...>
++.1 < . 1:1(0) ack 1 win 1000
++0 accept(3, ..., ...) = 4
+
+// 设置flag
++0 setsockopt(4, IPPROTO_TCP, TCP_NODELAY, [1], 4) = 0
+
++0 write(4, ..., 105) = 105
++0 write(4, ..., 58) = 58
+
+// 握手后
+// 20:10:28.141555 tun0  In  IP 192.0.2.1.42641 > 192.168.40.43.8848: Flags [.], ack 1, win 1000, length 0
+// 第一个包
+// 20:10:28.141737 tun0  Out IP 192.168.40.43.8848 > 192.0.2.1.42641: Flags [.], seq 1:51, ack 1, win 64240, length 50
+// 20:10:28.141739 tun0  Out IP 192.168.40.43.8848 > 192.0.2.1.42641: Flags [P.], seq 51:101, ack 1, win 64240, length 50
+// 20:10:28.141742 tun0  Out IP 192.168.40.43.8848 > 192.0.2.1.42641: Flags [P.], seq 101:106, ack 1, win 64240, length 5
+// 第二个包
+// 20:10:28.141775 tun0  Out IP 192.168.40.43.8848 > 192.0.2.1.42641: Flags [.], seq 106:156, ack 1, win 64240, length 50
+// 20:10:28.141775 tun0  Out IP 192.168.40.43.8848 > 192.0.2.1.42641: Flags [P.], seq 156:164, ack 1, win 64240, length 8
+// 重试
+// 20:10:28.459348 tun0  Out IP 192.168.40.43.8848 > 192.0.2.1.42641: Flags [.], seq 1:51, ack 1, win 64240, length 50
+// 20:10:29.089369 tun0  Out IP 192.168.40.43.8848 > 192.0.2.1.42641: Flags [.], seq 1:51, ack 1, win 64240, length 50
+// 20:10:30.359441 tun0  Out IP 192.168.40.43.8848 > 192.0.2.1.42641: Flags [.], seq 1:51, ack 1, win 64240, length 50
+
++0 `sleep 1000000`
