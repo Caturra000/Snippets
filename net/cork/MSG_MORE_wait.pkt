@@ -1,0 +1,21 @@
+--bind_port=8848
+
+0 socket(AF_INET, SOCK_STREAM, 0) = 3
++0 setsockopt(3, SOL_SOCKET, SO_REUSEADDR, [1], 4) = 0
++0 bind(3, ..., ...) = 0
++0 listen(3, 128) = 0
+
++.1 < S 0:0(0) win 1000
++.0 > S. 0:0(0) ack 1 <...>
++.1 < . 1:1(0) ack 1 win 1000
++0 accept(3, ..., ...) = 4
+
+// 可以看出相差300ms+
+// 19:27:14.919973 tun0  In  IP 192.0.2.1.56939 > 192.168.14.164.8848: Flags [.], ack 1, win 1000, length 0
+// 19:27:15.239328 tun0  Out IP 192.168.14.164.8848 > 192.0.2.1.56939: Flags [P.], seq 1:2, ack 1, win 64240, length 1
++0 send(4, ..., 1, MSG_MORE) = 1
+// 这里加上1s，测试MSG_MORE最长等多久
+// 如果设为0，那就会发出合并的长度为3的报文
++1 send(4, ..., 2, 0) = 2
+
++0 `sleep 1000000`
