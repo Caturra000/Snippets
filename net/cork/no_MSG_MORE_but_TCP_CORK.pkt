@@ -1,0 +1,24 @@
+--bind_port=8848
+
+0 socket(AF_INET, SOCK_STREAM, 0) = 3
++0 setsockopt(3, SOL_SOCKET, SO_REUSEADDR, [1], 4) = 0
++0 bind(3, ..., ...) = 0
++0 listen(3, 128) = 0
+
++.1 < S 0:0(0) win 1000
++.0 > S. 0:0(0) ack 1 <...>
++.1 < . 1:1(0) ack 1 win 1000
++0 accept(3, ..., ...) = 4
+
+// 设置cork算法
++0 setsockopt(4, IPPROTO_TCP, TCP_CORK, [1], 4) = 0
+
++0 send(4, ..., 1, 0) = 1
++0 send(4, ..., 2, 0) = 2
+
+// 依然是合并的
+// 间隔差不多320ms
+// 20:20:45.179906 tun0  In  IP 192.0.2.1.59933 > 192.168.63.113.8848: Flags [.], ack 1, win 1000, length 0
+// 20:20:45.499329 tun0  Out IP 192.168.63.113.8848 > 192.0.2.1.59933: Flags [P.], seq 1:4, ack 1, win 64240, length 3
+
++0 `sleep 1000000`
