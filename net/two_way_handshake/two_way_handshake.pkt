@@ -1,0 +1,25 @@
+--bind_port=8848
+
+0 socket(AF_INET, SOCK_STREAM, 0) = 3
++0 setsockopt(3, SOL_SOCKET, SO_REUSEADDR, [1], 4) = 0
++0 bind(3, ..., ...) = 0
++0 listen(3, 128) = 0
+
+// 前两次握手
++.1 < S 0:0(0) win 1000
++.0 > S. 0:0(0) ack 1 <...>
+
+// 第三次握手同时携带数据
++.1 < . 1:101(100) ack 1 win 1000
++0 accept(3, ..., ...) = 4
+
+// 相比正常握手过程，对端还多了对数据确认的ack
+// 16:13:34.376744 tun0  In  IP 192.0.2.1.39695 > 192.168.176.155.8848: Flags [S], seq 0, win 1000, length 0
+// 16:13:34.376805 tun0  Out IP 192.168.176.155.8848 > 192.0.2.1.39695: Flags [S.], seq 1808410350, ack 1, win 64240, options [mss 1460], length 0
+// 16:13:34.477485 tun0  In  IP 192.0.2.1.39695 > 192.168.176.155.8848: Flags [.], seq 1:101, ack 1, win 1000, length 100
+// 16:13:34.477520 tun0  Out IP 192.168.176.155.8848 > 192.0.2.1.39695: Flags [.], ack 101, win 64140, length 0
+//
+// netstat结果，建立ESTABLISHED连接
+// tcp      100      0 192.168.176.155:8848    192.0.2.1:39695         ESTABLISHED
+
++0 `sleep 1000000`
