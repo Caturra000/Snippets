@@ -6,4 +6,4 @@ all:
 	rm tcp_state
 
 clean:
-	rm -rf rfc9293 synack ack data data_random finack
+	rm -rf rfc9293 */

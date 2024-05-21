@@ -44,7 +44,6 @@ struct SYN_RCVD: LISTEN {
             "+.0 > S. 0:0(0) ack 1 <...>\n"
         , win);
         in_seq++;
-        out_seq++;
     }
 };
 
@@ -55,6 +54,7 @@ struct ESTAB: SYN_RCVD {
             "+.1 < . 1:1(0) ack 1 win {}\n"
             "+.0 accept(3, ..., ...) = 4\n"
         , win);
+        out_seq++; // S. packet acked.
     }
 };
 
@@ -66,7 +66,6 @@ struct FW1: ESTAB {
         os << std::format(
             "+1  close(4) = 0\n"
         );
-        out_seq++; // F. packet
     }
 };
 
@@ -75,6 +74,7 @@ struct FW2: FW1 {
         os << std::format(
             "+.1 < . 1:1(0) ack 2 win {}\n"
         , win);
+        out_seq++; // F. packet acked.
     }
 };
 
@@ -121,6 +121,18 @@ void make_ack(auto &state) {
     , state.in_seq, state.out_seq+1, state.win);
 }
 
+void make_older_ack(auto &state) {
+    state.os << std::format(
+        "+.1 < . {0}:{0}(0) ack {1} win {2}\n"
+    , state.in_seq, state.out_seq, state.win);
+}
+
+void make_newer_ack(auto &state) {
+    state.os << std::format(
+        "+.1 < . {0}:{0}(0) ack {1} win {2}\n"
+    , state.in_seq, state.out_seq+2, state.win);
+}
+
 void make_data(auto &state) {
     constexpr int len = 10;
     state.os << std::format(
@@ -158,6 +170,12 @@ void make_synack(auto &state) {
     state.in_seq++;
 }
 
+void make_rst(auto &state) {
+    state.os << std::format(
+        "+.1 < R {0}:{0}(0) win {1}\n"
+    , state.in_seq, state.win);
+}
+
 void make_null(auto &) {}
 
 //////////////////////////////////////////////////////////////////
@@ -167,11 +185,15 @@ void make_null(auto &) {}
 template <typename T, typename Ptr = void(*)(T&)>
 auto dir2func = std::unordered_map<std::string_view, Ptr> {
     {"rfc9293",     make_null},
+    {"syn",         make_syn},
     {"synack",      make_synack},
     {"ack",         make_ack},
+    {"older_ack",   make_older_ack},
+    {"newer_ack",   make_newer_ack},
     {"data",        make_data},
     {"data_random", make_data_random},
-    {"finack",      make_finack}
+    {"finack",      make_finack},
+    {"rst",         make_rst}
 };
 
 std::string_view state_names[]{"LISTEN", "SYN_RCVD", "SYN_SENT", "ESTAB", "FW1", "FW2", "TW", "CW", "LA"};
