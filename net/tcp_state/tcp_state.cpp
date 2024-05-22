@@ -111,73 +111,42 @@ struct LA: CW {
 
 //////////////////////////////////////////////////////////////////
 
-void make_ack(auto &state) {
+constexpr struct make_option {
+    char flag {' '};
+    int  len {0};
+    bool is_logical_seq {true};
+    bool ack {true};
+    bool random_ack {false};
+    int  addend_ack {0};
+} pure_ack_packet {.is_logical_seq=false};
+
+template <make_option option = pure_ack_packet>
+void make_single_packet(auto &state) {
+    char ack_flag = option.ack ? '.': ' ';
+    std::string ack_str;
+    if(option.ack) {
+        int ack_num = (option.random_ack ? 19260817 : state.out_seq)
+                    +  option.addend_ack;
+        ack_str = std::format("ack {}", ack_num);
+    }
+
     state.os << std::format(
-        "+.1 < . {0}:{0}(0) ack {1} win {2}\n"
-    , state.in_seq, state.out_seq, state.win);
+        "+.1 < {}{} {}:{}({}) {} win {}\n"
+    , option.flag, ack_flag
+    , state.in_seq, state.in_seq+option.len, option.len
+    , ack_str, state.win);
+
+    if(option.len || option.is_logical_seq) {
+        state.in_seq += std::max(option.len, 1);
+    }
 }
 
-void make_older_ack(auto &state) {
-    state.os << std::format(
-        "+.1 < . {0}:{0}(0) ack {1} win {2}\n"
-    , state.in_seq, state.out_seq-1, state.win);
-}
-
-void make_newer_ack(auto &state) {
-    state.os << std::format(
-        "+.1 < . {0}:{0}(0) ack {1} win {2}\n"
-    , state.in_seq, state.out_seq+1, state.win);
-}
-
-void make_data(auto &state) {
-    constexpr int len = 10;
-    state.os << std::format(
-        "+.1 < P. {}:{}({}) ack {} win {}\n"
-    , state.in_seq, state.in_seq+len, len, state.out_seq, state.win);
-    state.in_seq += len;
-}
-
-void make_data_random(auto &state) {
-    constexpr int len = 10;
-    state.os << std::format(
-        "+.1 < P. {}:{}({}) ack 56789 win {}\n"
-    , state.in_seq, state.in_seq+len, len, state.win);
-    state.in_seq += len;
-}
-
-void make_finack(auto &state) {
-    state.os << std::format(
-        "+.1 < F. {0}:{0}(0) ack {1} win {2}\n"
-    , state.in_seq, state.out_seq, state.win);
-    state.in_seq++;
-}
-
-void make_syn(auto &state) {
-    state.os << std::format(
-        "+.1 < S {0}:{0}(0) win {1}\n"
-    , state.in_seq, state.win);
-    state.in_seq++;
-}
-
-void make_synack(auto &state) {
-    state.os << std::format(
-        "+.1 < S. {0}:{0}(0) ack {1} win {2}\n"
-    , state.in_seq, state.out_seq, state.win);
-    state.in_seq++;
-}
-
-void make_rst(auto &state) {
-    state.os << std::format(
-        "+.1 < R {0}:{0}(0) win {1}\n"
-    , state.in_seq, state.win);
+template <auto ...options>
+void make_packet(auto &state) {
+    (make_single_packet<options>(state), ...);
 }
 
 void make_null(auto &) {}
-
-void make_figure5_note1(auto &state) {
-    make_syn(state);
-    make_rst(state);
-}
 
 //////////////////////////////////////////////////////////////////
 
@@ -186,16 +155,18 @@ void make_figure5_note1(auto &state) {
 template <typename T, typename Ptr = void(*)(T&)>
 auto dir2func = std::unordered_map<std::string_view, Ptr> {
     {"rfc9293",     make_null},
-    {"syn",         make_syn},
-    {"synack",      make_synack},
-    {"ack",         make_ack},
-    {"older_ack",   make_older_ack},
-    {"newer_ack",   make_newer_ack},
-    {"data",        make_data},
-    {"data_random", make_data_random},
-    {"finack",      make_finack},
-    {"rst",         make_rst},
-    {"note1",       make_figure5_note1}
+    {"ack",         make_packet<pure_ack_packet>},
+    {"synack",      make_packet<make_option{.flag='S'}>},
+    {"syn",         make_packet<make_option{.flag='S', .ack=false}>},
+    {"finack",      make_packet<make_option{.flag='F'}>},
+    {"fin",         make_packet<make_option{.flag='F', .ack=false}>},
+    {"rstack",      make_packet<make_option{.flag='R'}>},
+    {"rst",         make_packet<make_option{.flag='R', .ack=false}>},
+    {"data",        make_packet<make_option{.flag='P', .len=10}>},
+    {"data_random", make_packet<make_option{.flag='P', .len=10, .random_ack=true}>},
+    {"older_ack",   make_packet<make_option{.is_logical_seq=false, .addend_ack=-1}>},
+    {"newer_ack",   make_packet<make_option{.is_logical_seq=false, .addend_ack=+1}>},
+    {"note1",       make_packet<make_option{.flag='S', .ack=false}, make_option{.flag='R', .ack=false}>}
 };
 
 std::string_view states[]{"LISTEN", "SYN_RCVD", "SYN_SENT", "ESTAB", "FW1", "FW2", "TW", "CW", "LA"};
