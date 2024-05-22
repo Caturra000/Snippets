@@ -9,105 +9,107 @@ struct Connection {
     ~Connection() {os << "+.0 `sleep 1000000`\n";}
 };
 
-struct LISTEN: Connection {
-    LISTEN(std::ostream &os): Connection(os) {
-        os <<
-            "--bind_port=8848\n"
-            "  0 socket(..., SOCK_STREAM, IPPROTO_TCP) = 3\n"
-            "+.0 setsockopt(3, SOL_SOCKET, SO_REUSEADDR, [1], 4) = 0\n"
-            "+.0 bind(3, ..., ...) = 0\n"
-            "+.0 listen(3, 128) = 0\n";
-    }
+// 为了避免在构造函数里拉面条
+void init(auto &state);
+
+template <std::derived_from<Connection> Source, auto UNIQUE_using = [](){}>
+struct From: Source {
+    From(std::ostream &os): Source(os) { init(*this); }
 };
 
-struct SYN_SENT: Connection {
-    SYN_SENT(std::ostream &os): Connection(os) {
-        // 此时8848作为client，必须要bind绑定
-        os <<
-            "--bind_port=8848\n"
-            "--connect_port=38848\n"
-            "--tolerance_usecs=10000\n"
-            "  0 socket(..., SOCK_STREAM, IPPROTO_TCP) = 3\n"
-            "+.0 bind(3, ..., ...) = 0\n"
-            "+.0 fcntl(3, F_SETFL, O_RDWR | O_NONBLOCK) = 0\n"
-            "+.1 connect(3, ..., ...) = -1\n"
-            "+.0 fcntl(3, F_SETFL, O_RDWR) = 0\n"
-            "+.0 > S  0:0(0) <...>\n";
-        out_seq++;
-    }
-};
+using LISTEN   = From<Connection>;
+using SYN_RCVD = From<LISTEN>;
+using ESTAB    = From<SYN_RCVD>;
+using FW1      = From<ESTAB>;
+using FW2      = From<FW1>;
+using TW       = From<FW2>;
 
-struct SYN_RCVD: LISTEN {
-    SYN_RCVD(std::ostream &os): LISTEN(os) {
-        os << std::format(
-            "+.1 < S 0:0(0) win {0}\n"
-            "+.0 > S. 0:0(0) ack 1 <...>\n"
-        , win);
-        in_seq++;
-    }
-};
+// SYN_SENT和LISTEN并非同一类型
+using SYN_SENT = From<Connection>;
+using CW       = From<SYN_SENT>;
+using LA       = From<CW>;
 
-// 注意这个是基于被动打开而建立的
-struct ESTAB: SYN_RCVD {
-    ESTAB(std::ostream &os): SYN_RCVD(os) {
-        os << std::format(
-            "+.1 < . 1:1(0) ack 1 win {}\n"
-            "+.0 accept(3, ..., ...) = 4\n"
-        , win);
-        out_seq++; // S. packet acked.
-    }
-};
+void init(LISTEN &state) {
+    state.os <<
+        "--bind_port=8848\n"
+        "  0 socket(..., SOCK_STREAM, IPPROTO_TCP) = 3\n"
+        "+.0 setsockopt(3, SOL_SOCKET, SO_REUSEADDR, [1], 4) = 0\n"
+        "+.0 bind(3, ..., ...) = 0\n"
+        "+.0 listen(3, 128) = 0\n";
+}
 
-struct FW1: ESTAB {
-    FW1(std::ostream &os): ESTAB(os) {
-        // 虽然shutdown()也能触发FW1
-        // 后续收到ACK of FIN也能进入FW2
-        // 但是再次发出FIN无法进入TW
-        os << std::format(
-            "+1  close(4) = 0\n"
-        );
-    }
-};
+void init(SYN_RCVD &state) {
+    state.os << std::format(
+        "+.1 < S 0:0(0) win {0}\n"
+        "+.0 > S. 0:0(0) ack 1 <...>\n"
+    , state.win);
+    state.in_seq++;
+}
 
-struct FW2: FW1 {
-    FW2(std::ostream &os): FW1(os) {
-        os << std::format(
-            "+.1 < . 1:1(0) ack 2 win {}\n"
-        , win);
-        out_seq++; // F. packet acked.
-    }
-};
+// 注意这是基于被动打开的连接
+void init(ESTAB &state) {
+    state.os << std::format(
+        "+.1 < . 1:1(0) ack 1 win {}\n"
+        "+.0 accept(3, ..., ...) = 4\n"
+    , state.win);
+    state.out_seq++; // S. packet acked.
+}
 
-struct TW: FW2 {
-    TW(std::ostream &os): FW2(os) {
-        os << std::format(
-            "+.1 < F. 1:1(0) win {}\n"
-        , win);
-        in_seq++;
-    }
-};
+void init(FW1 &state) {
+    // 虽然shutdown()也能触发FW1
+    // 后续收到ACK of FIN也能进入FW2
+    // 但是再次发出FIN无法进入TW，而close()可以
+    state.os << std::format(
+        "+1  close(4) = 0\n"
+    );
+}
 
-struct CW: SYN_SENT {
-    CW(std::ostream &os): SYN_SENT(os) {
-        os << std::format(
-            "+.1 < S. 0:0(0) ack 1 win {0}\n"
-            "+.0 > . 1:1(0) ack 1\n"
+void init(FW2 &state) {
+    state.os << std::format(
+        "+.1 < . 1:1(0) ack 2 win {}\n"
+    , state.win);
+    state.out_seq++; // F. packet acked.
+}
 
-            "+.0 < F. 1:1(0) win {0}\n"
-            "+.0 > . 1:1(0) ack 2\n"
-        , win);
-        in_seq += 2;
-    }
-};
+void init(TW &state) {
+    state.os << std::format(
+        "+.1 < F. 1:1(0) win {}\n"
+    , state.win);
+    state.in_seq++;
+}
 
-struct LA: CW {
-    LA(std::ostream &os): CW(os) {
-        os <<
-            "+.1 shutdown(3, SHUT_WR) = 0\n"
-            "+.0 > F. 1:1(0) ack 2\n";
-        out_seq++;
-    }
-};
+void init(SYN_SENT &state) {
+    // 此时8848作为client，必须要bind绑定
+    state.os <<
+        "--bind_port=8848\n"
+        "--connect_port=38848\n"
+        "--tolerance_usecs=10000\n"
+        "  0 socket(..., SOCK_STREAM, IPPROTO_TCP) = 3\n"
+        "+.0 bind(3, ..., ...) = 0\n"
+        "+.0 fcntl(3, F_SETFL, O_RDWR | O_NONBLOCK) = 0\n"
+        "+.1 connect(3, ..., ...) = -1\n"
+        "+.0 fcntl(3, F_SETFL, O_RDWR) = 0\n"
+        "+.0 > S  0:0(0) <...>\n";
+    state.out_seq++;
+}
+
+void init(CW &state) {
+    state.os << std::format(
+        "+.1 < S. 0:0(0) ack 1 win {0}\n"
+        "+.0 > . 1:1(0) ack 1\n"
+
+        "+.0 < F. 1:1(0) win {0}\n"
+        "+.0 > . 1:1(0) ack 2\n"
+    , state.win);
+    state.in_seq += 2;
+}
+
+void init(LA &state) {
+    state.os <<
+        "+.1 shutdown(3, SHUT_WR) = 0\n"
+        "+.0 > F. 1:1(0) ack 2\n";
+    state.out_seq++;
+}
 
 //////////////////////////////////////////////////////////////////
 
