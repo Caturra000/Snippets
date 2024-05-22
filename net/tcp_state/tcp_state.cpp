@@ -87,10 +87,6 @@ struct TW: FW2 {
     }
 };
 
-// TODO
-// struct CLOSING: FW1 {
-// };
-
 struct CW: SYN_SENT {
     CW(std::ostream &os): SYN_SENT(os) {
         os << std::format(
@@ -118,26 +114,26 @@ struct LA: CW {
 void make_ack(auto &state) {
     state.os << std::format(
         "+.1 < . {0}:{0}(0) ack {1} win {2}\n"
-    , state.in_seq, state.out_seq+1, state.win);
+    , state.in_seq, state.out_seq, state.win);
 }
 
 void make_older_ack(auto &state) {
     state.os << std::format(
         "+.1 < . {0}:{0}(0) ack {1} win {2}\n"
-    , state.in_seq, state.out_seq, state.win);
+    , state.in_seq, state.out_seq-1, state.win);
 }
 
 void make_newer_ack(auto &state) {
     state.os << std::format(
         "+.1 < . {0}:{0}(0) ack {1} win {2}\n"
-    , state.in_seq, state.out_seq+2, state.win);
+    , state.in_seq, state.out_seq+1, state.win);
 }
 
 void make_data(auto &state) {
     constexpr int len = 10;
     state.os << std::format(
         "+.1 < P. {}:{}({}) ack {} win {}\n"
-    , state.in_seq, state.in_seq+len, len, state.out_seq+1, state.win);
+    , state.in_seq, state.in_seq+len, len, state.out_seq, state.win);
     state.in_seq += len;
 }
 
@@ -151,8 +147,8 @@ void make_data_random(auto &state) {
 
 void make_finack(auto &state) {
     state.os << std::format(
-        "+.1 < F. {0}:{0}(0) win {1}\n"
-    , state.in_seq, state.win);
+        "+.1 < F. {0}:{0}(0) ack {1} win {2}\n"
+    , state.in_seq, state.out_seq, state.win);
     state.in_seq++;
 }
 
@@ -166,7 +162,7 @@ void make_syn(auto &state) {
 void make_synack(auto &state) {
     state.os << std::format(
         "+.1 < S. {0}:{0}(0) ack {1} win {2}\n"
-    , state.in_seq, state.out_seq+1, state.win);
+    , state.in_seq, state.out_seq, state.win);
     state.in_seq++;
 }
 
@@ -178,9 +174,14 @@ void make_rst(auto &state) {
 
 void make_null(auto &) {}
 
+void make_figure5_note1(auto &state) {
+    make_syn(state);
+    make_rst(state);
+}
+
 //////////////////////////////////////////////////////////////////
 
-// rfc9293目录是未经任何修改报文，其文件名（state_names）对应于连接可达到的状态
+// rfc9293目录是未经任何修改报文，其文件名（states）对应于连接可达到的状态
 // 其余目录会在rfc9293的基础上使用make_前缀函数构造多余的报文
 template <typename T, typename Ptr = void(*)(T&)>
 auto dir2func = std::unordered_map<std::string_view, Ptr> {
@@ -193,11 +194,13 @@ auto dir2func = std::unordered_map<std::string_view, Ptr> {
     {"data",        make_data},
     {"data_random", make_data_random},
     {"finack",      make_finack},
-    {"rst",         make_rst}
+    {"rst",         make_rst},
+    {"note1",       make_figure5_note1}
 };
 
-std::string_view state_names[]{"LISTEN", "SYN_RCVD", "SYN_SENT", "ESTAB", "FW1", "FW2", "TW", "CW", "LA"};
-using State_types = std::tuple< LISTEN,   SYN_RCVD,   SYN_SENT,   ESTAB,   FW1,   FW2,   TW,   CW,   LA >;
+std::string_view states[]{"LISTEN", "SYN_RCVD", "SYN_SENT", "ESTAB", "FW1", "FW2", "TW", "CW", "LA"};
+using State_types =
+               std::tuple< LISTEN,   SYN_RCVD,   SYN_SENT,   ESTAB,   FW1,   FW2,   TW,   CW,   LA >;
 
 //////////////////////////////////////////////////////////////////
 
@@ -208,11 +211,11 @@ int main() {
             using State = std::tuple_element_t<I, State_types>;
             for(auto &&[dir, func] : dir2func<State>) {
                 std::filesystem::create_directories(dir);
-                auto path = enable_strcat + dir.data() + "/" + state_names[I].data();
+                auto path = enable_strcat + dir.data() + "/" + states[I].data();
                 std::ofstream filestream(path);
                 State state(filestream);
                 func(state);
             }
         }.template operator()<Is>(), ...);
-    }(std::make_index_sequence<std::size(state_names)>{});
+    }(std::make_index_sequence<std::size(states)>{});
 }
