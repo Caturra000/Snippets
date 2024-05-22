@@ -148,15 +148,13 @@ void make_packet(auto &state) {
     (make_single_packet<options>(state), ...);
 }
 
-void make_null(auto &) {}
-
 //////////////////////////////////////////////////////////////////
 
 // rfc9293目录是未经任何修改报文，其文件名（states）对应于连接可达到的状态
 // 其余目录会在rfc9293的基础上使用make_前缀函数构造多余的报文
 template <typename T, typename Ptr = void(*)(T&)>
 auto dir2func = std::unordered_map<std::string_view, Ptr> {
-    {"rfc9293",     make_null},
+    {"rfc9293",     make_packet},
     {"ack",         make_packet<pure_ack_packet>},
     {"synack",      make_packet<make_option{.flag='S'}>},
     {"syn",         make_packet<make_option{.flag='S', .ack=false}>},
