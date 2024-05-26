@@ -115,16 +115,18 @@ void add_edge(CW &, LA &state) {
 
 //////////////////////////////////////////////////////////////////
 
-constexpr struct make_option {
+constexpr struct packet {
     char flag {' '};
     int  len {0};
-    bool logical_seq {true};
+    bool logical_seq {flag != ' '};
     bool ack {true};
     bool random_ack {false};
     int  addend_ack {0};
-} pure_ack_packet {.logical_seq=false};
+    int  seq {-1};
+    int  win {1000};
+} default_ack_packet;
 
-template <make_option option = pure_ack_packet>
+template <packet option = default_ack_packet>
 void make_single_packet(auto &state) {
     char ack_flag = option.ack ? '.': ' ';
     std::string ack_str;
@@ -134,15 +136,34 @@ void make_single_packet(auto &state) {
         ack_str = std::format("ack {}", ack_num);
     }
 
+    int seq_start = option.seq < 0 ? state.in_seq : option.seq;
+    int seq_end = seq_start + option.len;
+
     state.os << std::format(
         "+.1 < {}{} {}:{}({}) {} win {}\n"
     , option.flag, ack_flag
-    , state.in_seq, state.in_seq+option.len, option.len
-    , ack_str, state.win);
+    , seq_start, seq_end, option.len
+    , ack_str, option.win);
 
-    if(option.len || option.logical_seq) {
+    if((option.len || option.logical_seq) && ~option.seq) {
         state.in_seq += std::max(option.len, 1);
     }
+}
+
+constexpr struct write_packet {
+    int len {10};
+} default_write_packet;
+
+template <write_packet write_option>
+void make_single_packet(auto &state) {
+    int len = write_option.len;
+    int seq_start = state.out_seq;
+    int seq_end = seq_start + write_option.len;
+
+    state.os << std::format(
+        "+.1 write(4, ..., {0}) = {0}\n"
+        "+.0 > P. {1}:{2}({0}) ack {3} <...>\n"
+    , len, seq_start, seq_end, state.in_seq);
 }
 
 template <auto ...options>
@@ -157,18 +178,22 @@ void make_packet(auto &state) {
 template <typename T, typename Ptr = void(*)(T&)>
 auto dir2func = std::unordered_map<std::string_view, Ptr> {
     {"rfc9293",     make_packet},
-    {"ack",         make_packet<pure_ack_packet>},
-    {"syn",         make_packet<make_option{.flag='S', .ack=false}>},
-    {"fin",         make_packet<make_option{.flag='F', .ack=false}>},
-    {"rst",         make_packet<make_option{.flag='R', .ack=false}>},
-    {"synack",      make_packet<make_option{.flag='S'}>},
-    {"finack",      make_packet<make_option{.flag='F'}>},
-    {"rstack",      make_packet<make_option{.flag='R'}>},
-    {"data",        make_packet<make_option{.flag='P', .len=10}>},
-    {"data_random", make_packet<make_option{.flag='P', .len=10, .random_ack=true}>},
-    {"older_ack",   make_packet<make_option{.logical_seq=false, .addend_ack=-1}>},
-    {"newer_ack",   make_packet<make_option{.logical_seq=false, .addend_ack=+1}>},
-    {"note1",       make_packet<make_option{.flag='S', .ack=false}, make_option{.flag='R', .ack=false}>}
+    {"ack",         make_packet<default_ack_packet>},
+    {"syn",         make_packet<packet{.flag='S', .ack=false}>},
+    {"fin",         make_packet<packet{.flag='F', .ack=false}>},
+    {"rst",         make_packet<packet{.flag='R', .ack=false}>},
+    {"synack",      make_packet<packet{.flag='S'}>},
+    {"finack",      make_packet<packet{.flag='F'}>},
+    {"rstack",      make_packet<packet{.flag='R'}>},
+    {"data",        make_packet<packet{.flag='P', .len=10}>},
+    {"data_random", make_packet<packet{.flag='P', .len=10, .random_ack=true}>},
+    {"older_ack",   make_packet<packet{.addend_ack=-1}>},
+    {"newer_ack",   make_packet<packet{.addend_ack=+1}>},
+    {"write",       make_packet<default_write_packet>},
+    {"challenge1",  make_packet<write_packet{.len=8}, packet{.flag='R', .seq=1 /* reset */}>},
+    {"challenge2",  make_packet<write_packet{.len=8}, packet{.flag='R', .seq=3 /* challenge */}>},
+    {"challenge3",  make_packet<write_packet{.len=8}, packet{.flag='R', .seq=0 /* ignore */}>},
+    {"note1",       make_packet<packet{.flag='S', .ack=false}, packet{.flag='R', .ack=false}>},
 };
 
 std::string_view states[]{"LISTEN", "SYN_RCVD", "SYN_SENT", "ESTAB", "FW1", "FW2", "TW", "CW", "LA"};
