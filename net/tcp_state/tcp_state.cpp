@@ -123,7 +123,6 @@ constexpr struct packet {
     bool random_ack {false};
     int  addend_ack {0};
     int  seq {-1};
-    int  win {1000};
 } default_ack_packet;
 
 template <packet option = default_ack_packet>
@@ -136,16 +135,17 @@ void make_single_packet(auto &state) {
         ack_str = std::format("ack {}", ack_num);
     }
 
-    int seq_start = option.seq < 0 ? state.in_seq : option.seq;
+    bool use_state_seq = option.seq < 0;
+    int seq_start = use_state_seq ? state.in_seq : option.seq;
     int seq_end = seq_start + option.len;
 
     state.os << std::format(
         "+.1 < {}{} {}:{}({}) {} win {}\n"
     , option.flag, ack_flag
     , seq_start, seq_end, option.len
-    , ack_str, option.win);
+    , ack_str, state.win);
 
-    if((option.len || option.logical_seq) && ~option.seq) {
+    if((option.len || option.logical_seq) && use_state_seq) {
         state.in_seq += std::max(option.len, 1);
     }
 }
@@ -190,10 +190,10 @@ auto dir2func = std::unordered_map<std::string_view, Ptr> {
     {"older_ack",   make_packet<packet{.addend_ack=-1}>},
     {"newer_ack",   make_packet<packet{.addend_ack=+1}>},
     {"write",       make_packet<default_write_packet>},
+    {"note1",       make_packet<packet{.flag='S', .ack=false}, packet{.flag='R', .ack=false}>},
     {"challenge1",  make_packet<write_packet{.len=8}, packet{.flag='R', .seq=1 /* reset */}>},
     {"challenge2",  make_packet<write_packet{.len=8}, packet{.flag='R', .seq=3 /* challenge */}>},
     {"challenge3",  make_packet<write_packet{.len=8}, packet{.flag='R', .seq=0 /* ignore */}>},
-    {"note1",       make_packet<packet{.flag='S', .ack=false}, packet{.flag='R', .ack=false}>},
 };
 
 std::string_view states[]{"LISTEN", "SYN_RCVD", "SYN_SENT", "ESTAB", "FW1", "FW2", "TW", "CW", "LA"};
