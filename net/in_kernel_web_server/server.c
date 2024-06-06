@@ -5,10 +5,15 @@
 #include <linux/socket.h>
 #include <net/sock.h>
 #include <linux/kthread.h>
+#include <linux/eventpoll.h>
+#include <linux/fdtable.h>
+#include <linux/slab.h>
+// Modified epoll header
+#include <linux/fs.h>
 
 #define SERVER_PORT 8848
-#define NO_FAIL(reason, str, finally) \
- if(ret < 0) {err_msg = reason; goto finally;}
+#define NO_FAIL(reason, err_str, finally) \
+ if(unlikely(ret < 0)) {err_str = reason; goto finally;}
 
 static struct socket *server_socket = NULL;
 static struct task_struct *thread_st;
@@ -21,7 +26,7 @@ static int create_server_socket(void) {
     char *err_msg;
 
     ret = sock_create(PF_INET, SOCK_STREAM, IPPROTO_TCP, &server_socket);
-    NO_FAIL("Failed to create socket\n", err_msg, err_routine);
+    NO_FAIL("Failed to create socket", err_msg, done);
 
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
@@ -29,17 +34,17 @@ static int create_server_socket(void) {
     server_addr.sin_port = htons(SERVER_PORT);
 
     ret = sock_setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, koptval, sizeof(optval));
-    NO_FAIL("Failed to set SO_REUSEADDR\n", err_msg, err_routine);
+    NO_FAIL("Failed to set SO_REUSEADDR", err_msg, done);
 
     ret = kernel_bind(server_socket, (struct sockaddr *)&server_addr, sizeof(server_addr));
-    NO_FAIL("Failed to bind socket\n", err_msg, err_routine);
+    NO_FAIL("Failed to bind socket", err_msg, done);
 
-    ret = kernel_listen(server_socket, 5);
-    NO_FAIL("Failed to listen on socket\n", err_msg, err_routine);
+    ret = kernel_listen(server_socket, 1024);
+    NO_FAIL("Failed to listen on socket", err_msg, done);
 
     return 0;
 
-err_routine:
+done:
     printk(KERN_ERR "%s", err_msg);
     if(server_socket) sock_release(server_socket);
     return ret;
@@ -53,39 +58,66 @@ static int server_thread(void *data) {
     struct kvec vec;
     struct msghdr msg;
     char *err_msg;
+    int epfd = -1;
+    const int EVENTS = 1024;
+    int nevents;
+    struct epoll_event *events;
+    struct epoll_event accept_event;
+    struct file *file;
+    int fd;
+
+    events = kmalloc(EVENTS * sizeof(struct epoll_event), GFP_KERNEL);
+
+    ret = do_epoll_create(0);
+    NO_FAIL("Failed to create epoll instance", err_msg, done);
+    epfd = ret;
+
+    file = sock_alloc_file(server_socket, 0 /* NONBLOCK? */, NULL);
+    if(IS_ERR(file)) {
+        ret = -1;
+        NO_FAIL("Failed to allocate file", err_msg, done);
+    }
+    ret = get_unused_fd_flags(0);
+    NO_FAIL("Failed to get fd", err_msg, done);
+    fd = ret;
+    fd_install(fd, file);
+
+    memset(&accept_event, 0, sizeof(struct epoll_event));
+    memcpy(&accept_event.data, &server_socket, sizeof(struct socket *));
+    accept_event.events = EPOLLIN;
+    ret = do_epoll_ctl(epfd, EPOLL_CTL_ADD, fd, &accept_event, false /* true for io_uring only */);
+    NO_FAIL("Failed to register acceptor event", err_msg, done);
 
     allow_signal(SIGKILL);
 
     while(!kthread_should_stop()) {
-        ret = sock_create_lite(PF_INET, SOCK_STREAM, IPPROTO_TCP, &conn_socket);
-        NO_FAIL("Failed to create connection socket\n", err_msg, err_routine);
+        ret = do_epoll_wait(epfd, &events[0], EVENTS, NULL /* wait_ms == -1 */);
+        NO_FAIL("Failed to wait epoll events", err_msg, done);
+        nevents = ret;
+        if(nevents > 0) {
+            ret = kernel_accept(server_socket, &conn_socket, 0);
+            NO_FAIL("Failed to accept connection", err_msg, done);
 
-        ret = kernel_accept(server_socket, &conn_socket, 0);
-        NO_FAIL("Failed to accept connection\n", err_msg, err_routine);
+            memset(&msg, 0, sizeof(msg));
+            vec.iov_base = response;
+            vec.iov_len = strlen(response);
 
-        memset(&msg, 0, sizeof(msg));
-        vec.iov_base = response;
-        vec.iov_len = strlen(response);
+            ret = kernel_sendmsg(conn_socket, &msg, &vec, 1, vec.iov_len);
+            NO_FAIL("Failed to send response", err_msg, done);
 
-        ret = kernel_sendmsg(conn_socket, &msg, &vec, 1, vec.iov_len);
-        NO_FAIL("Failed to send response\n", err_msg, err_routine);
-
-        sock_release(conn_socket);
+            sock_release(conn_socket);
+            conn_socket = NULL;
+        }
     }
 
-    return 0;
-
-err_routine:
-    printk(KERN_ERR "%s", err_msg);
+done:
+    if(ret < 0) printk(KERN_ERR "%s: %d\n", err_msg, ret);
+    if(~epfd) close_fd(epfd);
+    if(events) kfree(events);
     if(conn_socket) sock_release(conn_socket);
+    thread_st = NULL;
     return ret;
 }
-
-// static void reactor() {
-//     int epfd = do_epoll_create();
-//     struct timespec64 to;
-//     do_epoll_wait(epfd, NULL, 1, get_timespec64(&to, 1));
-// }
 
 static int __init simple_web_server_init(void) {
     int ret;
