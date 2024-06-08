@@ -139,11 +139,12 @@ static int wrk_parse(struct socket_context *context, const char *buffer, int nre
 static void event_loop(int epfd, struct epoll_event *events, const int nevents,
                        int server_fd, struct socket *server_socket, struct socket_context sockets[],
                        char *read_buffer, const size_t READ_BUFFER, struct kvec *request_vec,
-                       const int response_content_len, struct kvec response_vec[], const int MAX_RESPONSES,
+                       const int content_len, struct kvec response_vec[], const int MAX_RESPONSES,
                        struct msghdr *msg) {
     int ret;
 
     __poll_t next_event;
+    __poll_t current_event;
     int client_fd;
     struct socket_context *client_context;
     struct socket *client_socket;
@@ -157,6 +158,7 @@ static void event_loop(int epfd, struct epoll_event *events, const int nevents,
             kernel_accept(server_socket, &client_socket, 0);
             update_event(epfd, EPOLL_CTL_ADD, EPOLLIN | EPOLLHUP, sockets, -1, client_socket);
         } else {
+            current_event = e->events;
             next_event = e->events;
             client_fd = e->data;
             client_context = &sockets[client_fd];
@@ -192,7 +194,7 @@ static void event_loop(int epfd, struct epoll_event *events, const int nevents,
 
                 // Short write?
                 ret = kernel_sendmsg(client_socket, msg, &response_vec[0],
-                        responses, response_content_len * responses);
+                        responses, content_len * responses);
                 if(ret < 0) {
                     pr_warn("kernel_sendmsg: %d\n", ret);
                     if(ret != -EINTR) e->events = EPOLLHUP;
@@ -202,13 +204,14 @@ static void event_loop(int epfd, struct epoll_event *events, const int nevents,
                 }
             }
             if(e->events & EPOLLHUP && !(e->events & EPOLLIN)) {
-                next_event = EPOLLHUP;
                 ret = update_event(epfd, EPOLL_CTL_DEL, 0, sockets, client_fd, client_socket);
                 if(unlikely(ret < 0)) pr_warn("update_event[HUP]: %d\n", ret);
                 close_fd(client_fd);
                 memset(client_context, 0, sizeof (struct socket_context));
             }
-            if(likely(e->events != EPOLLHUP)) {
+            // Not necessary to compare the current event,
+            // but avoid duplicate syscall.
+            if(e->events != EPOLLHUP && current_event != next_event) {
                 ret = update_event(epfd, EPOLL_CTL_MOD, next_event,
                                     sockets, client_fd, client_socket);
                 if(unlikely(ret < 0)) pr_warn("update_event[~HUP]: %d\n", ret);
@@ -216,6 +219,7 @@ static void event_loop(int epfd, struct epoll_event *events, const int nevents,
         }
     }
 }
+
 
 static int server_thread(void *data) {
     /// Control flows.
@@ -284,7 +288,7 @@ static int server_thread(void *data) {
     server_fd = ret;
 
     while(!kthread_should_stop()) {
-        ret = do_epoll_wait(epfd, &events[0], EVENTS, NULL /* INF ms */);
+        ret = do_epoll_wait(epfd, events, EVENTS, NULL /* INF ms */);
         NO_FAIL("do_epoll_wait", err_msg, done);
         nevents = ret;
         event_loop(epfd, events, nevents, // Epoll
@@ -317,13 +321,13 @@ static int each_server_init(struct thread_context *context) {
     }
 
     context->thread = kthread_run(server_thread, context, "in_kernel_web_server");
-    pr_info("worker thread id: %d\n", context->thread->pid);
 
     if(IS_ERR(context->thread)) {
         pr_err("Failed to create thread\n");
         return PTR_ERR(context->thread);
     }
 
+    pr_info("worker thread id: %d\n", context->thread->pid);
     return 0;
 }
 
