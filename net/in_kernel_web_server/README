@@ -1,0 +1,6 @@
+server_kernel.c: 内核态的web server实现
+server_user.c: 用户态的web server实现
+
+可分别使用make kernel和make user构建
+
+更多细节：https://www.bluepuni.com/archives/in-kernel-web-server/
