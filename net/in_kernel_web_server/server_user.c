@@ -190,7 +190,7 @@ static void event_loop(int epfd, struct epoll_event *events, const int nevents,
                     next_event |= EPOLLIN;
                 }
             }
-            if(e->events & EPOLLHUP && !(e->events & EPOLLIN)) {
+            if((e->events & EPOLLHUP) && !(e->events & EPOLLIN)) {
                 ret = update_event(epfd, EPOLL_CTL_DEL, 0, sockets, client_fd);
                 if(unlikely(ret < 0)) pr_warn("update_event[HUP]: %d, %d\n", ret, errno);
                 close(client_fd);

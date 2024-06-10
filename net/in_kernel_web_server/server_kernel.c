@@ -170,7 +170,6 @@ static void event_loop(int epfd, struct epoll_event *events, const int nevents,
                     e->events = EPOLLHUP;
                 // May be an RST packet.
                 } else if(unlikely(ret < 0)) {
-                    pr_warn("kernel_recvmsg: %d\n", ret);
                     if(ret != -EINTR) e->events = EPOLLHUP;
                 // Slower path, may call (do_)epoll_ctl().
                 } else {
@@ -203,7 +202,7 @@ static void event_loop(int epfd, struct epoll_event *events, const int nevents,
                     next_event |= EPOLLIN;
                 }
             }
-            if(e->events & EPOLLHUP && !(e->events & EPOLLIN)) {
+            if((e->events & EPOLLHUP) && !(e->events & EPOLLIN)) {
                 ret = update_event(epfd, EPOLL_CTL_DEL, 0, sockets, client_fd, client_socket);
                 if(unlikely(ret < 0)) pr_warn("update_event[HUP]: %d\n", ret);
                 close_fd(client_fd);
