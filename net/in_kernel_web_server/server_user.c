@@ -37,7 +37,11 @@ struct socket_context {
     size_t responses;
 };
 
+// 1st argument.
 static int num_threads = 1;
+// 2nd argument. Set any non-zero number to enable zerocopy feature.
+// https://www.kernel.org/doc/html/v6.4/networking/msg_zerocopy.html
+static int zerocopy_flag = 0;
 
 static int create_server_socket(void) {
     int ret;
@@ -131,14 +135,15 @@ static int wrk_parse(struct socket_context *context, const char *buffer, int nre
 
 static void event_loop(int epfd, struct epoll_event *events, const int nevents,
                        int server_fd, struct socket_context sockets[],
-                       char *read_buffer, struct iovec *request_vec,
-                       struct iovec response_vec[], const int MAX_RESPONSES) {
+                       struct msghdr *read_msg, struct msghdr * write_msg,
+                       const int MAX_RESPONSES) {
     int ret;
 
     uint32_t next_event;
     uint32_t current_event;
     int client_fd;
     struct socket_context *client_context;
+    const char *read_buffer;
 
     int requests;
     int responses;
@@ -153,7 +158,7 @@ static void event_loop(int epfd, struct epoll_event *events, const int nevents,
             client_fd = e->data.fd;
             client_context = &sockets[client_fd];
             if(e->events & EPOLLIN) {
-                ret = readv(client_fd, request_vec, 1);
+                ret = recvmsg(client_fd, read_msg, 0);
                 // Fast check: Maybe a FIN packet and nothing is buffered (!EPOLLOUT).
                 if(ret == 0 && e->events == EPOLLIN) {
                     e->events = EPOLLHUP;
@@ -162,6 +167,7 @@ static void event_loop(int epfd, struct epoll_event *events, const int nevents,
                     if(errno != EINTR) e->events = EPOLLHUP;
                 // Slower path, may call (do_)epoll_ctl().
                 } else {
+                    read_buffer = read_msg->msg_iov->iov_base;
                     requests = wrk_parse(client_context, read_buffer, ret);
                     // Keep reading if there is no complete request.
                     // Otherwise disable EPOLLIN.
@@ -179,9 +185,9 @@ static void event_loop(int epfd, struct epoll_event *events, const int nevents,
                 }
                 // >= 0
                 client_context->responses -= responses;
+                write_msg->msg_iovlen = responses;
 
-                // Short write?
-                ret = writev(client_fd, &response_vec[0], responses);
+                ret = sendmsg(client_fd, write_msg, zerocopy_flag);
                 if(ret < 0) {
                     pr_warn("kernel_sendmsg: %d, %d\n", ret, errno);
                     if(errno != EINTR) e->events = EPOLLHUP;
@@ -238,8 +244,14 @@ static void* server_thread(void *data) {
             .iov_len = response_content_len,
         }
     };
-    struct msghdr msg;
-
+    struct msghdr read_msg = {
+        .msg_iov = &request_vec,
+        .msg_iovlen = 1,
+    };
+    struct msghdr write_msg = {
+        .msg_iov = response_vec,
+        // .msg_iovlen =  /* Modified in event_loop(). */
+    };
 
     /// Epoll.
 
@@ -248,7 +260,6 @@ static void* server_thread(void *data) {
     int nevents;
     struct epoll_event *events = NULL;
 
-    memset(&msg, 0, sizeof msg);
     sockets = malloc(SOCKETS * sizeof(struct socket_context));
     memset(sockets, 0, SOCKETS * sizeof(struct socket_context));
     events = malloc(EVENTS * sizeof(struct epoll_event));
@@ -278,8 +289,8 @@ static void* server_thread(void *data) {
         nevents = ret;
         event_loop(epfd, events, nevents, // Epoll
                    server_fd, sockets, // Socket
-                   read_buffer, &request_vec, // READ
-                   response_vec, MAX_RESPONSES); // WRITE
+                   &read_msg, &write_msg, // Iterators
+                   MAX_RESPONSES);
     }
 
 done:
@@ -353,9 +364,14 @@ static void simple_web_server_exit(void) {
 
 int main(int argc, char *argv[]) {
     num_threads = argc > 1 ? atoi(argv[1]) : 1;
+    zerocopy_flag = argc > 2 ? atoi(argv[2]) : 0;
+    zerocopy_flag = zerocopy_flag ? MSG_ZEROCOPY : 0;
     if(num_threads < 1 || num_threads >= CONTEXT_MAX_THREAD) {
         pr_err("num_threads < (CONTEXT_MAX_THREAD=32)\n");
         return 1;
+    }
+    if(zerocopy_flag == MSG_ZEROCOPY) {
+        pr_info("Enable MSG_ZEROCOPY.\n");
     }
     simple_web_server_init();
     // Press any key...
