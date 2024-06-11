@@ -177,7 +177,7 @@ static void event_loop(int epfd, struct epoll_event *events, const int nevents,
                     // Keep reading if there is no complete request.
                     // Otherwise disable EPOLLIN.
                     // FIXME. always enable? Cost more "syscall"s?
-                    if(requests > 1) next_event &= ~EPOLLIN;
+                    if(requests) next_event &= ~EPOLLIN;
                     // There are some pending responses to be send.
                     if(client_context->responses) next_event |= EPOLLOUT;
                 }
