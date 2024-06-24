@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # @lint-avoid-python-3-compatibility-imports
 #
-# biopattern - Identify random/sequential and read/write disk access patterns.
+# biopattern - Identify random/sequential, read/write and sync/async disk access patterns.
 #              For Linux, uses BCC, eBPF.
 #
 # Copyright (c) 2022 Rocky Xing.
@@ -37,12 +37,9 @@ bpf_text="""
 #include <trace/events/block.h>
 
 enum OP {
-    OP_READ = 0,
-    OP_WRITE,
-    OP_DISCARD,
-    OP_FLUSH,
-
-    OP_MAX
+    OP_READ = 1 << 0,
+    OP_WRITE = 1 << 1,
+    OP_SYNC = 1 << 2,
 };
 
 struct counter {
@@ -50,23 +47,39 @@ struct counter {
     u64 bytes;
     u32 sequential;
     u32 random;
-    u32 ops[OP_MAX];
+    u32 read;
+    u32 write;
+    u32 sync;
 };
 
 BPF_HASH(counters, u32, struct counter);
 
-static int rwbs_unpack(const char *rwbs) {
+static int rwbs_parse(const char *rwbs) {
+    int ops = 0;
     for (int i = 0; i < RWBS_LEN; i++) {
         switch (rwbs[i]) {
-            case 'R': return OP_READ;
-            case 'W': return OP_WRITE;
-            case 'D': return OP_DISCARD;
-            case 'F': return OP_FLUSH;
-            case '\\0': return OP_MAX;
+            case 'R': ops |= OP_READ; break;
+            case 'W': ops |= OP_WRITE; break;
+            case 'S': ops |= OP_SYNC; break;
+            case '\\0': return ops;
             default: (void)0;
         }
     }
-    return OP_MAX;
+    return ops;
+}
+
+static void rwbs_emit(const char *rwbs, struct counter *counterp) {
+    int ops =  rwbs_parse(rwbs);
+
+    if (ops & OP_READ) {
+        __sync_fetch_and_add(&counterp->read, 1);
+    } else if (ops & OP_WRITE) {
+        __sync_fetch_and_add(&counterp->write, 1);
+    }
+
+    if (ops & OP_SYNC) {
+        __sync_fetch_and_add(&counterp->sync, 1);
+    }
 }
 
 TRACEPOINT_PROBE(block, block_rq_complete)
@@ -85,17 +98,13 @@ TRACEPOINT_PROBE(block, block_rq_complete)
         return 0;
     }
 
-    int op = rwbs_unpack(rwbs);
-
     if (counterp->last_sector) {
         if (counterp->last_sector == sector) {
             __sync_fetch_and_add(&counterp->sequential, 1);
         } else {
             __sync_fetch_and_add(&counterp->random, 1);
         }
-        if (op != OP_MAX) {
-            __sync_fetch_and_add(&counterp->ops[op], 1);
-        }
+        rwbs_emit(rwbs, counterp);
         __sync_fetch_and_add(&counterp->bytes, nr_sector * 512);
     }
     counterp->last_sector = sector + nr_sector;
@@ -144,8 +153,9 @@ htab_batch_ops = True if BPF.kernel_struct_has_field(b'bpf_map_ops',
 exiting = 0 if args.interval else 1
 counters = b.get_table("counters")
 
-print("%-9s %-7s %5s %5s %6s %7s %9s %7s %8s %10s" % 
-    ("TIME", "DISK", "%RND", "%SEQ", "%READ", "%WRITE", "%DISCARD", "%FLUSH", "COUNT", "KBYTES"))
+print("%-9s %-7s %5s %5s %6s %7s %7s %6s %7s %8s %10s" %
+    ("TIME", "DISK", "%RND", "%SEQ",
+    "%READ", "%WRITE", "%OTHER", "%SYNC", "%ASYNC", "COUNT", "KBYTES"))
 
 while True:
     try:
@@ -162,20 +172,23 @@ while True:
         part_name = partitions.get(k.value, "Unknown")
         random_percent = int(round(v.random * 100 / total))
         sequential_percent = 100 - random_percent
-        read_percent = int(round(v.ops[0] * 100 / total))
-        write_percent = int(round(v.ops[1] * 100 / total))
-        discard_percent = int(round(v.ops[2] * 100 / total))
-        flush_percent = 100 - read_percent - write_percent - discard_percent
+        read_percent = int(round(v.read * 100 / total))
+        write_percent = int(round(v.write * 100 / total))
+        # other operations = (some) FLUSHs + FUAs + DISCARDs + `N`-flags in rwbs
+        other_percent = 100 - read_percent - write_percent
+        sync_percent = int(round(v.sync * 100 / total))
+        async_percent = 100 - sync_percent
 
-        print("%-9s %-7s %5s %5s %6s %7s %9s %7s %8d %10d" % (
+        print("%-9s %-7s %5s %5s %6s %7s %7s %6s %7s %8s %10s" % (
             strftime("%H:%M:%S"),
             part_name,
             random_percent,
             sequential_percent,
             read_percent,
             write_percent,
-            discard_percent,
-            flush_percent,
+            other_percent,
+            sync_percent,
+            async_percent,
             total,
             v.bytes / 1024))
 
