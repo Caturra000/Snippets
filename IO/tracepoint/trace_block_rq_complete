@@ -1,0 +1,17 @@
+        blk_update_request+788
+        scsi_end_request+44
+        scsi_io_completion+110
+        scsi_finish_command+195
+        scsi_complete+116
+        blk_complete_reqs+68
+        blk_done_softirq+29
+        __do_softirq+225
+        __irq_exit_rcu+215
+        irq_exit_rcu+14
+        common_interrupt+164
+        asm_common_interrupt+39
+        cpuidle_enter_state+218
+        cpuidle_enter+46
+        call_cpuidle+35
+        cpuidle_idle_call+285
+        do_idle+135
