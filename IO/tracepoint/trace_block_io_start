@@ -21,3 +21,24 @@
         entry_SYSCALL_64_after_hwframe+120
 
 -> blk_mq_submit_bio -> blk_mq_bio_to_request
+
+
+        blk_mq_submit_bio+1338
+        __submit_bio+179
+        submit_bio_noacct_nocheck+316
+        submit_bio_noacct+354
+        submit_bio+178
+        ext4_io_submit+36
+        ext4_do_writepages+1418
+        ext4_writepages+181
+        do_writepages+208
+        filemap_fdatawrite_wbc+117
+        __filemap_fdatawrite_range+88
+        filemap_flush+28
+        ext4_alloc_da_blocks+36
+        ext4_release_file+126
+        __fput+161
+        __fput_sync+28
+        __x64_sys_close+62
+        x64_sys_call+6589
+        do_syscall_64+127

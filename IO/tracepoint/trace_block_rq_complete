@@ -15,3 +15,20 @@
         call_cpuidle+35
         cpuidle_idle_call+285
         do_idle+135
+
+
+
+        blk_mq_end_request_batch+854
+        nvme_pci_complete_batch+181
+        nvme_irq+115
+        __handle_irq_event_percpu+79
+        handle_irq_event+57
+        handle_edge_irq+140
+        __common_interrupt+81
+        common_interrupt+159
+        asm_common_interrupt+39
+        cpuidle_enter_state+218
+        cpuidle_enter+46
+        call_cpuidle+35
+        cpuidle_idle_call+285
+        do_idle+135

@@ -16,3 +16,27 @@
         call_cpuidle+35
         cpuidle_idle_call+285
         do_idle+135
+
+
+
+        blk_account_io_done+302
+        blk_mq_end_request+198
+        blk_flush_complete_seq+607
+        mq_flush_data_end_io+153
+        blk_mq_end_request+136
+        nvme_end_req+99
+        nvme_complete_rq+90
+        nvme_pci_complete_rq+162
+        nvme_poll_cq+422
+        nvme_irq+64
+        __handle_irq_event_percpu+79
+        handle_irq_event+57
+        handle_edge_irq+140
+        __common_interrupt+81
+        common_interrupt+159
+        asm_common_interrupt+39
+        cpuidle_enter_state+218
+        cpuidle_enter+46
+        call_cpuidle+35
+        cpuidle_idle_call+285
+        do_idle+135
