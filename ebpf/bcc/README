@@ -12,5 +12,7 @@ TIME      DISK     %RND  %SEQ  %READ  %WRITE  %OTHER  %SYNC  %ASYNC    COUNT    
 06:11:07  sda       100     0     50      50       0     50      50    11993    48044.0
 06:11:08  sda       100     0     50      50       0     50      50    12474    49920.0
 06:11:09  sda       100     0     50      50       0     50      50    12576    50304.0
+感觉用途不大，暂不提交
 
 * modified_biolatency: WSL环境并不能使用，因为缺少kprobe和tracepoint，添加blktrace的tracepoint作为备选即可修复问题
+  已PR并合入bcc主线：https://github.com/iovisor/bcc/pull/5042
