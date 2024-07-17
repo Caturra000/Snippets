@@ -1,0 +1,229 @@
+# tracer: function_graph
+#
+# CPU  DURATION                  FUNCTION CALLS
+# |     |   |                     |   |   |   |
+root@bluepuni:/sys/kernel/debug/tracing# cat trace
+# tracer: function_graph
+#
+# CPU  DURATION                  FUNCTION CALLS
+# |     |   |                     |   |   |   |
+ 10)               |  __x64_sys_io_uring_enter() {
+ 10)               |    fget() {
+ 10)   0.380 us    |      __rcu_read_lock();
+ 10)   0.330 us    |      __rcu_read_unlock();
+ 10)   2.014 us    |    }
+ 10)               |    __io_uring_add_tctx_node_from_submit() {
+ 10)               |      __io_uring_add_tctx_node() {
+ 10)   0.331 us    |        __rcu_read_lock();
+ 10)   0.331 us    |        __rcu_read_unlock();
+ 10)   1.763 us    |      }
+ 10)   2.355 us    |    }
+ 10)               |    mutex_lock() {
+ 10)   0.320 us    |      __cond_resched();
+ 10)   0.922 us    |    }
+ 10)               |    io_submit_sqes() {
+ 10)               |      io_task_refs_refill() {
+ 10)   0.341 us    |        _raw_spin_lock();
+ 10)   0.331 us    |        _raw_spin_unlock();
+ 10)   1.563 us    |      }
+ 10)               |      __io_alloc_req_refill() {
+ 10)               |        kmem_cache_alloc_bulk() {
+ 10)   0.331 us    |          __cond_resched();
+ 10)   0.330 us    |          should_failslab.constprop.0();
+ 10)               |          obj_cgroup_charge() {
+ 10)   0.340 us    |            consume_obj_stock();
+ 10)   0.932 us    |          }
+ 10)               |          ___slab_alloc() {
+ 10)               |            get_any_partial() {
+ 10)   0.341 us    |              mempolicy_slab_node();
+ 10)   1.002 us    |            }
+ 10)               |            new_slab() {
+ 10)               |              allocate_slab() {
+ 10)               |                __alloc_pages() {
+ 10)   0.331 us    |                  should_fail_alloc_page();
+ 10)               |                  get_page_from_freelist() {
+ 10)   0.471 us    |                    __zone_watermark_ok();
+ 10)   0.331 us    |                    _raw_spin_trylock();
+ 10)   0.330 us    |                    _raw_spin_unlock();
+ 10)   0.351 us    |                    prep_compound_page();
+ 10)   3.737 us    |                  }
+ 10)   4.930 us    |                }
+ 10)               |                memcg_alloc_slab_cgroups() {
+ 10)               |                  __kmalloc_node() {
+ 10)   0.330 us    |                    __cond_resched();
+ 10)   0.330 us    |                    should_failslab.constprop.0();
+ 10)   2.034 us    |                  }
+ 10)   2.625 us    |                }
+ 10)   0.330 us    |                mod_node_page_state();
+ 10)               |                shuffle_freelist() {
+ 10)               |                  __get_random_u32_below() {
+ 10)   0.360 us    |                    get_random_u32();
+ 10)   0.972 us    |                  }
+ 10)   0.331 us    |                  setup_object();
+ 10)   0.320 us    |                  setup_object();
+ 10)   0.330 us    |                  setup_object();
+ 10)   0.321 us    |                  setup_object();
+ 10)   0.331 us    |                  setup_object();
+ 10)   0.331 us    |                  setup_object();
+ 10)   0.331 us    |                  setup_object();
+ 10)   0.331 us    |                  setup_object();
+ 10)   0.331 us    |                  setup_object();
+ 10)   0.330 us    |                  setup_object();
+ 10)   0.320 us    |                  setup_object();
+ 10)   0.320 us    |                  setup_object();
+ 10)   0.331 us    |                  setup_object();
+ 10)   0.331 us    |                  setup_object();
+ 10)   0.331 us    |                  setup_object();
+ 10)   0.331 us    |                  setup_object();
+ 10)   0.331 us    |                  setup_object();
+ 10)   0.331 us    |                  setup_object();
+ 10)   0.320 us    |                  setup_object();
+ 10)   0.801 us    |                  setup_object();
+ 10)   0.330 us    |                  setup_object();
+ 10)   0.330 us    |                  setup_object();
+ 10)   0.321 us    |                  setup_object();
+ 10)   0.321 us    |                  setup_object();
+ 10)   0.321 us    |                  setup_object();
+ 10)   0.321 us    |                  setup_object();
+ 10)   0.321 us    |                  setup_object();
+ 10)   0.320 us    |                  setup_object();
+ 10)   0.320 us    |                  setup_object();
+ 10)   0.320 us    |                  setup_object();
+ 10)   0.331 us    |                  setup_object();
+ 10)   0.331 us    |                  setup_object();
+ 10) + 21.270 us   |                }
+ 10) + 30.808 us   |              }
+ 10) + 31.529 us   |            }
+ 10) + 33.734 us   |          }
+ 10)               |          __memcg_slab_post_alloc_hook() {
+ 10)   0.331 us    |            __rcu_read_lock();
+ 10)   0.331 us    |            __rcu_read_unlock();
+ 10)   0.351 us    |            mod_objcg_state();
+ 10)   0.331 us    |            __rcu_read_lock();
+ 10)   0.331 us    |            __rcu_read_unlock();
+ 10)   0.330 us    |            mod_objcg_state();
+ 10)   0.330 us    |            __rcu_read_lock();
+ 10)   0.330 us    |            __rcu_read_unlock();
+ 10)   0.330 us    |            mod_objcg_state();
+ 10)   0.331 us    |            __rcu_read_lock();
+ 10)   0.331 us    |            __rcu_read_unlock();
+ 10)   0.331 us    |            mod_objcg_state();
+ 10)   0.321 us    |            __rcu_read_lock();
+ 10)   0.331 us    |            __rcu_read_unlock();
+ 10)   0.330 us    |            mod_objcg_state();
+ 10)   0.320 us    |            __rcu_read_lock();
+ 10)   0.320 us    |            __rcu_read_unlock();
+ 10)   0.341 us    |            mod_objcg_state();
+ 10)   0.331 us    |            __rcu_read_lock();
+ 10)   0.331 us    |            __rcu_read_unlock();
+ 10)   0.331 us    |            mod_objcg_state();
+ 10)   0.321 us    |            __rcu_read_lock();
+ 10)   0.331 us    |            __rcu_read_unlock();
+ 10)   0.330 us    |            mod_objcg_state();
+ 10) + 14.618 us   |          }
+ 10) + 51.917 us   |        }
+ 10)   0.320 us    |        __rcu_read_lock();
+ 10)   0.320 us    |        __rcu_read_unlock();
+ 10) + 53.761 us   |      }
+ 10)               |      io_init_req() {
+ 10)               |        io_prep_rwv() {
+ 10)   0.351 us    |          io_prep_rw();
+ 10)   1.061 us    |        }
+ 10)   1.884 us    |      }
+ 10)               |      io_issue_sqe() {
+ 10)               |        io_file_get_normal() {
+ 10)               |          fget() {
+ 10)   0.330 us    |            __rcu_read_lock();
+ 10)   0.321 us    |            __rcu_read_unlock();
+ 10)   1.523 us    |          }
+ 10)   2.114 us    |        }
+ 10)               |        io_read() {
+ 10)               |          __io_read() {
+ 10)               |            __io_import_iovec() {
+ 10)               |              __kmalloc() {
+ 10)   0.330 us    |                __cond_resched();
+ 10)   0.561 us    |                should_failslab.constprop.0();
+ 10)   2.425 us    |              }
+ 10)   3.336 us    |            }
+ 10)               |            io_rw_init_file() {
+ 10)   0.331 us    |              io_file_get_flags();
+ 10)   1.082 us    |            }
+ 10)               |            rw_verify_area() {
+ 10)               |              security_file_permission() {
+ 10)               |                apparmor_file_permission() {
+ 10)               |                  aa_file_perm() {
+ 10)   0.331 us    |                    __rcu_read_lock();
+ 10)   0.331 us    |                    __rcu_read_unlock();
+ 10)   1.512 us    |                  }
+ 10)   2.124 us    |                }
+ 10)   2.745 us    |              }
+ 10)               |              __fsnotify_parent() {
+ 10)               |                dget_parent() {
+ 10)   0.331 us    |                  __rcu_read_lock();
+ 10)   0.331 us    |                  __rcu_read_unlock();
+ 10)   1.532 us    |                }
+ 10)   0.341 us    |                fsnotify();
+ 10)               |                dput() {
+ 10)   0.330 us    |                  __cond_resched();
+ 10)   0.330 us    |                  __rcu_read_lock();
+ 10)   0.321 us    |                  __rcu_read_unlock();
+ 10)   2.124 us    |                }
+ 10)   5.130 us    |              }
+ 10)   8.756 us    |            }
+ 10)               |            ext4_file_read_iter() {
+ 10)               |              generic_file_read_iter() {
+ 10)               |                filemap_read() {
+ 10)   0.330 us    |                  __cond_resched();
+ 10)               |                  filemap_get_pages() {
+ 10)               |                    filemap_get_read_batch() {
+ 10)   0.331 us    |                      __rcu_read_lock();
+ 10)   0.330 us    |                      __rcu_read_unlock();
+ 10)   1.814 us    |                    }
+ 10)   2.424 us    |                  }
+ 10)   0.330 us    |                  folio_mark_accessed();
+ 10)               |                  touch_atime() {
+ 10)               |                    atime_needs_update() {
+ 10)   0.331 us    |                      make_vfsuid();
+ 10)   0.331 us    |                      make_vfsgid();
+ 10)               |                      current_time() {
+ 10)   0.341 us    |                        ktime_get_coarse_real_ts64();
+ 10)   1.002 us    |                      }
+ 10)   2.825 us    |                    }
+ 10)   3.426 us    |                  }
+ 10)   9.578 us    |                }
+ 10) + 10.199 us   |              }
+ 10) + 10.800 us   |            }
+ 10)   0.541 us    |            kfree();
+ 10) + 26.490 us   |          }
+ 10)               |          kiocb_done() {
+ 10)   0.341 us    |            __io_complete_rw_common();
+ 10)               |            io_req_io_end() {
+ 10)               |              __fsnotify_parent() {
+ 10)               |                dget_parent() {
+ 10)   0.330 us    |                  __rcu_read_lock();
+ 10)   0.320 us    |                  __rcu_read_unlock();
+ 10)   1.523 us    |                }
+ 10)   0.331 us    |                fsnotify();
+ 10)               |                dput() {
+ 10)   0.331 us    |                  __cond_resched();
+ 10)   0.321 us    |                  __rcu_read_lock();
+ 10)   0.331 us    |                  __rcu_read_unlock();
+ 10)   2.104 us    |                }
+ 10)   5.090 us    |              }
+ 10)   5.710 us    |            }
+ 10)   7.043 us    |          }
+ 10) + 34.625 us   |        }
+ 10) + 37.891 us   |      }
+ 10)               |      __io_submit_flush_completions() {
+ 10)   0.341 us    |        _raw_spin_lock();
+ 10)   0.331 us    |        io_cqe_cache_refill();
+ 10)   0.321 us    |        _raw_spin_unlock();
+ 10)   0.340 us    |        __io_commit_cqring_flush();
+ 10)               |        io_free_batch_list() {
+ 10)   0.330 us    |          fput();
+ 10)   0.942 us    |        }
+ 10)   4.419 us    |      }
+ 10) ! 101.530 us  |    }
+ 10)   0.330 us    |    mutex_unlock();
+ 10)   0.330 us    |    fput();
+ 10) ! 111.309 us  |  }

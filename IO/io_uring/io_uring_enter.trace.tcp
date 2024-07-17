@@ -1,0 +1,359 @@
+root@bluepuni:/sys/kernel/debug/tracing# cat trace
+# tracer: function_graph
+#
+# CPU  DURATION                  FUNCTION CALLS
+# |     |   |                     |   |   |   |
+ 14)               |  __x64_sys_io_uring_enter() {
+ 14)               |    fget() {
+ 14)   0.351 us    |      __rcu_read_lock();
+ 14)   0.320 us    |      __rcu_read_unlock();
+ 14)   1.703 us    |    }
+ 14)               |    __io_uring_add_tctx_node_from_submit() {
+ 14)               |      __io_uring_add_tctx_node() {
+ 14)   0.320 us    |        __rcu_read_lock();
+ 14)   0.321 us    |        __rcu_read_unlock();
+ 14)   1.703 us    |      }
+ 14)   2.295 us    |    }
+ 14)               |    mutex_lock() {
+ 14)   0.320 us    |      __cond_resched();
+ 14)   0.902 us    |    }
+ 14)               |    io_submit_sqes() {
+ 14)               |      io_task_refs_refill() {
+ 14)   0.331 us    |        _raw_spin_lock();
+ 14)   0.321 us    |        _raw_spin_unlock();
+ 14)   1.532 us    |      }
+ 14)               |      __io_alloc_req_refill() {
+ 14)               |        kmem_cache_alloc_bulk() {
+ 14)   0.321 us    |          __cond_resched();
+ 14)   0.330 us    |          should_failslab.constprop.0();
+ 14)               |          obj_cgroup_charge() {
+ 14)   0.330 us    |            consume_obj_stock();
+ 14)   0.922 us    |          }
+ 14)               |          ___slab_alloc() {
+ 14)               |            get_any_partial() {
+ 14)   0.371 us    |              mempolicy_slab_node();
+ 14)   1.042 us    |            }
+ 14)               |            new_slab() {
+ 14)               |              allocate_slab() {
+ 14)               |                __alloc_pages() {
+ 14)   0.331 us    |                  should_fail_alloc_page();
+ 14)               |                  get_page_from_freelist() {
+ 14)   0.330 us    |                    __zone_watermark_ok();
+ 14)   0.331 us    |                    _raw_spin_trylock();
+ 14)   0.321 us    |                    _raw_spin_unlock();
+ 14)   0.331 us    |                    prep_compound_page();
+ 14)   3.377 us    |                  }
+ 14)   4.569 us    |                }
+ 14)               |                memcg_alloc_slab_cgroups() {
+ 14)               |                  __kmalloc_node() {
+ 14)   0.320 us    |                    __cond_resched();
+ 14)   0.331 us    |                    should_failslab.constprop.0();
+ 14)   1.844 us    |                  }
+ 14)   2.434 us    |                }
+ 14)   0.330 us    |                mod_node_page_state();
+ 14)               |                shuffle_freelist() {
+ 14)               |                  __get_random_u32_below() {
+ 14)   0.361 us    |                    get_random_u32();
+ 14)   0.951 us    |                  }
+ 14)   0.331 us    |                  setup_object();
+ 14)   0.331 us    |                  setup_object();
+ 14)   0.321 us    |                  setup_object();
+ 14)   0.331 us    |                  setup_object();
+ 14)   0.330 us    |                  setup_object();
+ 14)   0.320 us    |                  setup_object();
+ 14)   0.320 us    |                  setup_object();
+ 14)   0.330 us    |                  setup_object();
+ 14)   0.321 us    |                  setup_object();
+ 14)   0.321 us    |                  setup_object();
+ 14)   0.321 us    |                  setup_object();
+ 14)   0.331 us    |                  setup_object();
+ 14)   0.321 us    |                  setup_object();
+ 14)   0.321 us    |                  setup_object();
+ 14)   0.331 us    |                  setup_object();
+ 14)   0.330 us    |                  setup_object();
+ 14)   0.320 us    |                  setup_object();
+ 14)   0.320 us    |                  setup_object();
+ 14)   0.330 us    |                  setup_object();
+ 14)   0.761 us    |                  setup_object();
+ 14)   0.320 us    |                  setup_object();
+ 14)   0.331 us    |                  setup_object();
+ 14)   0.330 us    |                  setup_object();
+ 14)   0.330 us    |                  setup_object();
+ 14)   0.321 us    |                  setup_object();
+ 14)   0.331 us    |                  setup_object();
+ 14)   0.321 us    |                  setup_object();
+ 14)   0.321 us    |                  setup_object();
+ 14)   0.331 us    |                  setup_object();
+ 14)   0.321 us    |                  setup_object();
+ 14)   0.320 us    |                  setup_object();
+ 14)   0.330 us    |                  setup_object();
+ 14) + 21.200 us   |                }
+ 14) + 30.056 us   |              }
+ 14) + 30.768 us   |            }
+ 14) + 32.962 us   |          }
+ 14)               |          __memcg_slab_post_alloc_hook() {
+ 14)   0.320 us    |            __rcu_read_lock();
+ 14)   0.330 us    |            __rcu_read_unlock();
+ 14)               |            mod_objcg_state() {
+ 14)   0.341 us    |              __rcu_read_lock();
+ 14)               |              __mod_memcg_lruvec_state() {
+ 14)   0.331 us    |                cgroup_rstat_updated();
+ 14)   1.072 us    |              }
+ 14)   0.321 us    |              __rcu_read_unlock();
+ 14)   2.885 us    |            }
+ 14)   0.330 us    |            __rcu_read_lock();
+ 14)   0.320 us    |            __rcu_read_unlock();
+ 14)   0.340 us    |            mod_objcg_state();
+ 14)   0.331 us    |            __rcu_read_lock();
+ 14)   0.331 us    |            __rcu_read_unlock();
+ 14)   0.341 us    |            mod_objcg_state();
+ 14)   0.331 us    |            __rcu_read_lock();
+ 14)   0.331 us    |            __rcu_read_unlock();
+ 14)   0.320 us    |            mod_objcg_state();
+ 14)   0.320 us    |            __rcu_read_lock();
+ 14)   0.320 us    |            __rcu_read_unlock();
+ 14)   0.330 us    |            mod_objcg_state();
+ 14)   0.321 us    |            __rcu_read_lock();
+ 14)   0.321 us    |            __rcu_read_unlock();
+ 14)   0.331 us    |            mod_objcg_state();
+ 14)   0.331 us    |            __rcu_read_lock();
+ 14)   0.331 us    |            __rcu_read_unlock();
+ 14)   0.321 us    |            mod_objcg_state();
+ 14)   0.330 us    |            __rcu_read_lock();
+ 14)   0.320 us    |            __rcu_read_unlock();
+ 14)   0.330 us    |            mod_objcg_state();
+ 14) + 17.072 us   |          }
+ 14) + 53.570 us   |        }
+ 14)   0.320 us    |        __rcu_read_lock();
+ 14)   0.321 us    |        __rcu_read_unlock();
+ 14) + 55.384 us   |      }
+ 14)               |      io_init_req() {
+ 14)   0.341 us    |        io_accept_prep();
+ 14)   1.292 us    |      }
+ 14)               |      io_issue_sqe() {
+ 14)               |        io_file_get_normal() {
+ 14)               |          fget() {
+ 14)   0.330 us    |            __rcu_read_lock();
+ 14)   0.331 us    |            __rcu_read_unlock();
+ 14)   1.503 us    |          }
+ 14)   2.334 us    |        }
+ 14)               |        io_accept() {
+ 14)               |          __get_unused_fd_flags() {
+ 14)               |            alloc_fd() {
+ 14)   0.410 us    |              _raw_spin_lock();
+ 14)   0.320 us    |              expand_files();
+ 14)   0.321 us    |              _raw_spin_unlock();
+ 14)   2.214 us    |            }
+ 14)   2.816 us    |          }
+ 14)               |          do_accept() {
+ 14)               |            sock_alloc() {
+ 14)               |              new_inode_pseudo() {
+ 14)               |                alloc_inode() {
+ 14)               |                  sock_alloc_inode() {
+ 14)               |                    kmem_cache_alloc_lru() {
+ 14)   0.331 us    |                      __cond_resched();
+ 14)   0.321 us    |                      should_failslab.constprop.0();
+ 14)               |                      __memcg_slab_pre_alloc_hook() {
+ 14)   0.330 us    |                        __rcu_read_lock();
+ 14)   0.321 us    |                        __rcu_read_lock();
+ 14)   0.331 us    |                        __rcu_read_unlock();
+ 14)   0.331 us    |                        __rcu_read_unlock();
+ 14)               |                        memcg_list_lru_alloc() {
+ 14)   0.320 us    |                          __rcu_read_lock();
+ 14)   0.321 us    |                          __rcu_read_unlock();
+ 14)   1.563 us    |                        }
+ 14)   0.320 us    |                        __rcu_read_lock();
+ 14)   0.320 us    |                        __rcu_read_unlock();
+ 14)               |                        obj_cgroup_charge() {
+ 14)   0.331 us    |                          consume_obj_stock();
+ 14)   0.330 us    |                          __rcu_read_lock();
+ 14)   0.320 us    |                          __rcu_read_lock();
+ 14)   0.330 us    |                          __rcu_read_unlock();
+ 14)   0.321 us    |                          __rcu_read_unlock();
+ 14)               |                          try_charge_memcg() {
+ 14)   0.330 us    |                            consume_stock();
+ 14)   0.912 us    |                          }
+ 14)               |                          memcg_account_kmem() {
+ 14)               |                            __mod_memcg_state() {
+ 14)   0.330 us    |                              cgroup_rstat_updated();
+ 14)   0.952 us    |                            }
+ 14)   1.553 us    |                          }
+ 14)   0.320 us    |                          __rcu_read_lock();
+ 14)   0.320 us    |                          __rcu_read_unlock();
+ 14)   0.330 us    |                          refill_obj_stock();
+ 14)   8.015 us    |                        }
+ 14) + 13.956 us   |                      }
+ 14)               |                      __memcg_slab_post_alloc_hook() {
+ 14)   0.320 us    |                        __rcu_read_lock();
+ 14)   0.320 us    |                        __rcu_read_unlock();
+ 14)   0.341 us    |                        mod_objcg_state();
+ 14)   2.284 us    |                      }
+ 14) + 18.305 us   |                    }
+ 14)   0.321 us    |                    __init_waitqueue_head();
+ 14) + 19.476 us   |                  }
+ 14)               |                  inode_init_always() {
+ 14)               |                    make_kuid() {
+ 14)   0.331 us    |                      map_id_range_down();
+ 14)   0.921 us    |                    }
+ 14)               |                    make_kgid() {
+ 14)   0.331 us    |                      map_id_range_down();
+ 14)   0.912 us    |                    }
+ 14)   0.321 us    |                    __init_rwsem();
+ 14)   0.321 us    |                    __init_rwsem();
+ 14)               |                    security_inode_alloc() {
+ 14)               |                      kmem_cache_alloc() {
+ 14)   0.320 us    |                        __cond_resched();
+ 14)   0.320 us    |                        should_failslab.constprop.0();
+ 14)   1.533 us    |                      }
+ 14)   0.331 us    |                      apparmor_inode_alloc_security();
+ 14)   2.726 us    |                    }
+ 14)   7.023 us    |                  }
+ 14) + 27.442 us   |                }
+ 14)   0.591 us    |                _raw_spin_lock();
+ 14)   0.320 us    |                _raw_spin_unlock();
+ 14) + 29.486 us   |              }
+ 14)   0.321 us    |              get_next_ino();
+ 14) + 30.707 us   |            }
+ 14)   0.330 us    |            __module_get();
+ 14)               |            sock_alloc_file() {
+ 14)               |              alloc_file_pseudo() {
+ 14)               |                d_alloc_pseudo() {
+ 14)               |                  __d_alloc() {
+ 14)               |                    kmem_cache_alloc_lru() {
+ 14)   0.331 us    |                      __cond_resched();
+ 14)   0.321 us    |                      should_failslab.constprop.0();
+ 14)               |                      __memcg_slab_pre_alloc_hook() {
+ 14)   0.321 us    |                        __rcu_read_lock();
+ 14)   0.321 us    |                        __rcu_read_lock();
+ 14)   0.331 us    |                        __rcu_read_unlock();
+ 14)   0.321 us    |                        __rcu_read_unlock();
+ 14)               |                        memcg_list_lru_alloc() {
+ 14)   0.321 us    |                          __rcu_read_lock();
+ 14)   0.321 us    |                          __rcu_read_unlock();
+ 14)   1.543 us    |                        }
+ 14)   0.320 us    |                        __rcu_read_lock();
+ 14)   0.320 us    |                        __rcu_read_unlock();
+ 14)               |                        obj_cgroup_charge() {
+ 14)   0.341 us    |                          consume_obj_stock();
+ 14)   0.922 us    |                        }
+ 14)   6.813 us    |                      }
+ 14)               |                      __memcg_slab_post_alloc_hook() {
+ 14)   0.321 us    |                        __rcu_read_lock();
+ 14)   0.321 us    |                        __rcu_read_unlock();
+ 14)   0.330 us    |                        mod_objcg_state();
+ 14)   2.094 us    |                      }
+ 14) + 11.011 us   |                    }
+ 14)   0.330 us    |                    d_set_d_op();
+ 14) + 12.213 us   |                  }
+ 14) + 12.794 us   |                }
+ 14)   0.320 us    |                mntget();
+ 14)               |                d_instantiate() {
+ 14)               |                  security_d_instantiate() {
+ 14)               |                    apparmor_d_instantiate() {
+ 14)   0.330 us    |                      _raw_spin_lock();
+ 14)   0.330 us    |                      _raw_spin_unlock();
+ 14)   1.523 us    |                    }
+ 14)   2.114 us    |                  }
+ 14)   0.331 us    |                  _raw_spin_lock();
+ 14)               |                  __d_instantiate() {
+ 14)   0.320 us    |                    d_flags_for_inode();
+ 14)   0.320 us    |                    _raw_spin_lock();
+ 14)   0.320 us    |                    _raw_spin_unlock();
+ 14)   2.084 us    |                  }
+ 14)   0.331 us    |                  _raw_spin_unlock();
+ 14)   6.211 us    |                }
+ 14)               |                alloc_file() {
+ 14)               |                  alloc_empty_file() {
+ 14)               |                    kmem_cache_alloc() {
+ 14)   0.330 us    |                      __cond_resched();
+ 14)   0.331 us    |                      should_failslab.constprop.0();
+ 14)               |                      obj_cgroup_charge() {
+ 14)   0.330 us    |                        consume_obj_stock();
+ 14)   0.912 us    |                      }
+ 14)               |                      __memcg_slab_post_alloc_hook() {
+ 14)   0.321 us    |                        __rcu_read_lock();
+ 14)   0.321 us    |                        __rcu_read_unlock();
+ 14)   0.341 us    |                        mod_objcg_state();
+ 14)   2.084 us    |                      }
+ 14)   5.140 us    |                    }
+ 14)               |                    init_file() {
+ 14)               |                      security_file_alloc() {
+ 14)               |                        kmem_cache_alloc() {
+ 14)   0.321 us    |                          __cond_resched();
+ 14)   0.321 us    |                          should_failslab.constprop.0();
+ 14)   1.512 us    |                        }
+ 14)   0.331 us    |                        hook_file_alloc_security();
+ 14)               |                        apparmor_file_alloc_security() {
+ 14)   0.331 us    |                          __cond_resched();
+ 14)   0.921 us    |                        }
+ 14)   4.198 us    |                      }
+ 14)   0.321 us    |                      __mutex_init();
+ 14)   5.380 us    |                    }
+ 14) + 11.371 us   |                  }
+ 14) + 12.002 us   |                }
+ 14) + 32.721 us   |              }
+ 14)   0.321 us    |              stream_open();
+ 14) + 33.893 us   |            }
+ 14)               |            security_socket_accept() {
+ 14)               |              apparmor_socket_accept() {
+ 14)               |                aa_inet_accept_perm() {
+ 14)   0.321 us    |                  __cond_resched();
+ 14)   0.952 us    |                }
+ 14)   1.553 us    |              }
+ 14)   2.174 us    |            }
+ 14)               |            inet_accept() {
+ 14)               |              inet_csk_accept() {
+ 14)               |                lock_sock_nested() {
+ 14)   0.321 us    |                  __cond_resched();
+ 14)   0.331 us    |                  _raw_spin_lock_bh();
+ 14)               |                  _raw_spin_unlock_bh() {
+ 14)   0.330 us    |                    __local_bh_enable_ip();
+ 14)   0.922 us    |                  }
+ 14)   2.685 us    |                }
+ 14)               |                release_sock() {
+ 14)   0.321 us    |                  _raw_spin_lock_bh();
+ 14)   0.330 us    |                  tcp_release_cb();
+ 14)               |                  _raw_spin_unlock_bh() {
+ 14)   0.321 us    |                    __local_bh_enable_ip();
+ 14)   0.901 us    |                  }
+ 14)   2.665 us    |                }
+ 14)   6.221 us    |              }
+ 14)   6.943 us    |            }
+ 14)               |            fput() {
+ 14)               |              task_work_add() {
+ 14)   0.330 us    |                kick_process();
+ 14)   0.942 us    |              }
+ 14)   1.523 us    |            }
+ 14) + 77.636 us   |          }
+ 14)               |          put_unused_fd() {
+ 14)   0.330 us    |            _raw_spin_lock();
+ 14)   0.320 us    |            _raw_spin_unlock();
+ 14)   1.503 us    |          }
+ 14) + 83.115 us   |        }
+ 14) + 86.502 us   |      }
+ 14)               |      io_queue_async() {
+ 14)               |        io_arm_poll_handler() {
+ 14)               |          kmalloc_trace() {
+ 14)   0.320 us    |            should_failslab.constprop.0();
+ 14)   1.543 us    |          }
+ 14)               |          __io_arm_poll_handler() {
+ 14)               |            sock_poll() {
+ 14)               |              tcp_poll() {
+ 14)               |                io_async_queue_proc() {
+ 14)               |                  __io_queue_proc() {
+ 14)               |                    add_wait_queue_exclusive() {
+ 14)   0.341 us    |                      _raw_spin_lock_irqsave();
+ 14)   0.330 us    |                      _raw_spin_unlock_irqrestore();
+ 14)   1.533 us    |                    }
+ 14)   2.134 us    |                  }
+ 14)   2.846 us    |                }
+ 14)   3.567 us    |              }
+ 14)   4.278 us    |            }
+ 14)   0.351 us    |            io_poll_add_hash();
+ 14)   5.620 us    |          }
+ 14)   8.175 us    |        }
+ 14)   8.896 us    |      }
+ 14) ! 155.862 us  |    }
+ 14)   0.331 us    |    mutex_unlock();
+ 14)   0.330 us    |    fput();
+ 14) ! 165.090 us  |  }

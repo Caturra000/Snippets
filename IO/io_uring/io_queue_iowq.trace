@@ -1,0 +1,36 @@
+root@bluepuni:/sys/kernel/debug/tracing# cat trace
+# tracer: function
+#
+# entries-in-buffer/entries-written: 0/0   #P:16
+#
+#                                _-----=> irqs-off/BH-disabled
+#                               / _----=> need-resched
+#                              | / _---=> hardirq/softirq
+#                              || / _--=> preempt-depth
+#                              ||| / _-=> migrate-disable
+#                              |||| /     delay
+#           TASK-PID     CPU#  |||||  TIMESTAMP  FUNCTION
+#              | |         |   |||||     |         |
+root@bluepuni:/sys/kernel/debug/tracing# cat trace
+# tracer: function
+#
+# entries-in-buffer/entries-written: 2/2   #P:16
+#
+#                                _-----=> irqs-off/BH-disabled
+#                               / _----=> need-resched
+#                              | / _---=> hardirq/softirq
+#                              || / _--=> preempt-depth
+#                              ||| / _-=> migrate-disable
+#                              |||| /     delay
+#           TASK-PID     CPU#  |||||  TIMESTAMP  FUNCTION
+#              | |         |   |||||     |         |
+  echo_coroutine-9255    [004] .....  1786.125205: io_queue_iowq <-io_queue_sqe_fallback
+  echo_coroutine-9255    [004] .....  1786.125224: <stack trace>
+ => io_queue_iowq
+ => io_queue_sqe_fallback
+ => io_submit_sqes
+ => __do_sys_io_uring_enter
+ => __x64_sys_io_uring_enter
+ => x64_sys_call
+ => do_syscall_64
+ => entry_SYSCALL_64_after_hwframe
