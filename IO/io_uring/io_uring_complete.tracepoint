@@ -1,0 +1,62 @@
+cat测试，submit时机：
+        __io_submit_flush_completions+431
+        __io_submit_flush_completions+431
+        io_submit_sqes+354
+        __do_sys_io_uring_enter+754
+        __x64_sys_io_uring_enter+34
+        x64_sys_call+3241
+        do_syscall_64+127
+        entry_SYSCALL_64_after_hwframe+120
+
+
+cat+IOSQE_ASYNC测试：
+        __io_req_complete_post+704
+        __io_req_complete_post+704
+        io_req_complete_post+109
+        io_issue_sqe+465
+        io_wq_submit_work+144
+        io_worker_handle_work+236
+        io_wq_worker+270
+        ret_from_fork+71
+        ret_from_fork_asm+27
+
+上述为6.8行为，6.4.8 cat稍有不同：
+__io_fill_cqe_req
+__io_submit_flush_completions
+tctx_task_work
+task_work_run
+io_run_task_work
+...enter
+
+
+回到6.8，echo_coroutine测试，无论是否async：
+listen:
+        __io_submit_flush_completions+431
+        __io_submit_flush_completions+431
+        ctx_flush_and_put+128
+        tctx_task_work+290
+        task_work_run+97
+        get_signal+1364
+        arch_do_signal_or_restart+57
+        syscall_exit_to_user_mode+518
+        do_syscall_64+140
+echo，存在两次:
+        __io_submit_flush_completions+431
+        __io_submit_flush_completions+431
+        ctx_flush_and_put+128
+        tctx_task_work+290
+        task_work_run+97
+        get_signal+1364
+        arch_do_signal_or_restart+57
+        syscall_exit_to_user_mode+518
+        do_syscall_64+140
+        entry_SYSCALL_64_after_hwframe+120
+----------
+        __io_submit_flush_completions+431
+        __io_submit_flush_completions+431
+        io_submit_sqes+354
+        __do_sys_io_uring_enter+754
+        __x64_sys_io_uring_enter+34
+        x64_sys_call+3241
+        do_syscall_64+127
+        entry_SYSCALL_64_after_hwframe+120
