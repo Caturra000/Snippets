@@ -60,3 +60,33 @@ echo，存在两次:
         x64_sys_call+3241
         do_syscall_64+127
         entry_SYSCALL_64_after_hwframe+120
+
+6.4.8，echo_coroutine默认与上述行为类似，不贴了
+但是async有所不同：
+listen:
+        __io_fill_cqe_req+217
+        __io_fill_cqe_req+217
+        __io_req_complete_post+367
+        io_issue_sqe+466
+        io_wq_submit_work+134
+        io_worker_handle_work+511
+        io_wq_worker+227
+        ret_from_fork+44
+echo，存在两次：
+        __io_fill_cqe_req+217
+        __io_fill_cqe_req+217
+        __io_req_complete_post+367
+        io_issue_sqe+466
+        io_wq_submit_work+134
+        io_worker_handle_work+511
+        io_wq_worker+227
+        ret_from_fork+44
+----------
+        __io_fill_cqe_req+217
+        __io_fill_cqe_req+217
+        __io_req_complete_post+367
+        io_issue_sqe+466
+        io_wq_submit_work+134
+        io_worker_handle_work+511
+        io_wq_worker+227
+        ret_from_fork+44
