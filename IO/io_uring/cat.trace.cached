@@ -1,0 +1,89 @@
+# tracer: function_graph
+#
+# CPU  DURATION                  FUNCTION CALLS
+# |     |   |                     |   |   |   |
+ 14)               |  __x64_sys_io_uring_enter() {
+ 14)               |    __fdget() {
+ 14)   0.500 us    |      __fget_light();
+ 14)   1.500 us    |    }
+ 14)               |    __io_uring_add_tctx_node_from_submit() {
+ 14)   0.800 us    |      __io_uring_add_tctx_node();
+ 14)   1.500 us    |    }
+ 14)   0.300 us    |    mutex_lock();
+ 14)               |    io_submit_sqes() {
+ 14)               |      io_task_refs_refill() {
+ 14)   0.300 us    |        _raw_spin_lock();
+ 14)   1.000 us    |      }
+ 14)               |      __io_alloc_req_refill() {
+ 14)               |        kmem_cache_alloc_bulk() {
+ 14)   0.300 us    |          should_failslab();
+ 14)   0.300 us    |          __get_obj_cgroup_from_memcg();
+ 14)   2.500 us    |        }
+ 14)   3.400 us    |      }
+ 14)               |      io_prep_rw() {
+ 14)   0.300 us    |        __get_task_ioprio();
+ 14)   1.100 us    |      }
+ 14)               |      io_issue_sqe() {
+ 14)               |        io_file_get_normal() {
+ 14)   0.300 us    |          fget();
+ 14)   0.900 us    |        }
+ 14)               |        io_read() {
+ 14)               |          __io_import_iovec() {
+ 14)               |            __kmalloc() {
+ 14)   0.300 us    |              kmalloc_slab();
+ 14)               |              __kmem_cache_alloc_node() {
+ 14)   0.300 us    |                should_failslab();
+ 14)   0.900 us    |              }
+ 14)   2.100 us    |            }
+ 14)   4.100 us    |          }
+ 14)               |          io_rw_init_file() {
+ 14)   0.900 us    |            io_file_get_flags();
+ 14)   1.800 us    |          }
+ 14)               |          rw_verify_area() {
+ 14)               |            security_file_permission() {
+ 14)   0.300 us    |              __fsnotify_parent();
+ 14)   0.900 us    |            }
+ 14)   1.300 us    |          }
+ 14)               |          ext4_file_read_iter() {
+ 14)               |            generic_file_read_iter() {
+ 14)               |              filemap_read() {
+ 14)               |                __cond_resched() {
+ 14)   0.300 us    |                  rcu_all_qs();
+ 14)   0.800 us    |                }
+ 14)               |                filemap_get_pages() {
+ 14)   0.900 us    |                  filemap_get_read_batch();
+ 14)   1.500 us    |                }
+ 14)   0.300 us    |                folio_mark_accessed();
+ 14)               |                touch_atime() {
+ 14)               |                  atime_needs_update() {
+ 14)   0.300 us    |                    make_vfsuid();
+ 14)   0.300 us    |                    make_vfsgid();
+ 14)               |                    current_time() {
+ 14)   0.300 us    |                      ktime_get_coarse_real_ts64();
+ 14)   0.900 us    |                    }
+ 14)   2.600 us    |                  }
+ 14)   3.300 us    |                }
+ 14) + 11.800 us   |              }
+ 14) + 12.300 us   |            }
+ 14) + 13.100 us   |          }
+ 14)               |          kfree() {
+ 14)   0.500 us    |            __kmem_cache_free();
+ 14)   1.400 us    |          }
+ 14)               |          kiocb_done() {
+ 14)               |            io_req_io_end() {
+ 14)   0.200 us    |              __fsnotify_parent();
+ 14)   1.100 us    |            }
+ 14)   1.700 us    |          }
+ 14) + 26.300 us   |        }
+ 14) + 28.400 us   |      }
+ 14)               |      __io_submit_flush_completions() {
+ 14)   0.300 us    |        _raw_spin_lock();
+ 14)   0.300 us    |        __io_get_cqe();
+ 14)   0.300 us    |        __io_commit_cqring_flush();
+ 14)               |        io_free_batch_list() {
+ 14)   0.300 us    |          fput();
+ 14)   0.900 us    |        }
+ 14)   3.500 us    |      }
+ 14) + 40.700 us   |    }
+ 14)   0.200 us    |    mutex_unlock();
+ 14) + 50.400 us   |  }

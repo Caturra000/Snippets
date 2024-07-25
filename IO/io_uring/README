@@ -3,3 +3,8 @@ https://github.com/Caturra000/io_uring-examples-cpp
 中的cat和echo_coroutine测试得出，内核版本6.8
 
 iowq在默认情况下没有触发，而是使用了IOSQE_ASYNC标记才会存在
+
+cat文件均为6.4.8使用cat程序测试时抓的function graph
+cached表示我读的文件已经在page cache里面
+cache_dropped表示读操作前使用`echo 3 > /proc/sys/vm/drop_caches`刷掉
+延迟的差异不用管，我电脑没插电，不准确
