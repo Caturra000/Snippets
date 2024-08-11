@@ -1,0 +1,22 @@
+/* 4.19 */
+// NOTE: 这段代码不只是重排序问题，见store_fusing和invetned_stores文件
+void shut_it_down(void)
+{
+    status = SHUTTING_DOWN; /* BUGGY!!! */
+    start_shutdown();
+    while (!other_task_ready) /* BUGGY!!! */
+        continue;
+    finish_shutdown();
+    status = SHUT_DOWN; /* BUGGY!!! */
+    do_something_else();
+}
+
+// 假定do_more_work不会访问到other_task_ready
+// 那么编译器有权置换代码顺序，使得other_task_ready赋值提前
+// 从而破坏了shut_it_down的状态，使得内部的finish_shutdown早于do_more_work执行
+void work_until_shut_down(void)
+{
+    while (status != SHUTTING_DOWN) /* BUGGY!!! */
+        do_more_work();
+    other_task_ready = 1; /* BUGGY!!! */
+}

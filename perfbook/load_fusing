@@ -1,0 +1,55 @@
+/* 4.16 */
+// 用户代码
+while (!need_to_stop)
+    do_something_quickly();
+
+/* 4.17 */
+// 上面的代码将有权被转换为
+if (!need_to_stop)
+    for (;;) {
+        do_something_quickly();
+        do_something_quickly();
+        do_something_quickly();
+        do_something_quickly();
+        do_something_quickly();
+        do_something_quickly();
+        do_something_quickly();
+        do_something_quickly();
+        do_something_quickly();
+        do_something_quickly();
+        do_something_quickly();
+        do_something_quickly();
+        do_something_quickly();
+        do_something_quickly();
+        do_something_quickly();
+        do_something_quickly();
+    }
+
+
+
+
+
+/* 4.18 C Compilers Can Fuse Non-Adjacent Loads */
+// t0和t1是并发执行的代码，do_something和do_something_else已内联
+// gp初始化为NULL
+int *gp;
+void t0(void)
+{
+    // 写入一个non-NULL指针
+    WRITE_ONCE(gp, &myvar);
+}
+
+void t1(void)
+{
+    p1 = gp;
+    do_something(p1);
+    p2 = READ_ONCE(gp);
+    // 假设这里读到的是non-NULL
+    if (p2) {
+        do_something_else();
+        // 所以按理说，gp已经不可能为NULL
+        // 但是实际上p1和p3处可能被编译器使用了load fusing优化
+        // 导致了读取NULL（p1 = NULL，p3 = *NULL）
+        p3 = *gp;
+    }
+}

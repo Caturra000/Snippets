@@ -1,0 +1,38 @@
+/* 4.19 */
+// NOTE: 这段代码不只是invented stores问题，见store_fusing和code_reordering文件
+void shut_it_down(void)
+{
+    status = SHUTTING_DOWN; /* BUGGY!!! */
+    start_shutdown();
+    while (!other_task_ready) /* BUGGY!!! */
+        continue;
+    finish_shutdown();
+    status = SHUT_DOWN; /* BUGGY!!! */
+    do_something_else();
+}
+
+// 假设do_more_work是一个inline函数
+void work_until_shut_down(void)
+{
+    while (status != SHUTTING_DOWN) /* BUGGY!!! */
+        // 在do_more_work执行时，可能临时借用了other_task_ready变量
+        do_more_work();
+    // 也就是other_task_ready还没执行到这里，却被提前设置为任意数值
+    // （Using a stored-to variable as a temporary）
+    other_task_ready = 1; /* BUGGY!!! */
+}
+
+/* 4.20 */
+// 另一种例子
+if (condition)
+    a = 1;
+else
+    do_a_bunch_of_stuff(&a);
+
+/* 4.21 */
+// 上面的代码将有权被转换为
+a = 1; // 影响了并发安全
+if (!condition) {
+    a = 0;
+    do_a_bunch_of_stuff(&a);
+} // 尝试消掉另一个分支

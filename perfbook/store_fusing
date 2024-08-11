@@ -1,0 +1,25 @@
+/* 4.19 */
+// shut_it_down和work_until_shut_down是并发的代码
+// start_shutdown和finish_shutdown不会访问到status
+// NOTE: 这段代码不只是store fusing问题，见code_reordering和invented_stores文件
+void shut_it_down(void)
+{
+    // 1. 编译器认为首个status赋值是多余的，移除并只保留最后一次赋值
+    status = SHUTTING_DOWN; /* BUGGY!!! */
+    start_shutdown();
+    // 4. 由于步骤3无法完成，这里也无法继续执行
+    while (!other_task_ready) /* BUGGY!!! */
+        continue;
+    finish_shutdown();
+    status = SHUT_DOWN; /* BUGGY!!! */
+    do_something_else();
+}
+
+void work_until_shut_down(void)
+{
+    // 2. 因此没法执行这里
+    while (status != SHUTTING_DOWN) /* BUGGY!!! */
+        do_more_work();
+    // 3. 从而导致other_task_ready也无法置位
+    other_task_ready = 1; /* BUGGY!!! */
+}

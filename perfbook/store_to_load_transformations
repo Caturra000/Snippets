@@ -1,0 +1,21 @@
+/* 4.22 */
+r1 = p;
+if (unlikely(r1))
+    do_something_with(r1);
+barrier();
+p = NULL;
+
+/* 4.23 */
+// 上面的代码将有权被转换为
+r1 = p;
+// 由于r1是unlikely，也就是说p很可能原来就是NULL
+if (unlikely(r1))
+    do_something_with(r1);
+// barrier强制使得编译器“忘掉”p的值，但是FDO优化仍可能让编译器得知unlikely的提示
+barrier();
+// 编译器仍然认为每次直接执行p = NULL可能是个昂贵却无意义的操作
+// 因此多加一个判断，使得if(load)-then-store
+// 这种优化通常是没问题的，除非有严格的顺序要求
+// （could be problematic if the actual store was required for ordering）
+if (p != NULL)
+    p = NULL;

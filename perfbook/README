@@ -1,0 +1,10 @@
+一些perfbook第四章中提到的，共享变量并发访问时的编译器优化问题：
+* load tearing：一次 load 操作被编译器优化为多个 load 操作。
+* store tearing：一次 store 操作被编译器优化为多个 store 操作。
+* load fusing：使用单次 load 获得的值替代重复 load 操作。
+* store fusing：使用最后的 store 操作替代连续的 store 操作。
+* code reordering：即 program order 重排序。
+* invented loads：将 load 时使用的临时（局部）变量直接替换为最终使用的变量。
+* invented stores：将 store 操作临时存放于暂时未被使用或不再使用到的变量。
+* store-to-load transformations：一次 store 操作被转换为先 load（用于分支判断）再 store。
+* dead-code elimination：操作被消除。

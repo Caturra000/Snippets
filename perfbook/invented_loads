@@ -1,0 +1,12 @@
+/* 4.14 */
+ptr = global_ptr;
+if (ptr != NULL && // 判断到下一步前，global_ptr设为NULL，依然保证正确性
+    ptr < high_address)
+    do_low(ptr);
+
+/* 4.15 */
+// 上面的代码有权被编译器优化为以下形式
+if (global_ptr != NULL && // 判断到下一步前，global_ptr设为NULL
+    global_ptr < high_address)
+        // 但是do_low没有应付NULL的措施
+        do_low(global_ptr);
