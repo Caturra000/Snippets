@@ -1,0 +1,21 @@
+#!/usr/bin/env bpftrace
+
+tracepoint:sched:sched_switch / comm == "busy" /
+{
+    if(nsecs > @windows[pid] + 5000000000) {
+        @windows[pid] = nsecs;
+        @volutary[pid] = (args.prev, args.next_pid, curtask->nvcsw, curtask->nivcsw);
+    }
+}
+
+interval:s:5
+{
+    print(@volutary);
+    clear(@volutary);
+}
+
+END
+{
+    clear(@windows);
+    clear(@volutary);
+}
