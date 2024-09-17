@@ -22,8 +22,8 @@ constexpr auto simd_max_element(const std::array<T, N> &arr) {
     constexpr auto tile = N / step;
     constexpr auto left = N % step;
 
-    for(auto group : arr | stdv::chunk(step) | stdv::take(tile)) {
-        simd_t temp {std::begin(group), stdx::element_aligned};
+    for(auto &boundary : arr | stdv::stride(step) | stdv::take(tile)) {
+        simd_t temp {std::addressof(boundary), stdx::element_aligned};
         where(max_value < temp, max_value) = temp;
     }
 
