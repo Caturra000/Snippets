@@ -7,58 +7,116 @@
 #include <tuple>
 #include <cassert>
 #include <thread>
+#include <vector>
 #include <immintrin.h>
 
 namespace stdv = std::views;
 namespace stdr = std::ranges;
 
-template <std::size_t N>
-concept simd_sortable = std::has_single_bit(N);
+namespace bitonic {
 
-// Bitonic sort.
-namespace detail {
+//////////////////////////////////////////////////////////// parallel
 
-auto schedule(std::size_t hint, std::invocable auto job) {
-    if(hint > 1e6) return std::jthread{std::move(job)};
-    return job(), std::jthread{};
+// A rough tuning option for amortizing thread overheads.
+constexpr std::size_t default_scale_hint = 1e6;
+// We don't have a good thread pool here, so let it be false.
+constexpr bool enable_parallel_for = false;
+constexpr bool enable_parallel(std::integral auto hint) {
+    return hint >= default_scale_hint;
 }
 
-// Sort up and sort down.
-void make_first_bitonic(stdr::random_access_range auto &&range) {
-    auto pivot = begin(range) + size(range) / 2;
-    auto up = stdr::subrange(begin(range), pivot);
-    auto down = stdr::subrange(pivot, end(range));
-    // These can be done in parallel.
-    auto _ = schedule(std::size(range),
-        [&]{ stdr::sort(up); });
-    stdr::sort(down, std::greater{});
+// Note: parallel(...) and parallel(...) are not parallel!
+void parallel(std::size_t scale_hint, std::invocable auto job,
+                                      std::invocable auto ...jobs) {
+    if(!enable_parallel(scale_hint)) return job(), (jobs(), ...);
+    std::array parallel_jobs {std::jthread{std::move(jobs)}...};
+    job();
 }
 
-// Merge only.
-void bitonic_sort(stdr::random_access_range auto &&range) {
-    if(std::size(range) == 1) return;
+void parallel_for(auto view, auto func) {
+    auto f = [=](auto subview) {
+        for(auto v : subview) func(v);
+    };
+    if(!enable_parallel_for || !enable_parallel(std::size(view))) {
+        return f(view);
+    }
+    auto chunk_view = view | stdv::chunk(default_scale_hint);
+    std::vector<std::jthread> parallel_jobs;
+    for(auto g : chunk_view) {
+        parallel_jobs.emplace_back(f, g);
+    }
+}
+
+//////////////////////////////////////////////////////////// parallel (end)
+//////////////////////////////////////////////////////////// direction
+
+constexpr struct {
+    std::true_type  up;
+    std::false_type down;
+} direction;
+
+constexpr auto match(auto &&range, auto op) {
+    using T = stdr::range_value_t<std::decay_t<decltype(range)>>;
+    if constexpr (op == direction.up) {
+        return std::less<T>();
+    } else if constexpr (op == direction.down){
+        return std::greater<T>();
+    } else {
+        static_assert(
+            op == direction.up || op == direction.down,
+            "Match nobody."
+        );
+        return std::less<T>();
+    }
+}
+
+//////////////////////////////////////////////////////////// direction (end)
+//////////////////////////////////////////////////////////// core
+
+void merge(auto range, auto opcode);
+void sort(auto range, auto opcode);
+
+auto cut(auto range) {
     auto pivot = std::begin(range) + std::size(range) / 2;
-    auto left = stdr::subrange{std::begin(range), pivot};
-    auto right = stdr::subrange{pivot, std::end(range)};
-    for(auto iters : stdv::zip(left, right)) {
-        if(auto &&[i1, i2] = iters; i1 > i2) {
+    auto lo = stdr::subrange(std::begin(range), pivot);
+    auto hi = stdr::subrange(pivot, std::end(range));
+    return std::tuple(lo, hi);
+}
+
+void sort(auto range, auto opcode) {
+    if(std::size(range) < 2) return;
+    auto [lo, hi] = cut(range);
+    parallel(std::size(range),
+        [=]{ sort(lo, direction.up); },
+        [=]{ sort(hi, direction.down); }
+    );
+    merge(range, opcode);
+}
+
+void merge(auto range, auto opcode) {
+    if(std::size(range) < 2) return;
+    auto [lo, hi] = cut(range);
+    auto cmp = match(range, opcode);
+    // All the comparisons can be done in parallel.
+    parallel_for(stdv::zip(lo, hi), [=](auto iters) {
+        if(auto &&[i1, i2] = iters; !cmp(i1, i2)) {
             std::swap(i1, i2);
         }
-    }
-    auto hint = std::size(range);
-    auto _ = schedule(hint,
-        [&] {bitonic_sort(stdr::subrange(std::begin(range), pivot));});
-    bitonic_sort(stdr::subrange(pivot, std::end(range)));
+    });
+    parallel(std::size(range),
+        [=]{ merge(lo, opcode); },
+        [=]{ merge(hi, opcode);});
 }
 
-} // namespace detail
+} // namespace bitonic
 
-void simd_sort(stdr::random_access_range auto &&range) {
+void parallel_sort(stdr::random_access_range auto &&range) {
     if(size(range) < 2) return;
     assert(std::has_single_bit(size(range)));
-    detail::make_first_bitonic(range | stdv::all);
-    detail::bitonic_sort(range | stdv::all);
+    bitonic::sort(range | stdv::all, bitonic::direction.up);
 }
+
+//////////////////////////////////////////////////////////// core (end)
 
 constexpr std::size_t MASS = 1<<26;
 std::array<int, MASS> massive;
@@ -90,13 +148,13 @@ auto tick(auto f) {
 }
 
 // clang++-18 -O3，6e7数组测试：
-// * 并行版本：2630ms
+// * 并行版本：2600ms
 // * 标准库版本：4972ms
 int main() {
     initiate(massive);
     // bitonic sort要求容器大小为2的幂
     static_assert(std::has_single_bit(std::size(massive)));
-    auto e = tick([&]{ simd_sort(massive); });
+    auto e = tick([&]{ parallel_sort(massive); });
     // auto e = tick([&] { stdr::sort(massive); });
     assert(std::ranges::is_sorted(massive));
     std::println("time: {}", e);
