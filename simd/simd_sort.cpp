@@ -39,7 +39,9 @@ void parallel(std::size_t scale_hint, std::invocable auto job,
 
 void parallel_for(auto view, auto func) {
     auto f = [func](auto maybe_subview) {
-        for(auto v : maybe_subview) func(v);
+        for(auto &&v : maybe_subview) {
+            func(std::forward<decltype(v)>(v));
+        }
     };
     if(!enable_parallel_for || !enable_parallel(std::size(view))) {
         return f(view);
@@ -52,24 +54,13 @@ void parallel_for(auto view, auto func) {
 }
 
 template <typename simd_t>
-void parallel_for(use_simd<simd_t>, auto view, auto func) {
-    // Single SIMD step for type simd_t::value_type. Typically 4, 8 or 16...
-    constexpr auto simd_step = simd_t::size();
-    // Per-thread chunk: safe to perform SIMD operations.
-    constexpr auto simd_chunk_size = std::lcm(default_scale_hint, simd_step);
-
-    auto f = [=](auto maybe_subview) {
-        for(auto v : maybe_subview | stdv::stride(simd_step)) func(v);
-    };
-
-    if(!enable_parallel_for || !enable_parallel(std::size(view))) {
-        return f(view);
-    }
-    auto per_thread_view = view | stdv::chunk(simd_chunk_size);
-    std::vector<std::jthread> parallel_jobs;
-    for(auto g : per_thread_view) {
-        parallel_jobs.emplace_back(f, g);
-    }
+auto parallel_for(use_simd<simd_t>, auto view, auto func) {
+    constexpr auto step = simd_t::size();
+    const auto tile = std::size(view) / step;
+    const auto consumed = step * tile;
+    auto simdify = stdv::stride(step) | stdv::take(tile);
+    parallel_for(view | simdify, std::move(func));
+    return consumed;
 }
 
 //////////////////////////////////////////////////////////// parallel (end)
@@ -95,6 +86,16 @@ auto cut(auto range) {
     return std::tuple(lo, hi);
 }
 
+void perform(auto &lhs, auto &rhs, directional auto dir) {
+    auto compare = [dir] {
+        if constexpr (dir == direction.incr) return std::less<>();
+        else return std::greater<>();
+    };
+    if(!compare()(lhs, rhs)) {
+        std::swap(lhs, rhs);
+    }
+}
+
 template <typename simd_t>
 void perform(use_simd<simd_t>, auto &lhs, auto &rhs, directional auto dir) {
     simd_t x {std::addressof(lhs), stdx::element_aligned};
@@ -106,17 +107,6 @@ void perform(use_simd<simd_t>, auto &lhs, auto &rhs, directional auto dir) {
     } else {
         x.copy_to(std::addressof(rhs), stdx::element_aligned);
         y.copy_to(std::addressof(lhs), stdx::element_aligned);
-    }
-}
-
-template <typename T>
-void perform(T &lhs, T &rhs, directional auto dir) {
-    auto compare = [dir] {
-        if constexpr (dir == direction.incr) return std::less<T>();
-        else return std::greater<T>();
-    };
-    if(!compare()(lhs, rhs)) {
-        std::swap(lhs, rhs);
     }
 }
 
@@ -134,25 +124,25 @@ void sort(auto range, directional auto dir) {
 
 void merge(auto range, directional auto dir) {
     if(std::size(range) < 2) return;
-    auto [lo, hi] = cut(range);
     using T = stdr::range_value_t<decltype(range)>;
     using simd_t = stdx::native_simd<T>;
 
+    auto [lo, hi] = cut(range);
     auto zip_view = stdv::zip(lo, hi);
-    const auto left = std::size(zip_view) % simd_t::size();
-    auto simd_zip_view = zip_view | stdv::take(std::size(zip_view) - left);
 
     // All the comparisons can be done in parallel.
-    parallel_for(use_simd<simd_t>{}, simd_zip_view, [=](auto zipped) {
-        auto &&[lhs, rhs] = zipped;
-        perform(use_simd<simd_t>{}, lhs, rhs, dir);
-    });
+    auto consumed =
+    parallel_for(use_simd<simd_t>(), zip_view,
+        [=](auto &&zipped) {
+            auto &&[lhs, rhs] = zipped;
+            perform(use_simd<simd_t>(), lhs, rhs, dir);
+        });
 
-    if(left) {
-        for(auto &&[lhs, rhs] : zip_view | stdv::reverse | stdv::take(left)) {
+    stdr::for_each(zip_view | stdv::drop(consumed),
+        [=](auto &&zipped) {
+            auto &&[lhs, rhs] = zipped;
             perform(lhs, rhs, dir);
-        }
-    }
+        });
 
     parallel(std::size(range),
         [=]{ merge(lo, dir); },
@@ -162,8 +152,8 @@ void merge(auto range, directional auto dir) {
 } // namespace bitonic
 
 void simd_sort(stdr::random_access_range auto &&range) {
-    if(size(range) < 2) return;
-    assert(std::has_single_bit(size(range)));
+    if(std::size(range) < 2) return;
+    assert(std::has_single_bit(std::size(range)));
     bitonic::sort(range | stdv::all, bitonic::direction.incr);
 }
 

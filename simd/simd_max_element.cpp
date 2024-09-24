@@ -22,22 +22,20 @@ constexpr auto simd_max_element(const std::array<T, N> &arr) {
     constexpr auto tile = N / step;
     constexpr auto left = N % step;
 
-    for(auto &boundary : arr | stdv::stride(step) | stdv::take(tile)) {
-        simd_t temp {std::addressof(boundary), stdx::element_aligned};
+    for(auto &batch : arr | stdv::stride(step) | stdv::take(tile)) {
+        simd_t temp {std::addressof(batch), stdx::element_aligned};
         where(max_value < temp, max_value) = temp;
     }
 
     if constexpr (left) {
-        auto left_view = arr | stdv::reverse | stdv::take(left);
+        auto left_view = arr | stdv::drop(tile * step);
         auto v = *stdr::max_element(left_view);
         if(stdx::none_of(max_value > v)) {
             return v;
         }
     }
 
-    auto simd_view = stdv::iota(0) | stdv::take(simd_t::size())
-        | stdv::transform([&](auto index) -> T { return max_value[index]; });
-    return *stdr::max_element(simd_view);
+    return stdx::hmax(max_value);
 }
 
 constexpr std::size_t MASS = 1e8;
