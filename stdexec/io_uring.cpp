@@ -1,3 +1,5 @@
+#include <unistd.h>
+#include <fcntl.h>
 #include <cstring>
 #include <mutex>
 #include <iostream>
@@ -5,6 +7,7 @@
 #include <ranges>
 #include <liburing.h>
 #include <stdexec/execution.hpp>
+#include <exec/async_scope.hpp>
 
 // Operations in stdexec are required to be address-stable.
 struct immovable {
@@ -25,7 +28,7 @@ struct io_uring_exec: immovable {
 
     // (Receiver) Types erasure support.
     template <typename Result>
-    struct vtab {
+    struct vtable {
         using result_t = Result;
         virtual void complete(result_t) = 0;
     };
@@ -33,7 +36,7 @@ struct io_uring_exec: immovable {
     // All the tasks are asynchronous.
     // The `task` struct is queued by a user-space intrusive queue.
     // NOTE: The io_uring-specified task is queued by an interal ring of io_uring.
-    struct task: immovable, vtab<decltype(std::ignore)> {
+    struct task: immovable, vtable<decltype(std::ignore)> {
         void complete(result_t) override {}
         task *next{this};
     };
@@ -42,7 +45,7 @@ struct io_uring_exec: immovable {
     template <stdexec::receiver Receiver>
     struct operation: task {
         using operation_state_concept = stdexec::operation_state_t;
-        operation(Receiver receiver, io_uring_exec *uring)
+        operation(Receiver receiver, io_uring_exec *uring) noexcept
             : receiver(std::move(receiver)), uring(uring) {}
         void start() noexcept {
             uring->push(this);
@@ -59,7 +62,8 @@ struct io_uring_exec: immovable {
         using sender_concept = stdexec::sender_t;
         using completion_signatures = stdexec::completion_signatures<
                                         stdexec::set_value_t(),
-                                        stdexec::set_error_t(std::exception_ptr)>;
+                                        stdexec::set_error_t(std::exception_ptr),
+                                        stdexec::set_stopped_t()>;
         template <stdexec::receiver Receiver>
         operation<Receiver> connect(Receiver receiver) noexcept {
             return {std::move(receiver), uring};
@@ -79,10 +83,12 @@ struct io_uring_exec: immovable {
     // External structured callbacks support.
     struct uring_operation {
         using result_t = decltype(std::declval<io_uring_cqe>().res);
-        using base = vtab<result_t>;
+        using base = vtable<result_t>;
     };
 
+    // TODO: Concurrent run().
     void run() {
+        // TODO: stop_token.
         for(task *first_task;;) {
             for(task *op = first_task = pop(); op; op = pop()) {
                 op->complete({});
@@ -139,8 +145,9 @@ struct io_uring_exec: immovable {
 template <auto F, stdexec::receiver Receiver, typename ...Args>
 struct io_uring_exec_initiating_operation: immovable, io_uring_exec::uring_operation::base {
     using operation_state_concept = stdexec::operation_state_t;
-    io_uring_exec_initiating_operation(Receiver receiver, io_uring_exec *uring,
-                                       std::tuple<Args...> args)
+    io_uring_exec_initiating_operation(Receiver receiver,
+                                       io_uring_exec *uring,
+                                       std::tuple<Args...> args) noexcept
         : receiver(std::move(receiver)),
           uring(uring),
           args(std::move(args)) {}
@@ -151,16 +158,31 @@ struct io_uring_exec_initiating_operation: immovable, io_uring_exec::uring_opera
             io_uring_sqe_set_data(sqe, static_cast<operation_base*>(this));
             std::apply(F, std::tuple_cat(std::tuple(sqe), std::move(args)));
         } else {
-            stdexec::set_error(std::move(receiver), std::exception_ptr{});
+            // RETURN VALUE
+            // io_uring_get_sqe(3)  returns  a  pointer  to the next submission
+            // queue event on success and NULL on failure. If NULL is returned,
+            // the SQ ring is currently full and entries must be submitted  for
+            // processing before new ones can get allocated.
+            try {
+                throw std::system_error(EBUSY, std::generic_category());
+            } catch(...) {
+                stdexec::set_error(std::move(receiver), std::current_exception());
+            }
         }
     }
 
     void complete(result_t cqe_res) override {
-        // if(cqe->res == -ECANCELED) [[unlikely]] {
-        //     stdexec::set_stopped(std::move(receiver));
-        // } else {
+        if(cqe_res == -ECANCELED) {
+            stdexec::set_stopped(std::move(receiver));
+        } else if(cqe_res < 0) {
+            try {
+                throw std::system_error(-cqe_res, std::generic_category());
+            } catch(...) {
+                stdexec::set_error(std::move(receiver), std::current_exception());
+            }
+        } else [[likely]] {
             stdexec::set_value(std::move(receiver), cqe_res);
-        // }
+        }
     }
 
     Receiver receiver;
@@ -173,7 +195,8 @@ struct io_uring_exec_sender {
     using sender_concept = stdexec::sender_t;
     using completion_signatures = stdexec::completion_signatures<
                                     stdexec::set_value_t(io_uring_exec::uring_operation::result_t),
-                                    stdexec::set_error_t(std::exception_ptr)>;
+                                    stdexec::set_error_t(std::exception_ptr),
+                                    stdexec::set_stopped_t()>;
 
     template <stdexec::receiver Receiver>
     io_uring_exec_initiating_operation<F, Receiver, Args...>
@@ -188,7 +211,9 @@ struct io_uring_exec_sender {
 
 // A sender factory.
 template <auto F, typename ...Args>
-stdexec::sender_of<stdexec::set_value_t(io_uring_exec::uring_operation::result_t /* cqe->res */)>
+stdexec::sender_of<
+    stdexec::set_value_t(io_uring_exec::uring_operation::result_t /* cqe->res */),
+    stdexec::set_error_t(std::exception_ptr)>
 auto make_uring_sender(io_uring_exec::scheduler s, Args ...args) noexcept {
     return io_uring_exec_sender<F, Args...>{s.uring, std::tuple(std::move(args)...)};
 }
@@ -203,16 +228,24 @@ auto async_read(io_uring_exec::scheduler s, int fd, void *buf, size_t n, uint64_
     return make_uring_sender<io_uring_prep_read>(s, fd, buf, n, offset);
 }
 
+stdexec::sender
+auto async_write(io_uring_exec::scheduler s, int fd, const void *buf, size_t n, uint64_t offset = 0) noexcept {
+    return make_uring_sender<io_uring_prep_write>(s, fd, buf, n, offset);
+}
+
 int main() {
-    int fd = (unlink("/tmp/jojo"), open("/tmp/jojo", O_RDWR|O_TRUNC|O_CREAT));
-    if(fd < 0 || write(fd, "dio", 3) != 3) {
+    
+    int fd = (::unlink("/tmp/jojo"), ::open("/tmp/jojo", O_RDWR|O_TRUNC|O_CREAT, 0666));
+    if(fd < 0 || ::write(fd, "dio", 3) != 3) {
         std::cerr << ::strerror(errno) , std::abort();
     }
 
     io_uring_exec uring(512);
     auto scheduler = uring.get_scheduler();
-    auto s =
-        stdexec::schedule(scheduler) | stdexec::then([] {
+    exec::async_scope scope;
+    auto s1 =
+        stdexec::schedule(scheduler)
+      | stdexec::then([] {
             std::cout << "hello ";
             return 19260816;
         })
@@ -221,7 +254,8 @@ int main() {
         }); // or then(...)
 
     auto s2 =
-        stdexec::schedule(scheduler) | stdexec::then([] {
+        stdexec::schedule(scheduler)
+      | stdexec::then([] {
             std::cout << "world!" << std::endl;
             return std::array<char, 5>{};
         })
@@ -234,8 +268,14 @@ int main() {
                     return nread;
                 });
         });
+
     std::jthread j {[&] { uring.run(); }};
-    auto a = stdexec::when_all(s, s2);
+
+    // scope.spawn(std::move(s1) | stdexec::then([](...) {}));
+    // scope.spawn(std::move(s2) | stdexec::then([](...) {}));
+    // stdexec::sync_wait(scope.on_empty());
+
+    auto a = stdexec::when_all(std::move(s1), std::move(s2));
     auto [v1, v2] = stdexec::sync_wait(std::move(a)).value();
     std::cout << "ans: " << v1 << ' ' << v2 << std::endl;
 }
