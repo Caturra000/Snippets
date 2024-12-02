@@ -2,6 +2,7 @@
 #include <poll.h>
 #include <liburing.h>
 #include <signal.h>
+#include <cstring>
 #include <cstddef>
 #include <cstdint>
 #include <utility>
@@ -9,6 +10,7 @@
 #include <array>
 #include <iostream>
 #include <ranges>
+#include <thread>
 
 // Just copy and paste.
 [[nodiscard("defer() is not allowed to be temporary.")]]
@@ -61,24 +63,34 @@ int main() {
         io_uring_queue_exit(&uring); 
     });
 
-    auto sfd = make_signalfd_from(std::array {SIGINT});
-    auto sqe = io_uring_get_sqe(&uring);
-    io_uring_prep_poll_add(sqe, sfd, POLLIN);
-    int n = io_uring_submit(&uring);
-    std::cout << "submit: " << n << std::endl;
+    // 不使用额外线程可以做到信号处理
+    std::thread t {[&] {
+        auto sfd = make_signalfd_from(std::array {SIGINT});
+        auto sqe = io_uring_get_sqe(&uring);
+        io_uring_prep_poll_add(sqe, sfd, POLLIN);
+        int n = io_uring_submit(&uring);
+        std::cout << "submit: " << n << std::endl;
+    }};
+
+    t.join();
 
     std::array<io_uring_cqe*, 64> cqes;
+
+    int n = 0;
 
     // Press Ctrl + C to break this loop.
     for(;;) {
         n = io_uring_peek_batch_cqe(&uring, cqes.data(), cqes.size());
         if(n) {
             std::cout << "peek: " << n << std::endl;
+            // 懒得回收cqe了
             break;
         }
     }
 
     for(auto cqe : cqes | std::views::take(n)) {
         std::cout << cqe->res << std::endl;
+        // 可能是Operation canceled
+        if(cqe->res < 0) std::cerr << strerror(-cqe->res) << std::endl;
     }
 }
