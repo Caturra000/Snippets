@@ -1,11 +1,16 @@
 #pragma once
+#include <fcntl.h>
 #include <unistd.h>
 #include <signal.h>
+#include <sys/mman.h>
 #include <sys/syscall.h>
+#include <linux/version.h>
 #include <linux/io_uring.h>
 #include <bits/stdc++.h>
 
-/// Workaround for compatibility
+#define HAS_USER_ADDR (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 5, 0))
+
+//////////////////////////////////////////////////////////// Syscall wrappers
 
 int io_uring_setup(unsigned entries, struct io_uring_params *p) {
     return (int) syscall(__NR_io_uring_setup, entries, p);
@@ -17,9 +22,42 @@ int io_uring_enter(int ring_fd, unsigned int to_submit,
                    flags, NULL, _NSIG / 8);
 }
 
+//////////////////////////////////////////////////////////// Library interface to io_uring
+
+struct SQ_ref {
+    unsigned *p_head;
+    unsigned *p_tail;
+    unsigned *p_flags;
+    unsigned *p_dropped;
+    unsigned *p_array;
+    struct io_uring_sqe *sqes;
+
+    unsigned sqe_head;
+    unsigned sqe_tail;
+
+    size_t ring_sz;
+    void *ring_ptr;
+
+    unsigned ring_mask;
+    unsigned ring_entries;
+};
+
+struct CQ_ref {
+    unsigned *p_head;
+    unsigned *p_tail;
+    unsigned *p_flags;
+    unsigned *p_overflow;
+    struct io_uring_cqe *cqes;
+
+    size_t ring_sz;
+    void *ring_ptr;
+
+    unsigned ring_mask;
+    unsigned ring_entries;
+};
 
 
-/// Helpers
+//////////////////////////////////////////////////////////// Helpers
 
 // C++-style check for syscall.
 // Failed on ret < 0 by default.
@@ -61,7 +99,9 @@ auto _dump(io_sqring_offsets &off) {
               << "flags: " << off.flags << ", "
               << "dropped: " << off.dropped << ", "
               << "array: " << off.array << ", "
+#if HAS_USER_ADDR
               << "user_addr: " << off.user_addr
+#endif
               << ")"
               << std::endl;
     return "";
@@ -76,7 +116,9 @@ auto _dump(io_cqring_offsets &off) {
               << "overflow: " << off.overflow << ", "
               << "cqes: " << off.cqes << ", "
               << "flags: " << off.flags << ", "
+#if HAS_USER_ADDR
               << "user_addr: " << off.user_addr
+#endif
               << ")"
               << std::endl;
     return "";
@@ -122,4 +164,31 @@ template <typename T>
 auto mmap_start_lifetime_as_array(void *mmap_start, unsigned offset, std::size_t n) {
     auto ptr_val = std::bit_cast<std::uintptr_t>(mmap_start) + offset;
     return start_lifetime_as_array<T>(std::bit_cast<T*>(ptr_val), n);
+}
+
+// Copy from liburing.
+template <typename T>
+void WRITE_ONCE(T &var, auto val) {
+    std::atomic_store_explicit(reinterpret_cast<std::atomic<T> *>(&var),
+                    val, std::memory_order_relaxed);
+}
+
+template <typename T>
+T READ_ONCE(const T &var) {
+    return std::atomic_load_explicit(
+        reinterpret_cast<const std::atomic<T> *>(&var),
+        std::memory_order_relaxed);
+}
+
+template <typename T>
+void smp_store_release(T *p, auto v) {
+    std::atomic_store_explicit(reinterpret_cast<std::atomic<T> *>(p), v,
+                    std::memory_order_release);
+}
+
+template <typename T>
+T smp_load_acquire(const T *p) {
+    return std::atomic_load_explicit(
+        reinterpret_cast<const std::atomic<T> *>(p),
+        std::memory_order_acquire);
 }
