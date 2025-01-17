@@ -3,7 +3,11 @@
 // Kernel v6.6+
 constexpr bool enable_IORING_SETUP_NO_SQARRAY = false;
 // Kernel v6.5+
+// !!!WORK IN PROGRESS!!!
 constexpr bool enable_IORING_SETUP_NO_MMAP = false;
+
+// In this example file, it must be greater than 3.
+constexpr unsigned queue_depth = 32;
 
 #ifndef IORING_SETUP_NO_SQARRAY
 #define IORING_SETUP_NO_SQARRAY (1U << 16)
@@ -20,52 +24,88 @@ int main() {
     }
     if constexpr (enable_IORING_SETUP_NO_MMAP) {
         p.flags |= IORING_SETUP_NO_MMAP;
-        // TODO: need allocation. We cannot allocate buffer from userspace directly.
+        // Need allocation. We cannot allocate buffer from userspace directly.
         // `man 2 io_uring_setup`:
         //   Typically, callers should allocate this memory by using mmap(2)  to  allocate  a
         //   huge  page.
 
-        /// WRONG!
 #if HAS_USER_ADDR
+        /// WRONG! discontig!
         // void *sq_cq_buf;
         // void *sqes_buf;
         // posix_memalign(&sq_cq_buf, 16384, 16384);
         // posix_memalign(&sqes_buf, 16384, 16384);
         // assert(sq_cq_buf);
         // assert(sqes_buf);
-        // p.sq_off.user_addr = std::bit_cast<unsigned long long>(&sq_cq_buf);
-        // p.cq_off.user_addr = std::bit_cast<unsigned long long>(&sqes_buf);
+        // p.sq_off.user_addr = std::bit_cast<unsigned long long>(sq_cq_buf);
+        // p.cq_off.user_addr = std::bit_cast<unsigned long long>(sqes_buf);
+
+        // But we can allocate a regular page if less than 4K.
+        if constexpr(queue_depth <= 64) {
+            auto allocate = [] {
+                return mmap(nullptr, 4096,
+                    PROT_READ | PROT_WRITE,
+                    MAP_SHARED | MAP_ANONYMOUS,
+                    -1, 0);
+            };
+
+            // Note that we don't need to check cq_buf with IORING_FEAT_SINGLE_MMAP.
+            // It must be true.
+            void *sq_cq_buf = allocate();
+            void *sqes_buf = allocate();
+            assert(sq_cq_buf != MAP_FAILED);
+            assert(sqes_buf != MAP_FAILED);
+
+            p.sq_off.user_addr = std::bit_cast<unsigned long long>(sq_cq_buf);
+            p.cq_off.user_addr = std::bit_cast<unsigned long long>(sqes_buf);
+        } // Otherwise raise EINVAL from io_uring_setup(2).
 #endif
     }
 
-    int fd = io_uring_setup(128, &p) | nofail("setup");
+    int fd = io_uring_setup(queue_depth, &p) | nofail("setup");
     dump(p);
 
-    // liburing uses sizeof(unsigned).
-    auto sqring_size = p.sq_off.array + p.sq_entries * sizeof(unsigned);
-    void *sqring_addr = mmap(nullptr, sqring_size,
-                            PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE,
-                            fd, IORING_OFF_SQ_RING);
-    assert(sqring_addr != MAP_FAILED);
+    void *sqring_addr {};
+    void *cqring_addr {};
+    void *sqes_addr {};
+    if(!(p.flags & IORING_SETUP_NO_MMAP)) {
+        // liburing uses sizeof(unsigned).
+        auto sqring_size = p.sq_off.array + p.sq_entries * sizeof(unsigned);
+        if(p.flags & IORING_SETUP_NO_SQARRAY) assert(p.sq_off.array == 0);
+        // if(p.flags & IORING_SETUP_NO_SQARRAY) sqring_size -= p.sq_off.array;
+        sqring_addr = mmap(nullptr, sqring_size,
+                                PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE,
+                                fd, IORING_OFF_SQ_RING);
+        assert(sqring_addr != MAP_FAILED);
 
-    auto sqe_size = sizeof(io_uring_sqe);
-    auto sqes_size = sqe_size * p.sq_entries;
-    void *sqes_addr = mmap(nullptr, sqes_size,
-                            PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE,
-                            fd, IORING_OFF_SQES);
-    assert(sqes_addr != MAP_FAILED);
+        auto sqe_size = sizeof(io_uring_sqe);
+        auto sqes_size = sqe_size * p.sq_entries;
+        sqes_addr = mmap(nullptr, sqes_size,
+                                PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE,
+                                fd, IORING_OFF_SQES);
+        assert(sqes_addr != MAP_FAILED);
 
-    auto mmap_cqring_opt = [=] {
-        if(p.features & IORING_FEAT_SINGLE_MMAP) {
-            return sqring_addr;
-        }
-        auto cqring_size = p.cq_off.cqes + p.cq_entries * sizeof(struct io_uring_cqe);
-        return mmap(nullptr, cqring_size,
-                    PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE,
-                    fd, IORING_OFF_CQ_RING);
-    };
-    void *cqring_addr = mmap_cqring_opt();
-    assert(cqring_addr != MAP_FAILED);
+        auto mmap_cqring_opt = [=] {
+            if(p.features & IORING_FEAT_SINGLE_MMAP) {
+                return sqring_addr;
+            }
+            auto cqring_size = p.cq_off.cqes + p.cq_entries * sizeof(struct io_uring_cqe);
+            return mmap(nullptr, cqring_size,
+                        PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE,
+                        fd, IORING_OFF_CQ_RING);
+        };
+        cqring_addr = mmap_cqring_opt();
+        assert(cqring_addr != MAP_FAILED);
+    } else {
+#if HAS_USER_ADDR
+        sqring_addr = std::bit_cast<void*>(p.sq_off.user_addr);
+        cqring_addr = std::bit_cast<void*>(p.sq_off.user_addr);
+        sqes_addr = std::bit_cast<void*>(p.cq_off.user_addr);
+#else
+        assert(false);
+#endif
+    }
+    assert(sqring_addr && cqring_addr && sqes_addr);
 
     SQ_ref sq;
     CQ_ref cq;
@@ -134,9 +174,11 @@ int main() {
         }
     } // Otherwise sqarray has no mapping.
 
+    // Tell the kernel we have updated the tail pointer.
     smp_store_release(sq.p_tail, 3);
 
-    io_uring_enter(fd, 3, 3, IORING_ENTER_GETEVENTS) | nofail("submit");
+    int cnt = io_uring_enter(fd, 3, 3, IORING_ENTER_GETEVENTS) | nofail("submit");
+    // FIXME: IORING_SETUP_NO_MMAP didn't update the head pointer.
     assert(smp_load_acquire(sq.p_head) == *sq.p_tail);
     assert(*sq.p_head == 3);
 
