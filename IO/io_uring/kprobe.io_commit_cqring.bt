@@ -1,0 +1,13 @@
+// For v6.8，这些是更新 CQ tail 的所有路径
+
+kprobe:io_cq_unlock_post {
+    print(tid);
+}
+
+kprobe:__io_submit_flush_completions {
+    print(tid);
+}
+
+kprobe:io_fill_cqe_req_aux {
+    print(tid);
+}
