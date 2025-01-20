@@ -1,0 +1,6 @@
+// bpftrace 测试程序
+// 使用 IOSQE_ASYNC 强制走异步线程池，但是完成点仍然是在本地线程
+tracepoint:io_uring:io_uring_complete
+{
+    print(tid);
+}
