@@ -189,7 +189,7 @@ int main() {
 
     std::array<io_uring_cqe*, 3> cqes;
     for(cnt = 0; cnt != 3;) {
-        cnt += peek_batch_cqe(cqes.data() + cnt, cnt - cqes.size());
+        cnt += peek_batch_cqe(cqes.data() + cnt, cqes.size() - cnt);
     }
     cq_advance(3);
 
