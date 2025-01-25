@@ -1,0 +1,176 @@
+main() {
+  stdexec::__just::just_t::operator()(0x7fff8b475f48) {
+    stdexec::__detail::__make_sexpr_t::operator()(0x6, __tuple{...}) = __sexpr{...};
+  } = __sexpr{...}; /* stdexec::__just::just_t::operator() */
+  stdexec::__closure::__binder_back::operator()::$_0::operator()(0x7fff8b475f68, 0x7fff8b475f68) {
+    stdexec::__then::then_t::operator()(0x7fff8b475f4c, &my_func, 0x7fff8b475f68) {
+      stdexec::__get_early_domain_t::operator()(&stdexec::__get_early_domain, 0x7fff8b475f4c, default_domain{...}) = default_domain{...};
+      stdexec::__detail::__make_sexpr_t::operator()(&my_func, 0x6) = __sexpr{...};
+    } = __sexpr{...}; /* stdexec::__then::then_t::operator() */
+  } = __sexpr{...}; /* stdexec::__closure::__binder_back::operator()::$_0::operator() */
+  stdexec::__sync_wait::sync_wait_t::operator()(0x7fff8b475f68, &stdexec::sync_wait) {
+    stdexec::__get_early_domain_t::operator()(&stdexec::__get_early_domain, 0x7fff8b475f70, default_domain{...}) = default_domain{...};
+    stdexec::__sync_wait::sync_wait_t::apply_sender(0x7fff8b475f68, 0x7fff8b475f17) {
+      std::__exception_ptr::exception_ptr::exception_ptr(0x7fff8b475e50);
+      stdexec::__loop::run_loop::run_loop(0x7fff8b475e58) {
+        std::mutex::mutex(0x7fff8b475e58) {
+          std::__mutex_base::__mutex_base(0x7fff8b475e58);
+        } /* std::mutex::mutex */
+        std::condition_variable::condition_variable();
+      } /* stdexec::__loop::run_loop::run_loop */
+      stdexec::__connect::connect_t::operator()(&stdexec::connect, 0x7fff8b475f70, 0x7fff8b475e10) {
+        stdexec::__sync_wait::__receiver::__t::get_env(0x7fff8b475e10) = __env{...};
+        stdexec::__get_late_domain_t::operator()(&stdexec::__get_late_domain, 0x7fff8b475f70, 0x7fff8b475d38) = default_domain{...};
+        stdexec::__detail::__op_state<stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__sync_wait::__receiver<int>::__t> stdexec::__detail::__connect::{lambda<typename $T0, typename $T1>($T0&&, $T1)#1}::operator()<stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__sync_wait::__receiver<int>::__t>(stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__sync_wait::__receiver<int>::__t) const() {
+          stdexec::__detail::__op_state::__op_state() {
+            stdexec::__detail::__op_base::__op_base() {
+              decltype(auto) stdexec::__detail::__get_state::{lambda<typename $T0>($T0&&, stdexec::__ignore)#1}::operator()<stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&>(stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__ignore) const() {
+                decltype (((__declval<stdexec::__detail::__get_data>)())((stdexec::__declval<stdexec::__then::then_t>)(), (__declval<stdexec::__i<true, _Ok<stdexec::__cplr> >::__f<stdexec::__cplr>::__f<int (*)(int)> >)(), (__declval<stdexec::__i<true, _Ok<stdexec::__cplr> >::__f<stdexec::__cplr>::__f<stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#7}{}, stdexec::(anonymous namespace)::__anon> > >)())) stdexec::__detail::__captures<stdexec::__then::then_t, int (*)(int), stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#7}{}, stdexec::(anonymous namespace)::__anon> >(stdexec::__then::then_t, int (*&&)(int), stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#7}{}, stdexec::(anonymous namespace)::__anon>&&)::{lambda<typename $T0, typename $T1>($T0, $T1&&)#1}::operator()<stdexec::__cplr, stdexec::__detail::__get_data>(stdexec::__cplr, stdexec::__detail::__get_data&&)();
+              } /* decltype(auto) stdexec::__detail::__get_state::{lambda<typename $T0>($T0&&, stdexec::__ignore)#1}::operator()<stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&>(stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__ignore) const */
+            } /* stdexec::__detail::__op_base::__op_base */
+            decltype (((__declval<stdexec::__detail::__connect_fn<stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__sync_wait::__receiver<int>::__t> >)())((stdexec::__declval<stdexec::__then::then_t>)(), (__declval<stdexec::__i<true, _Ok<stdexec::__cplr> >::__f<stdexec::__cplr>::__f<int (*)(int)> >)(), (__declval<stdexec::__i<true, _Ok<stdexec::__cplr> >::__f<stdexec::__cplr>::__f<stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#7}{}, stdexec::(anonymous namespace)::__anon> > >)())) stdexec::__detail::__captures<stdexec::__then::then_t, int (*)(int), stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#7}{}, stdexec::(anonymous namespace)::__anon> >(stdexec::__then::then_t, int (*&&)(int), stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#7}{}, stdexec::(anonymous namespace)::__anon>&&)::{lambda<typename $T0, typename $T1>($T0, $T1&&)#1}::operator()<stdexec::__cplr, stdexec::__detail::__connect_fn<stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__sync_wait::__receiver<int>::__t> >(stdexec::__cplr, stdexec::__detail::__connect_fn<stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__sync_wait::__receiver<int>::__t>&&)() {
+              stdexec::__detail::__connect_fn::operator()(0x7fff8b475e38, __ignore{...}) {
+                stdexec::__detail::__connect_fn::__impl::operator()(0x7fff8b475e38, 0x7fff8b475c00) {
+                  stdexec::__connect::connect_t::operator()(&stdexec::connect, 0x7fff8b475f78, 0x7fff8b475bc0) {
+                    stdexec::__detail::__get_env::$_0::operator()() {
+                      stdexec::__sync_wait::__receiver::__t::get_env(0x7fff8b475e20) = __env{...};
+                    } /* stdexec::__detail::__get_env::$_0::operator() */
+                    stdexec::__get_late_domain_t::operator()(&stdexec::__get_late_domain, 0x7fff8b475f78, 0x7fff8b475ae8) = default_domain{...};
+                    stdexec::__detail::__op_state<stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#7}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__detail::__receiver<stdexec::__sync_wait::__receiver<int>, stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__muchar (*) [1]>::__t> stdexec::__detail::__connect::{lambda<typename $T0, typename $T1>($T0&&, $T1)#1}::operator()<stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#7}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__detail::__receiver<stdexec::__sync_wait::__receiver<int>, stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__muchar (*) [1]>::__t>(stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#7}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__detail::__receiver<stdexec::__sync_wait::__receiver<int>, stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__muchar (*) [1]>::__t) const() {
+                      stdexec::__detail::__op_state::__op_state() {
+                        stdexec::__detail::__op_base::__op_base() {
+                          decltype(auto) stdexec::__detail::__get_state::{lambda<typename $T0>($T0&&, stdexec::__ignore)#1}::operator()<stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#7}{}, stdexec::(anonymous namespace)::__anon>&>(stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#7}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__ignore) const() {
+                            stdexec::__detail::__captures::$_0::operator()();
+                          } /* decltype(auto) stdexec::__detail::__get_state::{lambda<typename $T0>($T0&&, stdexec::__ignore)#1}::operator()<stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#7}{}, stdexec::(anonymous namespace)::__anon>&>(stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#7}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__ignore) const */
+                        } /* stdexec::__detail::__op_base::__op_base */
+                        decltype (((__declval<stdexec::__detail::__connect_fn<stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#7}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__detail::__receiver<stdexec::__sync_wait::__receiver<int>, stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__muchar (*) [1]>::__t> >)())((stdexec::__declval<stdexec::__just::just_t>)(), (__declval<stdexec::__i<true, _Ok<stdexec::__cplr> >::__f<stdexec::__cplr>::__f<stdexec::__tup::__tuple<(stdexec::__pack::__t<0ul>*)0, int> > >)())) stdexec::__detail::__captures<stdexec::__just::just_t, stdexec::__tup::__tuple<(stdexec::__pack::__t<0ul>*)0, int> >(stdexec::__just::just_t, stdexec::__tup::__tuple<(stdexec::__pack::__t<0ul>*)0, int>&&)::{lambda<typename $T0, typename $T1>($T0, $T1&&)#1}::operator()<stdexec::__cplr, stdexec::__detail::__connect_fn<stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#7}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__detail::__receiver<stdexec::__sync_wait::__receiver<int>, stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__muchar (*) [1]>::__t> >(stdexec::__cplr, stdexec::__detail::__connect_fn<stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#7}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__detail::__receiver<stdexec::__sync_wait::__receiver<int>, stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__muchar (*) [1]>::__t>&&)() {
+                          stdexec::__detail::__connect_fn::operator()(0x7fff8b475a58, __ignore{...}) = __tuple{...};
+                        } /* decltype (((__declval<stdexec::__detail::__connect_fn<stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#7}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__detail::__receiver<stdexec::__sync_wait::__receiver<int>, stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__muchar (*) [1]>::__t> >)())((stdexec::__declval<stdexec::__just::just_t>)(), (__declval<stdexec::__i<true, _Ok<stdexec::__cplr> >::__f<stdexec::__cplr>::__f<stdexec::__tup::__tuple<(stdexec::__pack::__t<0ul>*)0, int> > >)())) stdexec::__detail::__captures<stdexec::__just::just_t, stdexec::__tup::__tuple<(stdexec::__pack::__t<0ul>*)0, int> >(stdexec::__just::just_t, stdexec::__tup::__tuple<(stdexec::__pack::__t<0ul>*)0, int>&&)::{lambda<typename $T0, typename $T1>($T0, $T1&&)#1}::operator()<stdexec::__cplr, stdexec::__detail::__connect_fn<stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#7}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__detail::__receiver<stdexec::__sync_wait::__receiver<int>, stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__muchar (*) [1]>::__t> >(stdexec::__cplr, stdexec::__detail::__connect_fn<stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#7}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__detail::__receiver<stdexec::__sync_wait::__receiver<int>, stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__muchar (*) [1]>::__t>&&) */
+                      } /* stdexec::__detail::__op_state::__op_state */
+                    } /* stdexec::__detail::__op_state<stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#7}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__detail::__receiver<stdexec::__sync_wait::__receiver<int>, stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__muchar (*) [1]>::__t> stdexec::__detail::__connect::{lambda<typename $T0, typename $T1>($T0&&, $T1)#1}::operator()<stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#7}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__detail::__receiver<stdexec::__sync_wait::__receiver<int>, stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__muchar (*) [1]>::__t>(stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#7}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__detail::__receiver<stdexec::__sync_wait::__receiver<int>, stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__muchar (*) [1]>::__t) const */
+                  } = __op_state{...}; /* stdexec::__connect::connect_t::operator() */
+                } = __tuple{...}; /* stdexec::__detail::__connect_fn::__impl::operator() */
+              } = __tuple{...}; /* stdexec::__detail::__connect_fn::operator() */
+            } /* decltype (((__declval<stdexec::__detail::__connect_fn<stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__sync_wait::__receiver<int>::__t> >)())((stdexec::__declval<stdexec::__then::then_t>)(), (__declval<stdexec::__i<true, _Ok<stdexec::__cplr> >::__f<stdexec::__cplr>::__f<int (*)(int)> >)(), (__declval<stdexec::__i<true, _Ok<stdexec::__cplr> >::__f<stdexec::__cplr>::__f<stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#7}{}, stdexec::(anonymous namespace)::__anon> > >)())) stdexec::__detail::__captures<stdexec::__then::then_t, int (*)(int), stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#7}{}, stdexec::(anonymous namespace)::__anon> >(stdexec::__then::then_t, int (*&&)(int), stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#7}{}, stdexec::(anonymous namespace)::__anon>&&)::{lambda<typename $T0, typename $T1>($T0, $T1&&)#1}::operator()<stdexec::__cplr, stdexec::__detail::__connect_fn<stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__sync_wait::__receiver<int>::__t> >(stdexec::__cplr, stdexec::__detail::__connect_fn<stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__sync_wait::__receiver<int>::__t>&&) */
+          } /* stdexec::__detail::__op_state::__op_state */
+        } /* stdexec::__detail::__op_state<stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__sync_wait::__receiver<int>::__t> stdexec::__detail::__connect::{lambda<typename $T0, typename $T1>($T0&&, $T1)#1}::operator()<stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__sync_wait::__receiver<int>::__t>(stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__sync_wait::__receiver<int>::__t) const */
+      } = __op_state{...}; /* stdexec::__connect::connect_t::operator() */
+      stdexec::__detail::__op_state::start::$_0::operator()(0x7fff8b475e10) {
+        auto stdexec::__detail::__start::{lambda<typename $T0, typename... $T1>(stdexec::__ignore, stdexec::__ignore, ($T1&)...)#1}::operator()<stdexec::__start::start_t, stdexec::__detail::__op_state<stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#7}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__detail::__receiver<stdexec::__sync_wait::__receiver<int>, stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__muchar (*) [1]>::__t> >(stdexec::__ignore, stdexec::__ignore, stdexec::__detail::__op_state<stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#7}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__detail::__receiver<stdexec::__sync_wait::__receiver<int>, stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__muchar (*) [1]>::__t>&) const() {
+          stdexec::__detail::__op_state::start::$_0::operator()(0x7fff8b475d50) {
+            void stdexec::__just::__impl<stdexec::__just::just_t>::{lambda<typename $T0, typename $T1>($T0&, $T1&)#1}::operator()<stdexec::__tup::__tuple<(stdexec::__pack::__t<0ul>*)0, int>, stdexec::__detail::__receiver<stdexec::__sync_wait::__receiver<int>, stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__muchar (*) [1]>::__t>(stdexec::__tup::__tuple<(stdexec::__pack::__t<0ul>*)0, int>&, stdexec::__detail::__receiver<stdexec::__sync_wait::__receiver<int>, stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__muchar (*) [1]>::__t&) const() {
+              auto stdexec::__just::__impl<stdexec::__just::just_t>::{lambda<typename $T0, typename $T1>($T0&, $T1&)#1}::operator()<stdexec::__tup::__tuple<(stdexec::__pack::__t<0ul>*)0, int>, stdexec::__detail::__receiver<stdexec::__sync_wait::__receiver<int>, stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__muchar (*) [1]>::__t>(stdexec::__tup::__tuple<(stdexec::__pack::__t<0ul>*)0, int>&, stdexec::__detail::__receiver<stdexec::__sync_wait::__receiver<int>, stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__muchar (*) [1]>::__t&) const::{lambda<typename... $T0>(($T0&)...)#1}::operator()<int>(int&) const() {
+                void stdexec::__then::__then_impl::{lambda<typename $T0, typename $T1, typename $T2, typename... $T3>(stdexec::__ignore, $T1&, $T2&, $T0, ($T3&&)...)#2}::operator()<stdexec::__rcvrs::set_value_t, int (*)(int), stdexec::__sync_wait::__receiver<int>::__t, int>(stdexec::__ignore, int (*&)(int), stdexec::__sync_wait::__receiver<int>::__t&, stdexec::__rcvrs::set_value_t, int&&) const() {
+                  stdexec::__set_value_invoke(0x7fff8b475e20, 0x7fff8b475e30) {
+                    stdexec::__set_value_invoke(0x7fff8b475e20, 0x7fff8b475e30) {
+                      my_func(6) = 6;
+                      stdexec::__sync_wait::__receiver::__t::set_value(0x7fff8b475e20) {
+                        std::optional::emplace(0x7fff8b475f68) {
+                          std::_Optional_base_impl::_M_reset(0x7fff8b475f68) {
+                            std::_Optional_payload_base::_M_reset(0x7fff8b475f68);
+                          } /* std::_Optional_base_impl::_M_reset */
+                          std::forward(0x7fff8b475aec) = 0x7fff8b475aec;
+                          std::_Optional_base_impl::_M_construct(0x7fff8b475f68) {
+                            std::forward(0x7fff8b475aec) = 0x7fff8b475aec;
+                            std::_Optional_payload_base::_M_construct(0x7fff8b475f68) {
+                              std::forward(0x7fff8b475aec) = 0x7fff8b475aec;
+                              std::__addressof(0x7fff8b475f68) = 0x7fff8b475f68;
+                              std::_Construct(0x7fff8b475f68) {
+                                std::__is_constant_evaluated() = 0;
+                                operator new(4, 0x7fff8b475f68) = 0x7fff8b475f68;
+                                std::forward(0x7fff8b475aec) = 0x7fff8b475aec;
+                                std::tuple::tuple(0x7fff8b475f68) {
+                                  std::forward(0x7fff8b475aec) = 0x7fff8b475aec;
+                                  std::_Tuple_impl::_Tuple_impl(0x7fff8b475f68, 0x7fff8b475aec) {
+                                    std::forward(0x7fff8b475aec) = 0x7fff8b475aec;
+                                    std::_Head_base::_Head_base(0x7fff8b475f68, 0x7fff8b475aec) {
+                                      std::forward(0x7fff8b475aec) = 0x7fff8b475aec;
+                                    } /* std::_Head_base::_Head_base */
+                                  } /* std::_Tuple_impl::_Tuple_impl */
+                                } /* std::tuple::tuple */
+                              } /* std::_Construct */
+                            } /* std::_Optional_payload_base::_M_construct */
+                          } /* std::_Optional_base_impl::_M_construct */
+                          std::_Optional_base_impl::_M_get(0x7fff8b475f68) {
+                            std::__is_constant_evaluated() = 0;
+                            std::_Optional_payload_base::_M_get(0x7fff8b475f68) = 0x7fff8b475f68;
+                          } = 0x7fff8b475f68; /* std::_Optional_base_impl::_M_get */
+                        } = 0x7fff8b475f68; /* std::optional::emplace */
+                        stdexec::__loop::run_loop::finish(0x7fff8b475e58) {
+                          std::unique_lock::unique_lock(0x7fff8b475a60, 0x7fff8b475e58) {
+                            std::__addressof(0x7fff8b475e58) = 0x7fff8b475e58;
+                            std::unique_lock::lock(0x7fff8b475a60) {
+                              std::mutex::lock(0x7fff8b475e58) {
+                                __gthread_mutex_lock(0x7fff8b475e58) {
+                                  __gthread_active_p() = 1;
+                                  pthread_mutex_lock(0x7fff8b475e58) = 0;
+                                } = 0; /* __gthread_mutex_lock */
+                              } /* std::mutex::lock */
+                            } /* std::unique_lock::lock */
+                          } /* std::unique_lock::unique_lock */
+                          std::condition_variable::notify_all();
+                          std::unique_lock::~unique_lock(0x7fff8b475a60) {
+                            std::unique_lock::unlock(0x7fff8b475a60) {
+                              std::mutex::unlock(0x7fff8b475e58) {
+                                __gthread_mutex_unlock(0x7fff8b475e58) {
+                                  __gthread_active_p() = 1;
+                                  pthread_mutex_unlock(0x7fff8b475e58) = 0;
+                                } = 0; /* __gthread_mutex_unlock */
+                              } /* std::mutex::unlock */
+                            } /* std::unique_lock::unlock */
+                          } /* std::unique_lock::~unique_lock */
+                        } /* stdexec::__loop::run_loop::finish */
+                      } /* stdexec::__sync_wait::__receiver::__t::set_value */
+                    } /* stdexec::__set_value_invoke */
+                  } /* stdexec::__set_value_invoke */
+                } /* void stdexec::__then::__then_impl::{lambda<typename $T0, typename $T1, typename $T2, typename... $T3>(stdexec::__ignore, $T1&, $T2&, $T0, ($T3&&)...)#2}::operator()<stdexec::__rcvrs::set_value_t, int (*)(int), stdexec::__sync_wait::__receiver<int>::__t, int>(stdexec::__ignore, int (*&)(int), stdexec::__sync_wait::__receiver<int>::__t&, stdexec::__rcvrs::set_value_t, int&&) const */
+              } /* auto stdexec::__just::__impl<stdexec::__just::just_t>::{lambda<typename $T0, typename $T1>($T0&, $T1&)#1}::operator()<stdexec::__tup::__tuple<(stdexec::__pack::__t<0ul>*)0, int>, stdexec::__detail::__receiver<stdexec::__sync_wait::__receiver<int>, stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__muchar (*) [1]>::__t>(stdexec::__tup::__tuple<(stdexec::__pack::__t<0ul>*)0, int>&, stdexec::__detail::__receiver<stdexec::__sync_wait::__receiver<int>, stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__muchar (*) [1]>::__t&) const::{lambda<typename... $T0>(($T0&)...)#1}::operator()<int>(int&) const */
+            } /* void stdexec::__just::__impl<stdexec::__just::just_t>::{lambda<typename $T0, typename $T1>($T0&, $T1&)#1}::operator()<stdexec::__tup::__tuple<(stdexec::__pack::__t<0ul>*)0, int>, stdexec::__detail::__receiver<stdexec::__sync_wait::__receiver<int>, stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__muchar (*) [1]>::__t>(stdexec::__tup::__tuple<(stdexec::__pack::__t<0ul>*)0, int>&, stdexec::__detail::__receiver<stdexec::__sync_wait::__receiver<int>, stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__muchar (*) [1]>::__t&) const */
+          } /* stdexec::__detail::__op_state::start::$_0::operator() */
+        } /* auto stdexec::__detail::__start::{lambda<typename $T0, typename... $T1>(stdexec::__ignore, stdexec::__ignore, ($T1&)...)#1}::operator()<stdexec::__start::start_t, stdexec::__detail::__op_state<stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#7}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__detail::__receiver<stdexec::__sync_wait::__receiver<int>, stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__muchar (*) [1]>::__t> >(stdexec::__ignore, stdexec::__ignore, stdexec::__detail::__op_state<stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#7}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__detail::__receiver<stdexec::__sync_wait::__receiver<int>, stdexec::__sexpr<stdexec::(anonymous namespace)::{lambda()#8}{}, stdexec::(anonymous namespace)::__anon>&, stdexec::__muchar (*) [1]>::__t>&) const */
+      } /* stdexec::__detail::__op_state::start::$_0::operator() */
+      stdexec::__loop::run_loop::run(0x7fff8b475e58) {
+        stdexec::__loop::run_loop::__pop_front_(0x7fff8b475e58) {
+          std::unique_lock::unique_lock(0x7fff8b475d50, 0x7fff8b475e58) {
+            std::__addressof(0x7fff8b475e58) = 0x7fff8b475e58;
+            std::unique_lock::lock(0x7fff8b475d50) {
+              std::mutex::lock(0x7fff8b475e58) {
+                __gthread_mutex_lock(0x7fff8b475e58) {
+                  __gthread_active_p() = 1;
+                  pthread_mutex_lock(0x7fff8b475e58) = 0;
+                } = 0; /* __gthread_mutex_lock */
+              } /* std::mutex::lock */
+            } /* std::unique_lock::lock */
+          } /* std::unique_lock::unique_lock */
+          std::condition_variable::wait(0x7fff8b475e80, 0x7fff8b475d50, {...}) {
+            stdexec::__loop::run_loop::__pop_front_::$_0::operator()(0x7fff8b475d18) = 1;
+          } /* std::condition_variable::wait */
+          std::exchange(0x7fff8b475eb0, 0x7fff8b475eb0) {
+            std::forward(0x7fff8b475eb0) = 0x7fff8b475eb0;
+            std::__exchange(0x7fff8b475eb0, 0x7fff8b475eb0) {
+              std::move(0x7fff8b475eb0) = 0x7fff8b475eb0;
+              std::forward(0x7fff8b475eb0) = 0x7fff8b475eb0;
+            } = 0x7fff8b475eb0; /* std::__exchange */
+          } = 0x7fff8b475eb0; /* std::exchange */
+          std::unique_lock::~unique_lock(0x7fff8b475d50) {
+            std::unique_lock::unlock(0x7fff8b475d50) {
+              std::mutex::unlock(0x7fff8b475e58) {
+                __gthread_mutex_unlock(0x7fff8b475e58) {
+                  __gthread_active_p() = 1;
+                  pthread_mutex_unlock(0x7fff8b475e58) = 0;
+                } = 0; /* __gthread_mutex_unlock */
+              } /* std::mutex::unlock */
+            } /* std::unique_lock::unlock */
+          } /* std::unique_lock::~unique_lock */
+        } = 0x7fff8b475eb0; /* stdexec::__loop::run_loop::__pop_front_ */
+      } /* stdexec::__loop::run_loop::run */
+      std::__exception_ptr::exception_ptr::operator(cast)(0x7fff8b475e50) = 0;
+      stdexec::__sync_wait::__state::~__state(0x7fff8b475e50) {
+        stdexec::__loop::run_loop::~run_loop(0x7fff8b475e58) {
+          std::condition_variable::~condition_variable();
+        } /* stdexec::__loop::run_loop::~run_loop */
+        std::__exception_ptr::exception_ptr::~exception_ptr(0x7fff8b475e50);
+      } /* stdexec::__sync_wait::__state::~__state */
+    } = optional{...}; /* stdexec::__sync_wait::sync_wait_t::apply_sender */
+  } = optional{...}; /* stdexec::__sync_wait::sync_wait_t::operator() */
+} = 0; /* main */

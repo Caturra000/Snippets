@@ -1,0 +1,4 @@
+io_uring.cpp 已废弃，见仓库：
+https://github.com/Caturra000/uring_exec
+
+simple.trace 文件是 simple.cpp 运行得到的调用栈
