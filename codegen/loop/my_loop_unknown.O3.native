@@ -1,0 +1,86 @@
+
+loop_unknown.o:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000000000 <_Z15my_loop_unknownPii>:
+   0:	85 f6                	test   %esi,%esi
+   2:	7e 10                	jle    14 <_Z15my_loop_unknownPii+0x14>
+   4:	89 f1                	mov    %esi,%ecx
+   6:	83 fe 08             	cmp    $0x8,%esi
+   9:	73 0c                	jae    17 <_Z15my_loop_unknownPii+0x17>
+   b:	31 d2                	xor    %edx,%edx
+   d:	31 c0                	xor    %eax,%eax
+   f:	e9 0c 01 00 00       	jmp    120 <_Z15my_loop_unknownPii+0x120>
+  14:	31 c0                	xor    %eax,%eax
+  16:	c3                   	ret
+  17:	83 fe 40             	cmp    $0x40,%esi
+  1a:	73 09                	jae    25 <_Z15my_loop_unknownPii+0x25>
+  1c:	31 c0                	xor    %eax,%eax
+  1e:	31 d2                	xor    %edx,%edx
+  20:	e9 9f 00 00 00       	jmp    c4 <_Z15my_loop_unknownPii+0xc4>
+  25:	b8 06 19 00 00       	mov    $0x1906,%eax
+  2a:	89 ca                	mov    %ecx,%edx
+  2c:	81 e2 c0 ff ff 7f    	and    $0x7fffffc0,%edx
+  32:	c5 f9 ef c0          	vpxor  %xmm0,%xmm0,%xmm0
+  36:	c5 f1 ef c9          	vpxor  %xmm1,%xmm1,%xmm1
+  3a:	c5 e9 ef d2          	vpxor  %xmm2,%xmm2,%xmm2
+  3e:	c5 e1 ef db          	vpxor  %xmm3,%xmm3,%xmm3
+  42:	31 f6                	xor    %esi,%esi
+  44:	c4 e2 78 f7 c1       	bextr  %eax,%ecx,%eax
+  49:	48 c1 e0 08          	shl    $0x8,%rax
+  4d:	0f 1f 00             	nopl   (%rax)
+  50:	62 f1 7d 48 fe 04 37 	vpaddd (%rdi,%rsi,1),%zmm0,%zmm0
+  57:	62 f1 75 48 fe 4c 37 	vpaddd 0x40(%rdi,%rsi,1),%zmm1,%zmm1
+  5e:	01 
+  5f:	62 f1 6d 48 fe 54 37 	vpaddd 0x80(%rdi,%rsi,1),%zmm2,%zmm2
+  66:	02 
+  67:	62 f1 65 48 fe 5c 37 	vpaddd 0xc0(%rdi,%rsi,1),%zmm3,%zmm3
+  6e:	03 
+  6f:	48 81 c6 00 01 00 00 	add    $0x100,%rsi
+  76:	48 39 f0             	cmp    %rsi,%rax
+  79:	75 d5                	jne    50 <_Z15my_loop_unknownPii+0x50>
+  7b:	62 f1 75 48 fe c0    	vpaddd %zmm0,%zmm1,%zmm0
+  81:	62 f1 65 48 fe d2    	vpaddd %zmm2,%zmm3,%zmm2
+  87:	62 f1 6d 48 fe c0    	vpaddd %zmm0,%zmm2,%zmm0
+  8d:	62 f3 fd 48 3b c1 01 	vextracti64x4 $0x1,%zmm0,%ymm1
+  94:	62 f1 7d 48 fe c1    	vpaddd %zmm1,%zmm0,%zmm0
+  9a:	c4 e3 7d 39 c1 01    	vextracti128 $0x1,%ymm0,%xmm1
+  a0:	c5 f9 fe c1          	vpaddd %xmm1,%xmm0,%xmm0
+  a4:	c5 f9 70 c8 ee       	vpshufd $0xee,%xmm0,%xmm1
+  a9:	c5 f9 fe c1          	vpaddd %xmm1,%xmm0,%xmm0
+  ad:	c5 f9 70 c8 55       	vpshufd $0x55,%xmm0,%xmm1
+  b2:	c5 f9 fe c1          	vpaddd %xmm1,%xmm0,%xmm0
+  b6:	c5 f9 7e c0          	vmovd  %xmm0,%eax
+  ba:	48 39 ca             	cmp    %rcx,%rdx
+  bd:	74 6c                	je     12b <_Z15my_loop_unknownPii+0x12b>
+  bf:	f6 c1 38             	test   $0x38,%cl
+  c2:	74 5c                	je     120 <_Z15my_loop_unknownPii+0x120>
+  c4:	48 89 d6             	mov    %rdx,%rsi
+  c7:	89 ca                	mov    %ecx,%edx
+  c9:	81 e2 f8 ff ff 7f    	and    $0x7ffffff8,%edx
+  cf:	c5 f9 6e c0          	vmovd  %eax,%xmm0
+  d3:	66 66 66 66 2e 0f 1f 	data16 data16 data16 cs nopw 0x0(%rax,%rax,1)
+  da:	84 00 00 00 00 00 
+  e0:	c5 fd fe 04 b7       	vpaddd (%rdi,%rsi,4),%ymm0,%ymm0
+  e5:	48 83 c6 08          	add    $0x8,%rsi
+  e9:	48 39 f2             	cmp    %rsi,%rdx
+  ec:	75 f2                	jne    e0 <_Z15my_loop_unknownPii+0xe0>
+  ee:	c4 e3 7d 39 c1 01    	vextracti128 $0x1,%ymm0,%xmm1
+  f4:	c5 f9 fe c1          	vpaddd %xmm1,%xmm0,%xmm0
+  f8:	c5 f9 70 c8 ee       	vpshufd $0xee,%xmm0,%xmm1
+  fd:	c5 f9 fe c1          	vpaddd %xmm1,%xmm0,%xmm0
+ 101:	c5 f9 70 c8 55       	vpshufd $0x55,%xmm0,%xmm1
+ 106:	c5 f9 fe c1          	vpaddd %xmm1,%xmm0,%xmm0
+ 10a:	c5 f9 7e c0          	vmovd  %xmm0,%eax
+ 10e:	48 39 ca             	cmp    %rcx,%rdx
+ 111:	74 18                	je     12b <_Z15my_loop_unknownPii+0x12b>
+ 113:	66 66 66 66 2e 0f 1f 	data16 data16 data16 cs nopw 0x0(%rax,%rax,1)
+ 11a:	84 00 00 00 00 00 
+ 120:	03 04 97             	add    (%rdi,%rdx,4),%eax
+ 123:	48 ff c2             	inc    %rdx
+ 126:	48 39 d1             	cmp    %rdx,%rcx
+ 129:	75 f5                	jne    120 <_Z15my_loop_unknownPii+0x120>
+ 12b:	c5 f8 77             	vzeroupper
+ 12e:	c3                   	ret

@@ -1,0 +1,47 @@
+0000000000000000 <_Z7my_loopPi>:
+   0:	62 f1 fe 48 6f 47 04 	vmovdqu64 0x100(%rdi),%zmm0
+   7:	62 f1 fe 48 6f 4f 05 	vmovdqu64 0x140(%rdi),%zmm1
+   e:	62 f1 fe 48 6f 57 06 	vmovdqu64 0x180(%rdi),%zmm2
+  15:	62 f1 fe 48 6f 5f 07 	vmovdqu64 0x1c0(%rdi),%zmm3
+  1c:	62 f1 7d 48 fe 07    	vpaddd (%rdi),%zmm0,%zmm0
+  22:	62 f1 75 48 fe 4f 01 	vpaddd 0x40(%rdi),%zmm1,%zmm1
+  29:	62 f1 6d 48 fe 57 02 	vpaddd 0x80(%rdi),%zmm2,%zmm2
+  30:	62 f1 65 48 fe 5f 03 	vpaddd 0xc0(%rdi),%zmm3,%zmm3
+  37:	62 f1 7d 48 fe 47 08 	vpaddd 0x200(%rdi),%zmm0,%zmm0
+  3e:	62 f1 75 48 fe 4f 09 	vpaddd 0x240(%rdi),%zmm1,%zmm1
+  45:	62 f1 6d 48 fe 57 0a 	vpaddd 0x280(%rdi),%zmm2,%zmm2
+  4c:	62 f1 65 48 fe 5f 0b 	vpaddd 0x2c0(%rdi),%zmm3,%zmm3
+  53:	62 f1 7d 48 fe 47 0c 	vpaddd 0x300(%rdi),%zmm0,%zmm0
+  5a:	62 f1 75 48 fe 4f 0d 	vpaddd 0x340(%rdi),%zmm1,%zmm1
+  61:	62 f1 6d 48 fe 57 0e 	vpaddd 0x380(%rdi),%zmm2,%zmm2
+  68:	62 f1 65 48 fe 5f 0f 	vpaddd 0x3c0(%rdi),%zmm3,%zmm3
+  6f:	62 f1 7d 48 fe 47 10 	vpaddd 0x400(%rdi),%zmm0,%zmm0
+  76:	62 f1 75 48 fe 4f 11 	vpaddd 0x440(%rdi),%zmm1,%zmm1
+  7d:	62 f1 6d 48 fe 57 12 	vpaddd 0x480(%rdi),%zmm2,%zmm2
+  84:	62 f1 65 48 fe 5f 13 	vpaddd 0x4c0(%rdi),%zmm3,%zmm3
+  8b:	62 f1 7d 48 fe 47 14 	vpaddd 0x500(%rdi),%zmm0,%zmm0
+  92:	62 f1 75 48 fe 4f 15 	vpaddd 0x540(%rdi),%zmm1,%zmm1
+  99:	62 f1 6d 48 fe 57 16 	vpaddd 0x580(%rdi),%zmm2,%zmm2
+  a0:	62 f1 65 48 fe 5f 17 	vpaddd 0x5c0(%rdi),%zmm3,%zmm3
+  a7:	62 f1 7d 48 fe 47 18 	vpaddd 0x600(%rdi),%zmm0,%zmm0
+  ae:	62 f1 75 48 fe 4f 19 	vpaddd 0x640(%rdi),%zmm1,%zmm1
+  b5:	62 f1 6d 48 fe 57 1a 	vpaddd 0x680(%rdi),%zmm2,%zmm2
+  bc:	62 f1 65 48 fe 5f 1b 	vpaddd 0x6c0(%rdi),%zmm3,%zmm3
+  c3:	62 f1 7d 48 fe 47 1c 	vpaddd 0x700(%rdi),%zmm0,%zmm0
+  ca:	62 f1 75 48 fe 4f 1d 	vpaddd 0x740(%rdi),%zmm1,%zmm1
+  d1:	62 f1 6d 48 fe 57 1e 	vpaddd 0x780(%rdi),%zmm2,%zmm2
+  d8:	62 f1 65 48 fe 5f 1f 	vpaddd 0x7c0(%rdi),%zmm3,%zmm3
+  df:	62 f1 75 48 fe c0    	vpaddd %zmm0,%zmm1,%zmm0
+  e5:	62 f1 65 48 fe ca    	vpaddd %zmm2,%zmm3,%zmm1
+  eb:	62 f1 75 48 fe c0    	vpaddd %zmm0,%zmm1,%zmm0
+  f1:	62 f3 fd 48 3b c1 01 	vextracti64x4 $0x1,%zmm0,%ymm1
+  f8:	62 f1 7d 48 fe c1    	vpaddd %zmm1,%zmm0,%zmm0
+  fe:	c4 e3 7d 39 c1 01    	vextracti128 $0x1,%ymm0,%xmm1
+ 104:	c5 f9 fe c1          	vpaddd %xmm1,%xmm0,%xmm0
+ 108:	c5 f9 70 c8 ee       	vpshufd $0xee,%xmm0,%xmm1
+ 10d:	c5 f9 fe c1          	vpaddd %xmm1,%xmm0,%xmm0
+ 111:	c5 f9 70 c8 55       	vpshufd $0x55,%xmm0,%xmm1
+ 116:	c5 f9 fe c1          	vpaddd %xmm1,%xmm0,%xmm0
+ 11a:	c5 f9 7e c0          	vmovd  %xmm0,%eax
+ 11e:	c5 f8 77             	vzeroupper
+ 121:	c3                   	ret

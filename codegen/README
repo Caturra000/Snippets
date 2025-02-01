@@ -1,3 +1,5 @@
 一些代码生成示例，目前使用 clang++-18 编译，然后反汇编
 
-一般测试 -O0 和 -O3 选项，no_vectorize 指的是关闭向量化的情况
+一般测试 -O0 和 -O3 选项，
+no_vectorize 指的是关闭向量化的情况
+native 即 -march=native，我电脑 CPU 用的 ZEN 4（支持 AVX512）
