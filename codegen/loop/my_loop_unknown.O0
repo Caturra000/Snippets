@@ -1,0 +1,22 @@
+0000000000000000 <_Z15my_loop_unknownPii>:
+   0:	55                   	push   %rbp
+   1:	48 89 e5             	mov    %rsp,%rbp
+   4:	48 89 7d f8          	mov    %rdi,-0x8(%rbp)
+   8:	89 75 f4             	mov    %esi,-0xc(%rbp)
+   b:	c7 45 f0 00 00 00 00 	movl   $0x0,-0x10(%rbp)
+  12:	c7 45 ec 00 00 00 00 	movl   $0x0,-0x14(%rbp)
+  19:	8b 45 ec             	mov    -0x14(%rbp),%eax
+  1c:	3b 45 f4             	cmp    -0xc(%rbp),%eax
+  1f:	0f 8d 1f 00 00 00    	jge    44 <_Z15my_loop_unknownPii+0x44>
+  25:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+  29:	48 63 4d ec          	movslq -0x14(%rbp),%rcx
+  2d:	8b 04 88             	mov    (%rax,%rcx,4),%eax
+  30:	03 45 f0             	add    -0x10(%rbp),%eax
+  33:	89 45 f0             	mov    %eax,-0x10(%rbp)
+  36:	8b 45 ec             	mov    -0x14(%rbp),%eax
+  39:	83 c0 01             	add    $0x1,%eax
+  3c:	89 45 ec             	mov    %eax,-0x14(%rbp)
+  3f:	e9 d5 ff ff ff       	jmp    19 <_Z15my_loop_unknownPii+0x19>
+  44:	8b 45 f0             	mov    -0x10(%rbp),%eax
+  47:	5d                   	pop    %rbp
+  48:	c3                   	ret

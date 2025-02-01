@@ -1,0 +1,17 @@
+0000000000000000 <_Z7my_loopPi>:
+   0:	31 c9                	xor    %ecx,%ecx
+   2:	31 c0                	xor    %eax,%eax
+   4:	66 66 66 2e 0f 1f 84 	data16 data16 cs nopw 0x0(%rax,%rax,1)
+   b:	00 00 00 00 00 
+  10:	03 04 8f             	add    (%rdi,%rcx,4),%eax
+  13:	03 44 8f 04          	add    0x4(%rdi,%rcx,4),%eax
+  17:	03 44 8f 08          	add    0x8(%rdi,%rcx,4),%eax
+  1b:	03 44 8f 0c          	add    0xc(%rdi,%rcx,4),%eax
+  1f:	03 44 8f 10          	add    0x10(%rdi,%rcx,4),%eax
+  23:	03 44 8f 14          	add    0x14(%rdi,%rcx,4),%eax
+  27:	03 44 8f 18          	add    0x18(%rdi,%rcx,4),%eax
+  2b:	03 44 8f 1c          	add    0x1c(%rdi,%rcx,4),%eax
+  2f:	48 83 c1 08          	add    $0x8,%rcx
+  33:	48 81 f9 00 02 00 00 	cmp    $0x200,%rcx
+  3a:	75 d4                	jne    10 <_Z7my_loopPi+0x10>
+  3c:	c3                   	ret

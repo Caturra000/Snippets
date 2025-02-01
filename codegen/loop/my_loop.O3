@@ -1,0 +1,31 @@
+0000000000000000 <_Z7my_loopPi>:
+   0:	66 0f ef c0          	pxor   %xmm0,%xmm0
+   4:	31 c0                	xor    %eax,%eax
+   6:	66 0f ef c9          	pxor   %xmm1,%xmm1
+   a:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+  10:	f3 0f 6f 14 87       	movdqu (%rdi,%rax,4),%xmm2
+  15:	66 0f fe d0          	paddd  %xmm0,%xmm2
+  19:	f3 0f 6f 44 87 10    	movdqu 0x10(%rdi,%rax,4),%xmm0
+  1f:	66 0f fe c1          	paddd  %xmm1,%xmm0
+  23:	f3 0f 6f 4c 87 20    	movdqu 0x20(%rdi,%rax,4),%xmm1
+  29:	f3 0f 6f 5c 87 30    	movdqu 0x30(%rdi,%rax,4),%xmm3
+  2f:	f3 0f 6f 64 87 40    	movdqu 0x40(%rdi,%rax,4),%xmm4
+  35:	66 0f fe e1          	paddd  %xmm1,%xmm4
+  39:	66 0f fe e2          	paddd  %xmm2,%xmm4
+  3d:	f3 0f 6f 54 87 50    	movdqu 0x50(%rdi,%rax,4),%xmm2
+  43:	66 0f fe d3          	paddd  %xmm3,%xmm2
+  47:	66 0f fe d0          	paddd  %xmm0,%xmm2
+  4b:	f3 0f 6f 44 87 60    	movdqu 0x60(%rdi,%rax,4),%xmm0
+  51:	66 0f fe c4          	paddd  %xmm4,%xmm0
+  55:	f3 0f 6f 4c 87 70    	movdqu 0x70(%rdi,%rax,4),%xmm1
+  5b:	66 0f fe ca          	paddd  %xmm2,%xmm1
+  5f:	48 83 c0 20          	add    $0x20,%rax
+  63:	48 3d 00 02 00 00    	cmp    $0x200,%rax
+  69:	75 a5                	jne    10 <_Z7my_loopPi+0x10>
+  6b:	66 0f fe c8          	paddd  %xmm0,%xmm1
+  6f:	66 0f 70 c1 ee       	pshufd $0xee,%xmm1,%xmm0
+  74:	66 0f fe c1          	paddd  %xmm1,%xmm0
+  78:	66 0f 70 c8 55       	pshufd $0x55,%xmm0,%xmm1
+  7d:	66 0f fe c8          	paddd  %xmm0,%xmm1
+  81:	66 0f 7e c8          	movd   %xmm1,%eax
+  85:	c3                   	ret

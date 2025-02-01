@@ -1,0 +1,40 @@
+0000000000000000 <_Z15my_loop_unknownPii>:
+   0:	85 f6                	test   %esi,%esi
+   2:	7e 14                	jle    18 <_Z15my_loop_unknownPii+0x18>
+   4:	41 89 f0             	mov    %esi,%r8d
+   7:	44 89 c1             	mov    %r8d,%ecx
+   a:	83 e1 07             	and    $0x7,%ecx
+   d:	83 fe 08             	cmp    $0x8,%esi
+  10:	73 09                	jae    1b <_Z15my_loop_unknownPii+0x1b>
+  12:	31 d2                	xor    %edx,%edx
+  14:	31 c0                	xor    %eax,%eax
+  16:	eb 40                	jmp    58 <_Z15my_loop_unknownPii+0x58>
+  18:	31 c0                	xor    %eax,%eax
+  1a:	c3                   	ret
+  1b:	41 81 e0 f8 ff ff 7f 	and    $0x7ffffff8,%r8d
+  22:	31 d2                	xor    %edx,%edx
+  24:	31 c0                	xor    %eax,%eax
+  26:	66 2e 0f 1f 84 00 00 	cs nopw 0x0(%rax,%rax,1)
+  2d:	00 00 00 
+  30:	03 04 97             	add    (%rdi,%rdx,4),%eax
+  33:	03 44 97 04          	add    0x4(%rdi,%rdx,4),%eax
+  37:	03 44 97 08          	add    0x8(%rdi,%rdx,4),%eax
+  3b:	03 44 97 0c          	add    0xc(%rdi,%rdx,4),%eax
+  3f:	03 44 97 10          	add    0x10(%rdi,%rdx,4),%eax
+  43:	03 44 97 14          	add    0x14(%rdi,%rdx,4),%eax
+  47:	03 44 97 18          	add    0x18(%rdi,%rdx,4),%eax
+  4b:	03 44 97 1c          	add    0x1c(%rdi,%rdx,4),%eax
+  4f:	48 83 c2 08          	add    $0x8,%rdx
+  53:	49 39 d0             	cmp    %rdx,%r8
+  56:	75 d8                	jne    30 <_Z15my_loop_unknownPii+0x30>
+  58:	48 85 c9             	test   %rcx,%rcx
+  5b:	74 1e                	je     7b <_Z15my_loop_unknownPii+0x7b>
+  5d:	48 8d 14 97          	lea    (%rdi,%rdx,4),%rdx
+  61:	31 f6                	xor    %esi,%esi
+  63:	66 66 66 66 2e 0f 1f 	data16 data16 data16 cs nopw 0x0(%rax,%rax,1)
+  6a:	84 00 00 00 00 00 
+  70:	03 04 b2             	add    (%rdx,%rsi,4),%eax
+  73:	48 ff c6             	inc    %rsi
+  76:	48 39 f1             	cmp    %rsi,%rcx
+  79:	75 f5                	jne    70 <_Z15my_loop_unknownPii+0x70>
+  7b:	c3                   	ret

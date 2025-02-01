@@ -1,0 +1,43 @@
+0000000000000000 <_Z15my_loop_unknownPii>:
+   0:	85 f6                	test   %esi,%esi
+   2:	7e 0d                	jle    11 <_Z15my_loop_unknownPii+0x11>
+   4:	89 f1                	mov    %esi,%ecx
+   6:	83 fe 08             	cmp    $0x8,%esi
+   9:	73 09                	jae    14 <_Z15my_loop_unknownPii+0x14>
+   b:	31 d2                	xor    %edx,%edx
+   d:	31 c0                	xor    %eax,%eax
+   f:	eb 6f                	jmp    80 <_Z15my_loop_unknownPii+0x80>
+  11:	31 c0                	xor    %eax,%eax
+  13:	c3                   	ret
+  14:	89 ca                	mov    %ecx,%edx
+  16:	81 e2 f8 ff ff 7f    	and    $0x7ffffff8,%edx
+  1c:	89 c8                	mov    %ecx,%eax
+  1e:	c1 e8 03             	shr    $0x3,%eax
+  21:	25 ff ff ff 0f       	and    $0xfffffff,%eax
+  26:	48 c1 e0 05          	shl    $0x5,%rax
+  2a:	66 0f ef c0          	pxor   %xmm0,%xmm0
+  2e:	31 f6                	xor    %esi,%esi
+  30:	66 0f ef c9          	pxor   %xmm1,%xmm1
+  34:	66 66 66 2e 0f 1f 84 	data16 data16 cs nopw 0x0(%rax,%rax,1)
+  3b:	00 00 00 00 00 
+  40:	f3 0f 6f 14 37       	movdqu (%rdi,%rsi,1),%xmm2
+  45:	66 0f fe c2          	paddd  %xmm2,%xmm0
+  49:	f3 0f 6f 54 37 10    	movdqu 0x10(%rdi,%rsi,1),%xmm2
+  4f:	66 0f fe ca          	paddd  %xmm2,%xmm1
+  53:	48 83 c6 20          	add    $0x20,%rsi
+  57:	48 39 f0             	cmp    %rsi,%rax
+  5a:	75 e4                	jne    40 <_Z15my_loop_unknownPii+0x40>
+  5c:	66 0f fe c8          	paddd  %xmm0,%xmm1
+  60:	66 0f 70 c1 ee       	pshufd $0xee,%xmm1,%xmm0
+  65:	66 0f fe c1          	paddd  %xmm1,%xmm0
+  69:	66 0f 70 c8 55       	pshufd $0x55,%xmm0,%xmm1
+  6e:	66 0f fe c8          	paddd  %xmm0,%xmm1
+  72:	66 0f 7e c8          	movd   %xmm1,%eax
+  76:	48 39 ca             	cmp    %rcx,%rdx
+  79:	74 10                	je     8b <_Z15my_loop_unknownPii+0x8b>
+  7b:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+  80:	03 04 97             	add    (%rdi,%rdx,4),%eax
+  83:	48 ff c2             	inc    %rdx
+  86:	48 39 d1             	cmp    %rdx,%rcx
+  89:	75 f5                	jne    80 <_Z15my_loop_unknownPii+0x80>
+  8b:	c3                   	ret
