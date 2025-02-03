@@ -1,0 +1,20 @@
+0000000000000000 <assign>:
+   0:	55                   	push   %rbp
+   1:	48 89 e5             	mov    %rsp,%rbp
+   4:	48 89 7d f8          	mov    %rdi,-0x8(%rbp)
+   8:	48 89 75 f0          	mov    %rsi,-0x10(%rbp)
+   c:	c7 45 ec 00 00 00 00 	movl   $0x0,-0x14(%rbp)
+  13:	81 7d ec 00 02 00 00 	cmpl   $0x200,-0x14(%rbp)
+  1a:	0f 8d 24 00 00 00    	jge    44 <assign+0x44>
+  20:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+  24:	48 63 4d ec          	movslq -0x14(%rbp),%rcx
+  28:	8b 14 88             	mov    (%rax,%rcx,4),%edx
+  2b:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+  2f:	48 63 4d ec          	movslq -0x14(%rbp),%rcx
+  33:	89 14 88             	mov    %edx,(%rax,%rcx,4)
+  36:	8b 45 ec             	mov    -0x14(%rbp),%eax
+  39:	83 c0 01             	add    $0x1,%eax
+  3c:	89 45 ec             	mov    %eax,-0x14(%rbp)
+  3f:	e9 cf ff ff ff       	jmp    13 <assign+0x13>
+  44:	5d                   	pop    %rbp
+  45:	c3                   	ret

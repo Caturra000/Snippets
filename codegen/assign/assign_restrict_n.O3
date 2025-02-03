@@ -1,0 +1,7 @@
+0000000000000000 <assign>:
+   0:	85 d2                	test   %edx,%edx
+   2:	7e 0b                	jle    f <assign+0xf>
+   4:	89 d2                	mov    %edx,%edx
+   6:	48 c1 e2 02          	shl    $0x2,%rdx
+   a:	e9 00 00 00 00       	jmp    f <assign+0xf>
+   f:	c3                   	ret

@@ -1,0 +1,41 @@
+0000000000000000 <assign>:
+   0:	48 89 f8             	mov    %rdi,%rax
+   3:	48 29 f0             	sub    %rsi,%rax
+   6:	48 83 f8 20          	cmp    $0x20,%rax
+   a:	73 30                	jae    3c <assign+0x3c>
+   c:	31 c0                	xor    %eax,%eax
+   e:	66 90                	xchg   %ax,%ax
+  10:	8b 0c 86             	mov    (%rsi,%rax,4),%ecx
+  13:	89 0c 87             	mov    %ecx,(%rdi,%rax,4)
+  16:	8b 4c 86 04          	mov    0x4(%rsi,%rax,4),%ecx
+  1a:	89 4c 87 04          	mov    %ecx,0x4(%rdi,%rax,4)
+  1e:	8b 4c 86 08          	mov    0x8(%rsi,%rax,4),%ecx
+  22:	89 4c 87 08          	mov    %ecx,0x8(%rdi,%rax,4)
+  26:	8b 4c 86 0c          	mov    0xc(%rsi,%rax,4),%ecx
+  2a:	89 4c 87 0c          	mov    %ecx,0xc(%rdi,%rax,4)
+  2e:	48 83 c0 04          	add    $0x4,%rax
+  32:	48 3d 00 02 00 00    	cmp    $0x200,%rax
+  38:	75 d6                	jne    10 <assign+0x10>
+  3a:	eb 5e                	jmp    9a <assign+0x9a>
+  3c:	31 c0                	xor    %eax,%eax
+  3e:	66 90                	xchg   %ax,%ax
+  40:	0f 10 04 86          	movups (%rsi,%rax,4),%xmm0
+  44:	0f 10 4c 86 10       	movups 0x10(%rsi,%rax,4),%xmm1
+  49:	0f 11 04 87          	movups %xmm0,(%rdi,%rax,4)
+  4d:	0f 11 4c 87 10       	movups %xmm1,0x10(%rdi,%rax,4)
+  52:	0f 10 44 86 20       	movups 0x20(%rsi,%rax,4),%xmm0
+  57:	0f 10 4c 86 30       	movups 0x30(%rsi,%rax,4),%xmm1
+  5c:	0f 11 44 87 20       	movups %xmm0,0x20(%rdi,%rax,4)
+  61:	0f 11 4c 87 30       	movups %xmm1,0x30(%rdi,%rax,4)
+  66:	0f 10 44 86 40       	movups 0x40(%rsi,%rax,4),%xmm0
+  6b:	0f 10 4c 86 50       	movups 0x50(%rsi,%rax,4),%xmm1
+  70:	0f 11 44 87 40       	movups %xmm0,0x40(%rdi,%rax,4)
+  75:	0f 11 4c 87 50       	movups %xmm1,0x50(%rdi,%rax,4)
+  7a:	0f 10 44 86 60       	movups 0x60(%rsi,%rax,4),%xmm0
+  7f:	0f 10 4c 86 70       	movups 0x70(%rsi,%rax,4),%xmm1
+  84:	0f 11 44 87 60       	movups %xmm0,0x60(%rdi,%rax,4)
+  89:	0f 11 4c 87 70       	movups %xmm1,0x70(%rdi,%rax,4)
+  8e:	48 83 c0 20          	add    $0x20,%rax
+  92:	48 3d 00 02 00 00    	cmp    $0x200,%rax
+  98:	75 a6                	jne    40 <assign+0x40>
+  9a:	c3                   	ret

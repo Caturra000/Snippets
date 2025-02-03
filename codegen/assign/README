@@ -1,0 +1,2 @@
+C 使用 restrict 关键字可以直接优化为 memcpy@plt
+我这里只使用 objdump -d 看不出来，要自行 dr
