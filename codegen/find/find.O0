@@ -1,0 +1,29 @@
+0000000000000000 <_Z4findPimi>:
+   0:	55                   	push   %rbp
+   1:	48 89 e5             	mov    %rsp,%rbp
+   4:	48 89 7d f0          	mov    %rdi,-0x10(%rbp)
+   8:	48 89 75 e8          	mov    %rsi,-0x18(%rbp)
+   c:	89 55 e4             	mov    %edx,-0x1c(%rbp)
+   f:	48 c7 45 d8 00 00 00 	movq   $0x0,-0x28(%rbp)
+  16:	00 
+  17:	48 8b 45 d8          	mov    -0x28(%rbp),%rax
+  1b:	48 3b 45 e8          	cmp    -0x18(%rbp),%rax
+  1f:	0f 83 33 00 00 00    	jae    58 <_Z4findPimi+0x58>
+  25:	8b 45 e4             	mov    -0x1c(%rbp),%eax
+  28:	48 8b 4d f0          	mov    -0x10(%rbp),%rcx
+  2c:	48 8b 55 d8          	mov    -0x28(%rbp),%rdx
+  30:	3b 04 91             	cmp    (%rcx,%rdx,4),%eax
+  33:	0f 85 09 00 00 00    	jne    42 <_Z4findPimi+0x42>
+  39:	c6 45 ff 01          	movb   $0x1,-0x1(%rbp)
+  3d:	e9 1a 00 00 00       	jmp    5c <_Z4findPimi+0x5c>
+  42:	e9 00 00 00 00       	jmp    47 <_Z4findPimi+0x47>
+  47:	48 8b 45 d8          	mov    -0x28(%rbp),%rax
+  4b:	48 83 c0 01          	add    $0x1,%rax
+  4f:	48 89 45 d8          	mov    %rax,-0x28(%rbp)
+  53:	e9 bf ff ff ff       	jmp    17 <_Z4findPimi+0x17>
+  58:	c6 45 ff 00          	movb   $0x0,-0x1(%rbp)
+  5c:	8a 45 ff             	mov    -0x1(%rbp),%al
+  5f:	24 01                	and    $0x1,%al
+  61:	0f b6 c0             	movzbl %al,%eax
+  64:	5d                   	pop    %rbp
+  65:	c3                   	ret

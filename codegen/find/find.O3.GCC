@@ -1,0 +1,17 @@
+find(int*, unsigned long, int):
+        testq   %rsi, %rsi
+        je      .L4
+        xorl    %eax, %eax
+        jmp     .L3
+.L8:
+        addq    $1, %rax
+        cmpq    %rax, %rsi
+        je      .L4
+.L3:
+        cmpl    %edx, (%rdi,%rax,4)
+        jne     .L8
+        movl    $1, %eax
+        ret
+.L4:
+        xorl    %eax, %eax
+        ret

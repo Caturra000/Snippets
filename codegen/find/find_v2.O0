@@ -1,0 +1,34 @@
+0000000000000000 <_Z7find_v2Pimi>:
+   0:	55                   	push   %rbp
+   1:	48 89 e5             	mov    %rsp,%rbp
+   4:	48 89 7d f0          	mov    %rdi,-0x10(%rbp)
+   8:	48 89 75 e8          	mov    %rsi,-0x18(%rbp)
+   c:	89 55 e4             	mov    %edx,-0x1c(%rbp)
+   f:	8b 55 e4             	mov    -0x1c(%rbp),%edx
+  12:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+  16:	48 8b 4d e8          	mov    -0x18(%rbp),%rcx
+  1a:	89 14 88             	mov    %edx,(%rax,%rcx,4)
+  1d:	48 c7 45 d8 00 00 00 	movq   $0x0,-0x28(%rbp)
+  24:	00 
+  25:	8b 45 e4             	mov    -0x1c(%rbp),%eax
+  28:	48 8b 4d f0          	mov    -0x10(%rbp),%rcx
+  2c:	48 8b 55 d8          	mov    -0x28(%rbp),%rdx
+  30:	3b 04 91             	cmp    (%rcx,%rdx,4),%eax
+  33:	0f 85 20 00 00 00    	jne    59 <_Z7find_v2Pimi+0x59>
+  39:	48 8b 45 d8          	mov    -0x28(%rbp),%rax
+  3d:	48 3b 45 e8          	cmp    -0x18(%rbp),%rax
+  41:	0f 85 09 00 00 00    	jne    50 <_Z7find_v2Pimi+0x50>
+  47:	c6 45 ff 00          	movb   $0x0,-0x1(%rbp)
+  4b:	e9 1f 00 00 00       	jmp    6f <_Z7find_v2Pimi+0x6f>
+  50:	c6 45 ff 01          	movb   $0x1,-0x1(%rbp)
+  54:	e9 16 00 00 00       	jmp    6f <_Z7find_v2Pimi+0x6f>
+  59:	e9 00 00 00 00       	jmp    5e <_Z7find_v2Pimi+0x5e>
+  5e:	48 8b 45 d8          	mov    -0x28(%rbp),%rax
+  62:	48 83 c0 01          	add    $0x1,%rax
+  66:	48 89 45 d8          	mov    %rax,-0x28(%rbp)
+  6a:	e9 b6 ff ff ff       	jmp    25 <_Z7find_v2Pimi+0x25>
+  6f:	8a 45 ff             	mov    -0x1(%rbp),%al
+  72:	24 01                	and    $0x1,%al
+  74:	0f b6 c0             	movzbl %al,%eax
+  77:	5d                   	pop    %rbp
+  78:	c3                   	ret

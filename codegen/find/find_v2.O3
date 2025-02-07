@@ -1,0 +1,13 @@
+0000000000000000 <_Z7find_v2Pimi>:
+   0:	89 14 b7             	mov    %edx,(%rdi,%rsi,4)
+   3:	31 c0                	xor    %eax,%eax
+   5:	66 66 2e 0f 1f 84 00 	data16 cs nopw 0x0(%rax,%rax,1)
+   c:	00 00 00 00 
+  10:	48 89 c1             	mov    %rax,%rcx
+  13:	48 ff c0             	inc    %rax
+  16:	39 14 8f             	cmp    %edx,(%rdi,%rcx,4)
+  19:	75 f5                	jne    10 <_Z7find_v2Pimi+0x10>
+  1b:	48 ff c6             	inc    %rsi
+  1e:	48 39 c6             	cmp    %rax,%rsi
+  21:	0f 95 c0             	setne  %al
+  24:	c3                   	ret

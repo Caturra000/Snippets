@@ -1,0 +1,187 @@
+find(int*, unsigned long, int):
+        movl    %edx, %ecx
+        testq   %rsi, %rsi
+        je      .L53
+        movq    %rdi, %rax
+        movl    $11, %r9d
+        leaq    -1(%rsi), %r10
+        shrq    $2, %rax
+        negq    %rax
+        movq    %rax, %rdx
+        andl    $7, %edx
+        leaq    8(%rdx), %r8
+        cmpq    %r9, %r8
+        cmovb   %r9, %r8
+        cmpq    %r8, %r10
+        jb      .L10
+        testq   %rdx, %rdx
+        je      .L11
+        cmpl    (%rdi), %ecx
+        je      .L52
+        testb   $6, %al
+        je      .L13
+        cmpl    4(%rdi), %ecx
+        je      .L52
+        cmpq    $2, %rdx
+        jbe     .L15
+        cmpl    8(%rdi), %ecx
+        je      .L52
+        testb   $4, %al
+        je      .L17
+        cmpl    12(%rdi), %ecx
+        je      .L52
+        cmpq    $4, %rdx
+        jbe     .L19
+        cmpl    16(%rdi), %ecx
+        je      .L52
+        cmpq    $5, %rdx
+        je      .L21
+        cmpl    20(%rdi), %ecx
+        je      .L52
+        cmpq    $7, %rdx
+        jne     .L23
+        cmpl    24(%rdi), %ecx
+        je      .L52
+        movl    $7, %r11d
+.L4:
+        movq    %rsi, %r10
+        leaq    (%rdi,%rdx,4), %r8
+        vpbroadcastq    %r11, %ymm0
+        xorl    %eax, %eax
+        subq    %rdx, %r10
+        vpaddq  .LC0(%rip), %ymm0, %ymm0
+        vpbroadcastd    %ecx, %ymm2
+        movl    $8, %edx
+        movq    %r10, %r9
+        vpbroadcastq    %rdx, %ymm1
+        shrq    $3, %r9
+        jmp     .L8
+.L6:
+        incq    %rax
+        vpaddq  %ymm1, %ymm0, %ymm0
+        cmpq    %rax, %r9
+        je      .L56
+.L8:
+        movq    %rax, %rdx
+        salq    $5, %rdx
+        vpcmpeqd        (%r8,%rdx), %ymm2, %k0
+        kortestb        %k0, %k0
+        je      .L6
+        vmovq   %xmm0, %rax
+        vzeroupper
+.L3:
+        leaq    0(,%rax,4), %rdx
+        cmpl    (%rdi,%rax,4), %ecx
+        je      .L52
+        leaq    1(%rax), %r8
+        cmpq    %rsi, %r8
+        jnb     .L53
+        cmpl    4(%rdi,%rdx), %ecx
+        je      .L52
+        leaq    2(%rax), %r8
+        cmpq    %rsi, %r8
+        jnb     .L53
+        cmpl    8(%rdi,%rdx), %ecx
+        je      .L52
+        leaq    3(%rax), %r8
+        cmpq    %rsi, %r8
+        jnb     .L53
+        cmpl    12(%rdi,%rdx), %ecx
+        je      .L52
+        leaq    4(%rax), %r8
+        cmpq    %rsi, %r8
+        jnb     .L53
+        cmpl    16(%rdi,%rdx), %ecx
+        je      .L52
+        leaq    5(%rax), %r8
+        cmpq    %rsi, %r8
+        jnb     .L53
+        cmpl    20(%rdi,%rdx), %ecx
+        je      .L52
+        leaq    6(%rax), %r8
+        cmpq    %rsi, %r8
+        jnb     .L53
+        cmpl    24(%rdi,%rdx), %ecx
+        je      .L52
+        leaq    7(%rax), %r8
+        cmpq    %rsi, %r8
+        jnb     .L53
+        cmpl    28(%rdi,%rdx), %ecx
+        je      .L52
+        leaq    8(%rax), %r8
+        cmpq    %rsi, %r8
+        jnb     .L53
+        cmpl    32(%rdi,%rdx), %ecx
+        je      .L52
+        leaq    9(%rax), %r8
+        cmpq    %rsi, %r8
+        jnb     .L53
+        cmpl    36(%rdi,%rdx), %ecx
+        je      .L52
+        leaq    10(%rax), %r8
+        cmpq    %rsi, %r8
+        jnb     .L53
+        cmpl    40(%rdi,%rdx), %ecx
+        je      .L52
+        leaq    11(%rax), %r8
+        cmpq    %rsi, %r8
+        jnb     .L53
+        cmpl    44(%rdi,%rdx), %ecx
+        je      .L52
+        leaq    12(%rax), %r8
+        cmpq    %rsi, %r8
+        jnb     .L53
+        cmpl    48(%rdi,%rdx), %ecx
+        je      .L52
+        leaq    13(%rax), %r8
+        cmpq    %rsi, %r8
+        jnb     .L53
+        cmpl    52(%rdi,%rdx), %ecx
+        je      .L52
+        addq    $14, %rax
+        cmpq    %rsi, %rax
+        jnb     .L53
+        cmpl    %ecx, 56(%rdi,%rdx)
+        sete    %al
+        ret
+.L52:
+        movl    $1, %eax
+        ret
+.L53:
+        xorl    %eax, %eax
+        ret
+.L56:
+        testb   $7, %r10b
+        je      .L25
+        andq    $-8, %r10
+        leaq    (%r10,%r11), %rax
+        vzeroupper
+        jmp     .L3
+.L25:
+        xorl    %eax, %eax
+        vzeroupper
+        ret
+.L11:
+        xorl    %r11d, %r11d
+        jmp     .L4
+.L10:
+        xorl    %eax, %eax
+        jmp     .L3
+.L19:
+        movl    $4, %r11d
+        jmp     .L4
+.L13:
+        movl    $1, %r11d
+        jmp     .L4
+.L15:
+        movl    $2, %r11d
+        jmp     .L4
+.L17:
+        movl    $3, %r11d
+        jmp     .L4
+.L21:
+        movl    $5, %r11d
+        jmp     .L4
+.L23:
+        movl    $6, %r11d
+        jmp     .L4

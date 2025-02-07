@@ -1,0 +1,7 @@
+代码来自丹大师的博客：
+https://easyperf.net/blog/2016/11/21/Sentinels
+
+NOTES:
++ Clang 没有用到向量化，也就是说 find.O3.native 和 find.O3 是一样的文件，不重复贴了。v2 同理。
++ find.O3.native.GCC 是用 GCC trunk（现在应该对标 15）生成的，GCC 14 及以下版本基本和 find.O3.native 差不多。
++ v3 对比 v2 是小修小补，因此 O3 是生成一样的代码，但是 O0 略有区别。
