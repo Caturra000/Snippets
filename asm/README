@@ -1,0 +1,5 @@
+truncate:
+x86汇编当中，move eax这种操作会导致rax高位清零，
+但是set/move al这种区分上下半部的并不会导致rax高位清零
+
+# gcc -nostdlib -static -g truncate.s
