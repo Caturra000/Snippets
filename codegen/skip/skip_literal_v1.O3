@@ -1,0 +1,44 @@
+0000000000000000 <_Z8EqBytes4PKcj>:
+   0:	39 37                	cmp    %esi,(%rdi)
+   2:	0f 94 c0             	sete   %al
+   5:	c3                   	ret
+   6:	66 2e 0f 1f 84 00 00 	cs nopw 0x0(%rax,%rax,1)
+   d:	00 00 00 
+
+0000000000000010 <_Z15skip_literal_v1PKcRmmh>:
+  10:	48 8b 06             	mov    (%rsi),%rax
+  13:	48 01 fa             	add    %rdi,%rdx
+  16:	48 ff c2             	inc    %rdx
+  19:	48 01 c7             	add    %rax,%rdi
+  1c:	83 f9 66             	cmp    $0x66,%ecx
+  1f:	74 3a                	je     5b <_Z15skip_literal_v1PKcRmmh+0x4b>
+  21:	83 f9 6e             	cmp    $0x6e,%ecx
+  24:	74 1d                	je     43 <_Z15skip_literal_v1PKcRmmh+0x33>
+  26:	83 f9 74             	cmp    $0x74,%ecx
+  29:	75 50                	jne    7b <_Z15skip_literal_v1PKcRmmh+0x6b>
+  2b:	48 8d 4f 04          	lea    0x4(%rdi),%rcx
+  2f:	48 39 d1             	cmp    %rdx,%rcx
+  32:	73 47                	jae    7b <_Z15skip_literal_v1PKcRmmh+0x6b>
+  34:	b9 04 00 00 00       	mov    $0x4,%ecx
+  39:	81 3f 74 72 75 65    	cmpl   $0x65757274,(%rdi)
+  3f:	74 31                	je     72 <_Z15skip_literal_v1PKcRmmh+0x62>
+  41:	eb 38                	jmp    7b <_Z15skip_literal_v1PKcRmmh+0x6b>
+  43:	48 8d 4f 04          	lea    0x4(%rdi),%rcx
+  47:	48 39 d1             	cmp    %rdx,%rcx
+  4a:	73 2f                	jae    7b <_Z15skip_literal_v1PKcRmmh+0x6b>
+  4c:	b9 04 00 00 00       	mov    $0x4,%ecx
+  51:	81 3f 6e 75 6c 6c    	cmpl   $0x6c6c756e,(%rdi)
+  57:	75 22                	jne    7b <_Z15skip_literal_v1PKcRmmh+0x6b>
+  59:	eb 17                	jmp    72 <_Z15skip_literal_v1PKcRmmh+0x62>
+  5b:	48 8d 4f 05          	lea    0x5(%rdi),%rcx
+  5f:	48 39 d1             	cmp    %rdx,%rcx
+  62:	73 17                	jae    7b <_Z15skip_literal_v1PKcRmmh+0x6b>
+  64:	b9 05 00 00 00       	mov    $0x5,%ecx
+  69:	81 7f 01 61 6c 73 65 	cmpl   $0x65736c61,0x1(%rdi)
+  70:	75 09                	jne    7b <_Z15skip_literal_v1PKcRmmh+0x6b>
+  72:	48 01 c8             	add    %rcx,%rax
+  75:	48 89 06             	mov    %rax,(%rsi)
+  78:	b0 01                	mov    $0x1,%al
+  7a:	c3                   	ret
+  7b:	31 c0                	xor    %eax,%eax
+  7d:	c3                   	ret

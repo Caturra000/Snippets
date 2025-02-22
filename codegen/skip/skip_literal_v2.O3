@@ -1,0 +1,42 @@
+0000000000000000 <_Z8EqBytes4PKcj>:
+   0:	39 37                	cmp    %esi,(%rdi)
+   2:	0f 94 c0             	sete   %al
+   5:	c3                   	ret
+   6:	66 2e 0f 1f 84 00 00 	cs nopw 0x0(%rax,%rax,1)
+   d:	00 00 00 
+
+0000000000000010 <_Z15skip_literal_v2PKcRmmh>:
+  10:	48 8b 06             	mov    (%rsi),%rax
+  13:	48 8d 0c 07          	lea    (%rdi,%rax,1),%rcx
+  17:	4c 8d 04 17          	lea    (%rdi,%rdx,1),%r8
+  1b:	49 ff c0             	inc    %r8
+  1e:	48 8d 14 07          	lea    (%rdi,%rax,1),%rdx
+  22:	48 83 c2 05          	add    $0x5,%rdx
+  26:	4c 39 c2             	cmp    %r8,%rdx
+  29:	73 2d                	jae    58 <_Z15skip_literal_v2PKcRmmh+0x48>
+  2b:	8b 39                	mov    (%rcx),%edi
+  2d:	ba 04 00 00 00       	mov    $0x4,%edx
+  32:	81 ff 74 72 75 65    	cmp    $0x65757274,%edi
+  38:	74 3e                	je     78 <_Z15skip_literal_v2PKcRmmh+0x68>
+  3a:	81 ff 6e 75 6c 6c    	cmp    $0x6c6c756e,%edi
+  40:	74 36                	je     78 <_Z15skip_literal_v2PKcRmmh+0x68>
+  42:	81 ff 66 61 6c 73    	cmp    $0x736c6166,%edi
+  48:	75 0e                	jne    58 <_Z15skip_literal_v2PKcRmmh+0x48>
+  4a:	ba 05 00 00 00       	mov    $0x5,%edx
+  4f:	81 79 01 61 6c 73 65 	cmpl   $0x65736c61,0x1(%rcx)
+  56:	74 20                	je     78 <_Z15skip_literal_v2PKcRmmh+0x68>
+  58:	48 8d 51 04          	lea    0x4(%rcx),%rdx
+  5c:	4c 39 c2             	cmp    %r8,%rdx
+  5f:	73 20                	jae    81 <_Z15skip_literal_v2PKcRmmh+0x71>
+  61:	8b 09                	mov    (%rcx),%ecx
+  63:	ba 04 00 00 00       	mov    $0x4,%edx
+  68:	81 f9 6e 75 6c 6c    	cmp    $0x6c6c756e,%ecx
+  6e:	74 08                	je     78 <_Z15skip_literal_v2PKcRmmh+0x68>
+  70:	81 f9 74 72 75 65    	cmp    $0x65757274,%ecx
+  76:	75 09                	jne    81 <_Z15skip_literal_v2PKcRmmh+0x71>
+  78:	48 01 d0             	add    %rdx,%rax
+  7b:	48 89 06             	mov    %rax,(%rsi)
+  7e:	b0 01                	mov    $0x1,%al
+  80:	c3                   	ret
+  81:	31 c0                	xor    %eax,%eax
+  83:	c3                   	ret

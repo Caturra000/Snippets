@@ -1,0 +1,48 @@
+EqBytes4(char const*, unsigned int):
+        cmpl    %esi, (%rdi)
+        sete    %al
+        ret
+skip_literal_v2(char const*, unsigned long&, unsigned long, unsigned char):
+        movq    %rsi, %rcx
+        movq    (%rsi), %rsi
+        movq    %rdx, %rax
+        leaq    (%rdi,%rsi), %rdx
+        leaq    1(%rdi,%rax), %rdi
+        leaq    5(%rdx), %rax
+        cmpq    %rdi, %rax
+        jnb     .L4
+        movl    (%rdx), %edi
+        cmpl    $1702195828, %edi
+        sete    %al
+        cmpl    $1819047278, %edi
+        sete    %r8b
+        orb     %r8b, %al
+        jne     .L12
+        cmpl    $1936482662, %edi
+        je      .L13
+.L3:
+        ret
+.L4:
+        leaq    4(%rdx), %r8
+        xorl    %eax, %eax
+        cmpq    %rdi, %r8
+        jnb     .L3
+        movl    (%rdx), %edx
+        cmpl    $1702195828, %edx
+        sete    %al
+        cmpl    $1819047278, %edx
+        sete    %dl
+        orb     %dl, %al
+        je      .L3
+.L12:
+        addq    $4, %rsi
+        movq    %rsi, (%rcx)
+.L6:
+        movl    $1, %eax
+        ret
+.L13:
+        cmpl    $1702063201, 1(%rdx)
+        jne     .L3
+        addq    $5, %rsi
+        movq    %rsi, (%rcx)
+        jmp     .L6
