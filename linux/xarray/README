@@ -1,0 +1,10 @@
+用于内核态调试XArray，使用make构建内核模块
+
+其实XArray在用户态就可以直接调试：
+cd <linux源码目录>
+cd ./tools/testing/radix-tree/
+make
+gdb ./xarray
+但是kmem cache模拟有点问题（v6.15）
+
+目前只调试基本的store/load行为
