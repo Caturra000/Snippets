@@ -1,0 +1,8 @@
+opt-viewer 是直接从 LLVM 项目拉过来的
+https://github.com/llvm/llvm-project/tree/main/llvm/tools/opt-viewer
+
+usage: opt-viewer.py [-h] [--output-dir OUTPUT_DIR] [--jobs JOBS] [--source-dir SOURCE_DIR]
+                     [--no-progress-indicator]
+                     [--max-hottest-remarks-on-index MAX_HOTTEST_REMARKS_ON_INDEX] [--no-highlight]
+                     [--demangler DEMANGLER] [--filter FILTER]
+                     yaml_dirs_or_files [yaml_dirs_or_files ...]
