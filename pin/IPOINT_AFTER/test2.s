@@ -1,5 +1,5 @@
 # To compile:
-# gcc test2.s -o test2 -nostdlib
+# gcc test2.s -o test2 -nostdlib -static
 
 .section .text
 .globl _start
@@ -21,14 +21,14 @@ check_taken:
     # 4. 条件分支 (会跳转)
     cmpq $1, %rax               # 预期: 只触发 AFTER
     je  branch_was_taken        # rax is 1, so this jump IS taken
-                                # 预期: **同时触发** TAKEN_BRANCH 和 AFTER
+                                # 预期: 只触发 TAKEN_BRANCH
 
     # 这条指令永远不会被执行
     movq $999, %rcx
 
 branch_was_taken:
     # 5. 无条件分支 (会跳转)
-    jmp exit_label              # 预期: **同时触发** TAKEN_BRANCH 和 AFTER
+    jmp exit_label              # 预期: 只触发 TAKEN_BRANCH
 
     # 这条指令永远不会被执行
     movq $888, %rdx

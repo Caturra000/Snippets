@@ -1,1 +1,25 @@
 需要手动提供 PIN_ROOT 环境变量
+
+${PIN_ROOT}/pin -t obj-intel64/pintool-IPOINT_AFTER.so -case 2 -- ./test2
+Start case 2.
+mov rax, 0x0                            [PIN]
+mov rax, 0x0                            [PIN][AFTER]
+cmp rax, 0x1                            [PIN]
+cmp rax, 0x1                            [PIN][AFTER]
+jz 0x40101d                             [PIN]
+jz 0x40101d                             [PIN][AFTER]
+inc rax                                 [PIN]
+inc rax                                 [PIN][AFTER]
+cmp rax, 0x1                            [PIN]
+cmp rax, 0x1                            [PIN][AFTER]
+jz 0x40101d                             [PIN]
+jz 0x40101d                             [PIN][TAKEN BRANCH]
+jmp 0x401026                            [PIN]
+jmp 0x401026                            [PIN][TAKEN BRANCH]
+mov rax, 0x3c                           [PIN]
+mov rax, 0x3c                           [PIN][AFTER]
+mov rdi, 0x0                            [PIN]
+mov rdi, 0x0                            [PIN][AFTER]
+syscall                                 [PIN]
+
+case 1 输出太长，自行测试

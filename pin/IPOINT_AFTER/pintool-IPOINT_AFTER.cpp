@@ -86,8 +86,8 @@ VOID Fini(INT32 code, VOID *v) {
 }
 
 // -case 1 对应于 test1
-// -case 2 对应于 test2 (WIP!)
-KNOB<std::string> case_selector(KNOB_MODE_WRITEONCE, "pintool", "case", "1", "select your study case. Currently 1 or 2.");
+// -case 2 对应于 test2
+KNOB<int> case_selector(KNOB_MODE_WRITEONCE, "pintool", "case", "1", "select your study case. Currently 1 or 2.");
 
 int main(int argc, char * argv[]) {
     PIN_InitSymbols();
@@ -96,15 +96,17 @@ int main(int argc, char * argv[]) {
     OutFile.open(KnobOutputFile.Value().c_str());
     OutFile << std::hex;
 
-    auto icase = case_selector.Value();
-    if(icase == "1") {
+    switch(case_selector.Value()) {
+    case 1 :
         OutFile << "Start case 1." << std::endl;
         RTN_AddInstrumentFunction(Routine, 0);
-    }
-    // TODO：有些问题，后面再改
-    if(icase == "2") {
+        break;
+    case 2:
         OutFile << "Start case 2." << std::endl;
         INS_AddInstrumentFunction(Instruction, 0);
+        break;
+    default:
+        ;
     }
     PIN_AddFiniFunction(Fini, 0);
     PIN_StartProgram();
