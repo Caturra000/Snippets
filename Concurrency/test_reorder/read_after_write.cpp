@@ -1,4 +1,7 @@
-#include <bits/stdc++.h>
+#include <atomic>
+#include <vector>
+#include <thread>
+#include <iostream>
 
 std::atomic<int> x {0};
 

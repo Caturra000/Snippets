@@ -1,5 +1,5 @@
-#include <bits/stdc++.h>
-using namespace std;
+#include <atomic>
+#include <mutex>
 
 class Singleton {
 public:

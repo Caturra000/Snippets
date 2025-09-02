@@ -1,4 +1,16 @@
-#include <bits/stdc++.h>
+#include <atomic>
+#include <array>
+#include <optional>
+#include <thread>
+#include <cassert>
+#include <iostream>
+#include <ranges>
+#include <memory>
+#include <bit>
+#include <queue>
+#include <functional>
+#include <mutex>
+#include <condition_variable>
 
 // 参考libuv的思路，写了个更复杂点的线程池
 // 并且用工地英语来提高逼格

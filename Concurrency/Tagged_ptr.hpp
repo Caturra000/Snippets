@@ -1,5 +1,6 @@
 #pragma once
-#include <bits/stdc++.h>
+#include <cstdint>
+#include <cstddef>
 
 // 48bit pointer
 // 只适用于x86_64四级分页的情况

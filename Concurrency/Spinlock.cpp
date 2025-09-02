@@ -1,4 +1,8 @@
-#include <bits/stdc++.h>
+#include <atomic>
+#include <thread>
+#include <chrono>
+#include <cassert>
+#include <iostream>
 
 namespace V1 {
 struct Spinlock {

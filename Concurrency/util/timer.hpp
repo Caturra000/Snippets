@@ -1,5 +1,6 @@
 #pragma once
-#include <bits/stdc++.h>
+#include <chrono>
+#include <iostream>
 
 inline struct {
     std::chrono::steady_clock::time_point clock_start, clock_end;

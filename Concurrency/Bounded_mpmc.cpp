@@ -1,4 +1,12 @@
-#include <bits/stdc++.h>
+#include <atomic>
+#include <array>
+#include <optional>
+#include <thread>
+#include <cassert>
+#include <iostream>
+#include <ranges>
+#include <memory>
+#include <bit>
 
 // This toy class is NOT for generic usage.
 // SIZE must be a power of 2.

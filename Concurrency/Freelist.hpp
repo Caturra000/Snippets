@@ -1,5 +1,16 @@
 #pragma once
-#include <bits/stdc++.h>
+#include <atomic>
+#include <array>
+#include <optional>
+#include <thread>
+#include <cassert>
+#include <iostream>
+#include <ranges>
+#include <memory>
+#include <bit>
+#include <cstddef>
+#include <utility>
+#include <new>
 #include "Tagged_ptr.hpp"
 
 // 实现lockfree的freelist

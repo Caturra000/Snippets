@@ -1,4 +1,7 @@
-#include <bits/stdc++.h>
+#include <atomic>
+#include <thread>
+#include <vector>
+#include <iostream>
 
 // 参考6.S081单变量实现
 // 其实应该叫SharedSpin

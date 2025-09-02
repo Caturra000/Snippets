@@ -1,4 +1,4 @@
-#include <bits/stdc++.h>
+#include <atomic>
 using namespace std;
 
 // 思路来自：https://www.boost.org/doc/libs/1_78_0/doc/html/atomic/usage_examples.html

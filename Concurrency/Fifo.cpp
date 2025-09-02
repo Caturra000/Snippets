@@ -1,4 +1,11 @@
-#include <bits/stdc++.h>
+#include <atomic>
+#include <array>
+#include <optional>
+#include <thread>
+#include <cassert>
+#include <iostream>
+#include <ranges>
+#include <memory>
 
 // A lock-free, single-producer-single-consumer and fixed-size FIFO implementation.
 //

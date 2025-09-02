@@ -1,4 +1,11 @@
-#include <bits/stdc++.h>
+#include <atomic>
+#include <memory>
+#include <optional>
+#include <vector>
+#include <thread>
+#include <algorithm>
+#include <iostream>
+#include <cstddef>
 #include "Tagged_ptr.hpp"
 #include "Freelist.hpp"
 #include "util/timer.hpp"

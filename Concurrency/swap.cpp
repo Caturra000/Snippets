@@ -1,4 +1,5 @@
-#include <bits/stdc++.h>
+#include <mutex>
+#include <algorithm>
 
 // 本文件示范如何在并发过程中正确地执行swap操作
 
