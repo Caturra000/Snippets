@@ -1,0 +1,492 @@
+  \b_mm(_|128|256|512)\w+
+  ├── _mm256_add_epi8
+  │   ├── compress	[vim singleheader/simdjson.cpp +17816]
+  │   └── if	[vim singleheader/simdjson.h +58817]
+  ├── _mm256_adds_epu8
+  │   ├── saturating_add	[vim singleheader/simdjson.cpp +17952]
+  │   └── saturating_add	[vim singleheader/simdjson.h +60288]
+  ├── _mm256_alignr_epi8
+  │   ├── prev	[vim include/simdjson/haswell/simd.h +58]
+  │   ├── prev	[vim singleheader/simdjson.cpp +15024]
+  │   └── prev	[vim singleheader/simdjson.h +16300]
+  ├── _mm256_and_si256
+  │   ├── operator|	[vim include/simdjson/haswell/simd.h +32]
+  │   ├── operator|	[vim singleheader/simdjson.cpp +14998]
+  │   └── operator|	[vim singleheader/simdjson.h +16274]
+  ├── _mm256_andnot_si256
+  │   ├── operator|	[vim include/simdjson/haswell/simd.h +32]
+  │   ├── operator|	[vim singleheader/simdjson.cpp +14998]
+  │   └── operator|	[vim singleheader/simdjson.h +16274]
+  ├── _mm256_castsi128_si256
+  │   ├── compress	[vim singleheader/simdjson.cpp +17816]
+  │   └── if	[vim singleheader/simdjson.h +58817]
+  ├── _mm256_castsi256_si128
+  │   ├── compress	[vim singleheader/simdjson.cpp +17816]
+  │   └── if	[vim singleheader/simdjson.h +58817]
+  ├── _mm256_cmpgt_epi8
+  │   ├── max_val	[vim singleheader/simdjson.cpp +17911]
+  │   └── max_val	[vim singleheader/simdjson.h +60247]
+  ├── _mm256_extractf128_si256
+  │   ├── compress	[vim singleheader/simdjson.cpp +17816]
+  │   └── if	[vim singleheader/simdjson.h +58817]
+  ├── _mm256_insertf128_si256
+  │   ├── compress	[vim singleheader/simdjson.cpp +17816]
+  │   └── if	[vim singleheader/simdjson.h +58817]
+  ├── _mm256_loadu_si256
+  │   ├── splat	[vim include/simdjson/haswell/simd.h +80]
+  │   ├── splat	[vim singleheader/simdjson.cpp +15046]
+  │   └── splat	[vim singleheader/simdjson.h +16322]
+  ├── _mm256_max_epi8
+  │   ├── max_val	[vim singleheader/simdjson.cpp +17911]
+  │   └── max_val	[vim singleheader/simdjson.h +60247]
+  ├── _mm256_max_epu8
+  │   ├── max_val	[vim singleheader/simdjson.cpp +17956]
+  │   └── max_val	[vim singleheader/simdjson.h +60292]
+  ├── _mm256_min_epi8
+  │   ├── max_val	[vim singleheader/simdjson.cpp +17911]
+  │   └── max_val	[vim singleheader/simdjson.h +60247]
+  ├── _mm256_min_epu8
+  │   ├── max_val	[vim singleheader/simdjson.cpp +17956]
+  │   └── max_val	[vim singleheader/simdjson.h +60292]
+  ├── _mm256_movemask_epi8
+  │   ├── to_bitmask	[vim include/simdjson/haswell/simd.h +73]
+  │   ├── to_bitmask	[vim singleheader/simdjson.cpp +15039]
+  │   ├── bits_not_set	[vim singleheader/simdjson.cpp +17968]
+  │   ├── get_bit	[vim singleheader/simdjson.cpp +17984]
+  │   ├── to_bitmask	[vim singleheader/simdjson.h +16315]
+  │   ├── bits_not_set	[vim singleheader/simdjson.h +60304]
+  │   └── get_bit	[vim singleheader/simdjson.h +60320]
+  ├── _mm256_permute2x128_si256
+  │   ├── prev	[vim include/simdjson/haswell/simd.h +58]
+  │   ├── prev	[vim singleheader/simdjson.cpp +15024]
+  │   └── prev	[vim singleheader/simdjson.h +16300]
+  ├── _mm256_set1_epi8
+  │   ├── splat	[vim include/simdjson/haswell/simd.h +66]
+  │   ├── splat	[vim include/simdjson/haswell/simd.h +80]
+  │   ├── splat	[vim singleheader/simdjson.cpp +15032]
+  │   ├── splat	[vim singleheader/simdjson.cpp +15046]
+  │   ├── splat	[vim singleheader/simdjson.h +16308]
+  │   └── splat	[vim singleheader/simdjson.h +16322]
+  ├── _mm256_set_epi32
+  │   ├── compress	[vim singleheader/simdjson.cpp +17816]
+  │   └── if	[vim singleheader/simdjson.h +58817]
+  ├── _mm256_set_epi64x
+  │   ├── compress	[vim singleheader/simdjson.cpp +17816]
+  │   └── if	[vim singleheader/simdjson.h +58817]
+  ├── _mm256_setr_epi8
+  │   ├── simd8	[vim singleheader/simdjson.cpp +17886]
+  │   ├── simd8	[vim singleheader/simdjson.cpp +17927]
+  │   ├── simd8	[vim singleheader/simdjson.h +60222]
+  │   └── simd8	[vim singleheader/simdjson.h +60263]
+  ├── _mm256_setzero_si256
+  │   ├── splat	[vim include/simdjson/haswell/simd.h +80]
+  │   ├── splat	[vim singleheader/simdjson.cpp +15046]
+  │   └── splat	[vim singleheader/simdjson.h +16322]
+  ├── _mm256_shuffle_epi8
+  │   ├── json_character_block::classify	[vim src/haswell.cpp +43]
+  │   ├── lookup_16	[vim include/simdjson/haswell/simd.h +115]
+  │   ├── lookup_16	[vim singleheader/simdjson.cpp +15081]
+  │   ├── compress	[vim singleheader/simdjson.cpp +17816]
+  │   ├── lookup_16	[vim singleheader/simdjson.h +16357]
+  │   └── if	[vim singleheader/simdjson.h +58817]
+  ├── _mm256_slli_epi16
+  │   ├── shl	[vim singleheader/simdjson.cpp +17980]
+  │   ├── get_bit	[vim singleheader/simdjson.cpp +17984]
+  │   ├── shl	[vim singleheader/simdjson.h +60316]
+  │   └── get_bit	[vim singleheader/simdjson.h +60320]
+  ├── _mm256_srli_epi16
+  │   ├── shr	[vim singleheader/simdjson.cpp +17978]
+  │   └── shr	[vim singleheader/simdjson.h +60314]
+  ├── _mm256_storeu_si256
+  │   ├── store	[vim include/simdjson/haswell/simd.h +102]
+  │   ├── store	[vim singleheader/simdjson.cpp +15068]
+  │   └── store	[vim singleheader/simdjson.h +16344]
+  ├── _mm256_sub_epi8
+  │   ├── operator+	[vim include/simdjson/haswell/simd.h +105]
+  │   ├── operator+	[vim singleheader/simdjson.cpp +15071]
+  │   └── operator+	[vim singleheader/simdjson.h +16347]
+  ├── _mm256_subs_epu8
+  │   ├── saturating_add	[vim singleheader/simdjson.cpp +17952]
+  │   └── saturating_add	[vim singleheader/simdjson.h +60288]
+  ├── _mm256_testz_si256
+  │   ├── to_bitmask	[vim include/simdjson/haswell/simd.h +73]
+  │   ├── to_bitmask	[vim singleheader/simdjson.cpp +15039]
+  │   ├── bits_not_set	[vim singleheader/simdjson.cpp +17968]
+  │   ├── to_bitmask	[vim singleheader/simdjson.h +16315]
+  │   └── bits_not_set	[vim singleheader/simdjson.h +60304]
+  ├── _mm256_xor_si256
+  │   ├── operator|	[vim include/simdjson/haswell/simd.h +32]
+  │   ├── operator|	[vim singleheader/simdjson.cpp +14998]
+  │   └── operator|	[vim singleheader/simdjson.h +16274]
+  ├── _mm512_add_epi32
+  │   ├── bit_indexer::write	[vim src/icelake.cpp +129]
+  │   └── bit_indexer::write	[vim singleheader/simdjson.cpp +27304]
+  ├── _mm512_adds_epu8
+  │   ├── saturating_add	[vim singleheader/simdjson.cpp +21522]
+  │   ├── saturating_add	[vim singleheader/simdjson.h +19142]
+  │   └── saturating_add	[vim singleheader/simdjson.h +74045]
+  ├── _mm512_alignr_epi8
+  │   ├── prev	[vim include/simdjson/icelake/simd.h +83]
+  │   └── prev	[vim singleheader/simdjson.cpp +24045]
+  ├── _mm512_and_si512
+  │   ├── operator|	[vim include/simdjson/icelake/simd.h +56]
+  │   └── operator|	[vim singleheader/simdjson.cpp +24018]
+  ├── _mm512_andnot_si512
+  │   ├── operator|	[vim include/simdjson/icelake/simd.h +56]
+  │   └── operator|	[vim singleheader/simdjson.cpp +24018]
+  ├── _mm512_castsi512_si128
+  │   ├── bit_indexer::write	[vim src/icelake.cpp +129]
+  │   └── bit_indexer::write	[vim singleheader/simdjson.cpp +27304]
+  ├── _mm512_cmpeq_epi8_mask
+  │   ├── escaping::copy_and_find	[vim include/simdjson/icelake/stringparsing_defs.h +58]
+  │   ├── escaping::copy_and_find	[vim singleheader/simdjson.cpp +21676]
+  │   ├── escaping::copy_and_find	[vim singleheader/simdjson.h +19296]
+  │   └── escaping::copy_and_find	[vim singleheader/simdjson.h +74199]
+  ├── _mm512_cmpgt_epi8_mask
+  │   ├── operator>	[vim singleheader/simdjson.cpp +21470]
+  │   ├── operator>	[vim singleheader/simdjson.h +19090]
+  │   └── operator>	[vim singleheader/simdjson.h +73993]
+  ├── _mm512_cmplt_epi8_mask
+  │   ├── escaping::copy_and_find	[vim include/simdjson/icelake/stringparsing_defs.h +58]
+  │   ├── escaping::copy_and_find	[vim singleheader/simdjson.cpp +21676]
+  │   ├── escaping::copy_and_find	[vim singleheader/simdjson.h +19296]
+  │   └── escaping::copy_and_find	[vim singleheader/simdjson.h +74199]
+  ├── _mm512_cvtepu8_epi32
+  │   ├── bit_indexer::write	[vim src/icelake.cpp +129]
+  │   └── bit_indexer::write	[vim singleheader/simdjson.cpp +27304]
+  ├── _mm512_extracti32x4_epi32
+  │   ├── bit_indexer::write	[vim src/icelake.cpp +129]
+  │   └── bit_indexer::write	[vim singleheader/simdjson.cpp +27304]
+  ├── _mm512_loadu_si512
+  │   ├── splat	[vim include/simdjson/icelake/simd.h +105]
+  │   └── splat	[vim singleheader/simdjson.cpp +24067]
+  ├── _mm512_mask_blend_epi8
+  │   ├── bits_not_set	[vim singleheader/simdjson.cpp +21538]
+  │   ├── bits_not_set	[vim singleheader/simdjson.h +19158]
+  │   └── bits_not_set	[vim singleheader/simdjson.h +74061]
+  ├── _mm512_maskz_abs_epi8
+  │   ├── operator>	[vim singleheader/simdjson.cpp +21470]
+  │   ├── operator>	[vim singleheader/simdjson.h +19090]
+  │   └── operator>	[vim singleheader/simdjson.h +73993]
+  ├── _mm512_maskz_compress_epi8
+  │   ├── bit_indexer::write	[vim src/icelake.cpp +129]
+  │   ├── compress	[vim singleheader/simdjson.cpp +21396]
+  │   ├── bit_indexer::write	[vim singleheader/simdjson.cpp +27304]
+  │   ├── compress	[vim singleheader/simdjson.h +19016]
+  │   └── if	[vim singleheader/simdjson.h +72622]
+  ├── _mm512_max_epi8
+  │   ├── max_val	[vim singleheader/simdjson.cpp +21467]
+  │   ├── max_val	[vim singleheader/simdjson.h +19087]
+  │   └── max_val	[vim singleheader/simdjson.h +73990]
+  ├── _mm512_max_epu8
+  │   ├── max_val	[vim singleheader/simdjson.cpp +21526]
+  │   ├── max_val	[vim singleheader/simdjson.h +19146]
+  │   └── max_val	[vim singleheader/simdjson.h +74049]
+  ├── _mm512_min_epi8
+  │   ├── max_val	[vim singleheader/simdjson.cpp +21467]
+  │   ├── max_val	[vim singleheader/simdjson.h +19087]
+  │   └── max_val	[vim singleheader/simdjson.h +73990]
+  ├── _mm512_min_epu8
+  │   ├── max_val	[vim singleheader/simdjson.cpp +21526]
+  │   ├── max_val	[vim singleheader/simdjson.h +19146]
+  │   └── max_val	[vim singleheader/simdjson.h +74049]
+  ├── _mm512_movepi8_mask
+  │   ├── is_ascii	[vim singleheader/simdjson.cpp +21543]
+  │   ├── get_bit	[vim singleheader/simdjson.cpp +21557]
+  │   ├── is_ascii	[vim singleheader/simdjson.h +19163]
+  │   ├── get_bit	[vim singleheader/simdjson.h +19177]
+  │   ├── is_ascii	[vim singleheader/simdjson.h +74066]
+  │   └── get_bit	[vim singleheader/simdjson.h +74080]
+  ├── _mm512_permutex2var_epi64
+  │   ├── prev	[vim include/simdjson/icelake/simd.h +83]
+  │   └── prev	[vim singleheader/simdjson.cpp +24045]
+  ├── _mm512_set1_epi32
+  │   ├── bit_indexer::write	[vim src/icelake.cpp +129]
+  │   └── bit_indexer::write	[vim singleheader/simdjson.cpp +27304]
+  ├── _mm512_set1_epi8
+  │   ├── splat	[vim include/simdjson/icelake/simd.h +93]
+  │   ├── splat	[vim include/simdjson/icelake/simd.h +105]
+  │   ├── escaping::copy_and_find	[vim include/simdjson/icelake/stringparsing_defs.h +58]
+  │   ├── operator>	[vim singleheader/simdjson.cpp +21470]
+  │   ├── bits_not_set	[vim singleheader/simdjson.cpp +21538]
+  │   ├── escaping::copy_and_find	[vim singleheader/simdjson.cpp +21676]
+  │   ├── splat	[vim singleheader/simdjson.cpp +24055]
+  │   ├── splat	[vim singleheader/simdjson.cpp +24067]
+  │   ├── operator>	[vim singleheader/simdjson.h +19090]
+  │   ├── bits_not_set	[vim singleheader/simdjson.h +19158]
+  │   ├── escaping::copy_and_find	[vim singleheader/simdjson.h +19296]
+  │   ├── operator>	[vim singleheader/simdjson.h +73993]
+  │   ├── bits_not_set	[vim singleheader/simdjson.h +74061]
+  │   └── escaping::copy_and_find	[vim singleheader/simdjson.h +74199]
+  ├── _mm512_set_epi32
+  │   ├── bit_indexer::write	[vim src/icelake.cpp +129]
+  │   └── bit_indexer::write	[vim singleheader/simdjson.cpp +27304]
+  ├── _mm512_set_epi64
+  │   ├── _mm512_set_epi8	[vim include/simdjson/icelake/simd.h +21]
+  │   ├── prev	[vim include/simdjson/icelake/simd.h +83]
+  │   ├── _mm512_set_epi8	[vim singleheader/simdjson.cpp +23983]
+  │   └── prev	[vim singleheader/simdjson.cpp +24045]
+  ├── _mm512_set_epi8
+  │   ├── simd8	[vim singleheader/simdjson.cpp +21429]
+  │   ├── simd8	[vim singleheader/simdjson.cpp +21484]
+  │   ├── simd8	[vim singleheader/simdjson.h +19049]
+  │   ├── simd8	[vim singleheader/simdjson.h +19104]
+  │   ├── simd8	[vim singleheader/simdjson.h +73952]
+  │   └── simd8	[vim singleheader/simdjson.h +74007]
+  ├── _mm512_setzero_si512
+  │   ├── splat	[vim include/simdjson/icelake/simd.h +105]
+  │   └── splat	[vim singleheader/simdjson.cpp +24067]
+  ├── _mm512_shuffle_epi8
+  │   ├── json_character_block::classify	[vim src/icelake.cpp +48]
+  │   ├── lookup_16	[vim include/simdjson/icelake/simd.h +144]
+  │   ├── lookup_16	[vim singleheader/simdjson.cpp +24106]
+  │   └── json_character_block::classify	[vim singleheader/simdjson.cpp +27223]
+  ├── _mm512_slli_epi16
+  │   ├── shl	[vim singleheader/simdjson.cpp +21553]
+  │   ├── get_bit	[vim singleheader/simdjson.cpp +21557]
+  │   ├── shl	[vim singleheader/simdjson.h +19173]
+  │   ├── get_bit	[vim singleheader/simdjson.h +19177]
+  │   ├── shl	[vim singleheader/simdjson.h +74076]
+  │   └── get_bit	[vim singleheader/simdjson.h +74080]
+  ├── _mm512_srli_epi16
+  │   ├── shr	[vim singleheader/simdjson.cpp +21551]
+  │   ├── shr	[vim singleheader/simdjson.h +19171]
+  │   └── shr	[vim singleheader/simdjson.h +74074]
+  ├── _mm512_storeu_si512
+  │   ├── bit_indexer::write	[vim src/icelake.cpp +129]
+  │   ├── store	[vim include/simdjson/icelake/simd.h +131]
+  │   ├── compress	[vim singleheader/simdjson.cpp +21396]
+  │   ├── store	[vim singleheader/simdjson.cpp +24093]
+  │   ├── bit_indexer::write	[vim singleheader/simdjson.cpp +27304]
+  │   ├── compress	[vim singleheader/simdjson.h +19016]
+  │   └── if	[vim singleheader/simdjson.h +72622]
+  ├── _mm512_sub_epi8
+  │   ├── operator+	[vim include/simdjson/icelake/simd.h +134]
+  │   └── operator+	[vim singleheader/simdjson.cpp +24096]
+  ├── _mm512_subs_epu8
+  │   ├── saturating_add	[vim singleheader/simdjson.cpp +21522]
+  │   ├── saturating_add	[vim singleheader/simdjson.h +19142]
+  │   └── saturating_add	[vim singleheader/simdjson.h +74045]
+  ├── _mm512_test_epi8_mask
+  │   ├── simd8	[vim include/simdjson/icelake/simd.h +98]
+  │   ├── is_ascii	[vim singleheader/simdjson.cpp +21543]
+  │   ├── simd8	[vim singleheader/simdjson.cpp +24060]
+  │   ├── is_ascii	[vim singleheader/simdjson.h +19163]
+  │   └── is_ascii	[vim singleheader/simdjson.h +74066]
+  ├── _mm512_xor_si512
+  │   ├── operator|	[vim include/simdjson/icelake/simd.h +56]
+  │   └── operator|	[vim singleheader/simdjson.cpp +24018]
+  ├── _mm_add_epi8
+  │   ├── compress	[vim singleheader/simdjson.h +24576]
+  │   └── if	[vim singleheader/simdjson.h +100347]
+  ├── _mm_adds_epu8
+  │   ├── saturating_add	[vim singleheader/simdjson.h +24685]
+  │   └── saturating_add	[vim singleheader/simdjson.h +101828]
+  ├── _mm_alignr_epi8
+  │   ├── prev	[vim include/simdjson/westmere/simd.h +52]
+  │   ├── prev	[vim singleheader/simdjson.h +24937]
+  │   └── prev	[vim singleheader/simdjson.h +102080]
+  ├── _mm_and_si128
+  │   ├── operator|	[vim include/simdjson/westmere/simd.h +30]
+  │   ├── operator|	[vim singleheader/simdjson.h +24915]
+  │   └── operator|	[vim singleheader/simdjson.h +102058]
+  ├── _mm_andnot_si128
+  │   ├── operator|	[vim include/simdjson/westmere/simd.h +30]
+  │   ├── operator|	[vim singleheader/simdjson.h +24915]
+  │   └── operator|	[vim singleheader/simdjson.h +102058]
+  ├── _mm_clmulepi64_si128
+  │   ├── prefix_xor	[vim include/simdjson/icelake/bitmask.h +18]
+  │   ├── prefix_xor	[vim include/simdjson/westmere/bitmask.h +18]
+  │   ├── prefix_xor	[vim include/simdjson/haswell/bitmask.h +18]
+  │   ├── prefix_xor	[vim singleheader/simdjson.cpp +14887]
+  │   ├── prefix_xor	[vim singleheader/simdjson.cpp +23947]
+  │   └── prefix_xor	[vim singleheader/simdjson.h +16163]
+  ├── _mm_cmpgt_epi8
+  │   ├── max_val	[vim singleheader/simdjson.h +24650]
+  │   └── max_val	[vim singleheader/simdjson.h +101793]
+  ├── _mm_cvtsi128_si32
+  │   ├── parse_eight_digits_unrolled	[vim include/simdjson/icelake/numberparsing_defs.h +14]
+  │   ├── parse_eight_digits_unrolled	[vim include/simdjson/westmere/numberparsing_defs.h +16]
+  │   ├── parse_eight_digits_unrolled	[vim include/simdjson/haswell/numberparsing_defs.h +18]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.cpp +14920]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.cpp +21712]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.h +16196]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.h +19332]
+  │   └── parse_eight_digits_unrolled	[vim singleheader/simdjson.h +74235]
+  ├── _mm_cvtsi128_si64
+  │   ├── prefix_xor	[vim include/simdjson/icelake/bitmask.h +18]
+  │   ├── prefix_xor	[vim include/simdjson/westmere/bitmask.h +18]
+  │   ├── prefix_xor	[vim include/simdjson/haswell/bitmask.h +18]
+  │   ├── prefix_xor	[vim singleheader/simdjson.cpp +14887]
+  │   ├── prefix_xor	[vim singleheader/simdjson.cpp +23947]
+  │   └── prefix_xor	[vim singleheader/simdjson.h +16163]
+  ├── _mm_loadu_si128
+  │   ├── parse_eight_digits_unrolled	[vim include/simdjson/icelake/numberparsing_defs.h +14]
+  │   ├── splat	[vim include/simdjson/westmere/simd.h +74]
+  │   ├── parse_eight_digits_unrolled	[vim include/simdjson/westmere/numberparsing_defs.h +16]
+  │   ├── parse_eight_digits_unrolled	[vim include/simdjson/haswell/numberparsing_defs.h +18]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.cpp +14920]
+  │   ├── compress	[vim singleheader/simdjson.cpp +17816]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.cpp +21712]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.h +16196]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.h +19332]
+  │   ├── compress	[vim singleheader/simdjson.h +24576]
+  │   ├── splat	[vim singleheader/simdjson.h +24959]
+  │   ├── if	[vim singleheader/simdjson.h +58817]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.h +74235]
+  │   ├── if	[vim singleheader/simdjson.h +100347]
+  │   └── splat	[vim singleheader/simdjson.h +102102]
+  ├── _mm_madd_epi16
+  │   ├── parse_eight_digits_unrolled	[vim include/simdjson/icelake/numberparsing_defs.h +14]
+  │   ├── parse_eight_digits_unrolled	[vim include/simdjson/westmere/numberparsing_defs.h +16]
+  │   ├── parse_eight_digits_unrolled	[vim include/simdjson/haswell/numberparsing_defs.h +18]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.cpp +14920]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.cpp +21712]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.h +16196]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.h +19332]
+  │   └── parse_eight_digits_unrolled	[vim singleheader/simdjson.h +74235]
+  ├── _mm_maddubs_epi16
+  │   ├── parse_eight_digits_unrolled	[vim include/simdjson/icelake/numberparsing_defs.h +14]
+  │   ├── parse_eight_digits_unrolled	[vim include/simdjson/westmere/numberparsing_defs.h +16]
+  │   ├── parse_eight_digits_unrolled	[vim include/simdjson/haswell/numberparsing_defs.h +18]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.cpp +14920]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.cpp +21712]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.h +16196]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.h +19332]
+  │   └── parse_eight_digits_unrolled	[vim singleheader/simdjson.h +74235]
+  ├── _mm_max_epi8
+  │   ├── max_val	[vim singleheader/simdjson.h +24650]
+  │   └── max_val	[vim singleheader/simdjson.h +101793]
+  ├── _mm_max_epu8
+  │   ├── max_val	[vim singleheader/simdjson.h +24689]
+  │   └── max_val	[vim singleheader/simdjson.h +101832]
+  ├── _mm_min_epi8
+  │   ├── max_val	[vim singleheader/simdjson.h +24650]
+  │   └── max_val	[vim singleheader/simdjson.h +101793]
+  ├── _mm_min_epu8
+  │   ├── max_val	[vim singleheader/simdjson.h +24689]
+  │   └── max_val	[vim singleheader/simdjson.h +101832]
+  ├── _mm_movemask_epi8
+  │   ├── to_bitmask	[vim include/simdjson/westmere/simd.h +67]
+  │   ├── bits_not_set	[vim singleheader/simdjson.h +24701]
+  │   ├── get_bit	[vim singleheader/simdjson.h +24717]
+  │   ├── to_bitmask	[vim singleheader/simdjson.h +24952]
+  │   ├── bits_not_set	[vim singleheader/simdjson.h +101844]
+  │   ├── get_bit	[vim singleheader/simdjson.h +101860]
+  │   └── to_bitmask	[vim singleheader/simdjson.h +102095]
+  ├── _mm_packus_epi32
+  │   ├── parse_eight_digits_unrolled	[vim include/simdjson/icelake/numberparsing_defs.h +14]
+  │   ├── parse_eight_digits_unrolled	[vim include/simdjson/westmere/numberparsing_defs.h +16]
+  │   ├── parse_eight_digits_unrolled	[vim include/simdjson/haswell/numberparsing_defs.h +18]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.cpp +14920]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.cpp +21712]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.h +16196]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.h +19332]
+  │   └── parse_eight_digits_unrolled	[vim singleheader/simdjson.h +74235]
+  ├── _mm_set1_epi8
+  │   ├── prefix_xor	[vim include/simdjson/icelake/bitmask.h +18]
+  │   ├── parse_eight_digits_unrolled	[vim include/simdjson/icelake/numberparsing_defs.h +14]
+  │   ├── prefix_xor	[vim include/simdjson/westmere/bitmask.h +18]
+  │   ├── splat	[vim include/simdjson/westmere/simd.h +60]
+  │   ├── splat	[vim include/simdjson/westmere/simd.h +74]
+  │   ├── parse_eight_digits_unrolled	[vim include/simdjson/westmere/numberparsing_defs.h +16]
+  │   ├── parse_eight_digits_unrolled	[vim include/simdjson/haswell/numberparsing_defs.h +18]
+  │   ├── prefix_xor	[vim include/simdjson/haswell/bitmask.h +18]
+  │   ├── prefix_xor	[vim singleheader/simdjson.cpp +14887]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.cpp +14920]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.cpp +21712]
+  │   ├── prefix_xor	[vim singleheader/simdjson.cpp +23947]
+  │   ├── prefix_xor	[vim singleheader/simdjson.h +16163]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.h +16196]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.h +19332]
+  │   ├── splat	[vim singleheader/simdjson.h +24945]
+  │   ├── splat	[vim singleheader/simdjson.h +24959]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.h +74235]
+  │   ├── splat	[vim singleheader/simdjson.h +102088]
+  │   └── splat	[vim singleheader/simdjson.h +102102]
+  ├── _mm_set_epi32
+  │   ├── compress	[vim singleheader/simdjson.h +24576]
+  │   └── if	[vim singleheader/simdjson.h +100347]
+  ├── _mm_set_epi64x
+  │   ├── prefix_xor	[vim include/simdjson/icelake/bitmask.h +18]
+  │   ├── prefix_xor	[vim include/simdjson/westmere/bitmask.h +18]
+  │   ├── prefix_xor	[vim include/simdjson/haswell/bitmask.h +18]
+  │   ├── prefix_xor	[vim singleheader/simdjson.cpp +14887]
+  │   ├── prefix_xor	[vim singleheader/simdjson.cpp +23947]
+  │   ├── prefix_xor	[vim singleheader/simdjson.h +16163]
+  │   ├── compress	[vim singleheader/simdjson.h +24576]
+  │   └── if	[vim singleheader/simdjson.h +100347]
+  ├── _mm_setr_epi16
+  │   ├── parse_eight_digits_unrolled	[vim include/simdjson/icelake/numberparsing_defs.h +14]
+  │   ├── parse_eight_digits_unrolled	[vim include/simdjson/westmere/numberparsing_defs.h +16]
+  │   ├── parse_eight_digits_unrolled	[vim include/simdjson/haswell/numberparsing_defs.h +18]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.cpp +14920]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.cpp +21712]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.h +16196]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.h +19332]
+  │   └── parse_eight_digits_unrolled	[vim singleheader/simdjson.h +74235]
+  ├── _mm_setr_epi8
+  │   ├── parse_eight_digits_unrolled	[vim include/simdjson/icelake/numberparsing_defs.h +14]
+  │   ├── parse_eight_digits_unrolled	[vim include/simdjson/westmere/numberparsing_defs.h +16]
+  │   ├── parse_eight_digits_unrolled	[vim include/simdjson/haswell/numberparsing_defs.h +18]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.cpp +14920]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.cpp +21712]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.h +16196]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.h +19332]
+  │   ├── simd8	[vim singleheader/simdjson.h +24631]
+  │   ├── simd8	[vim singleheader/simdjson.h +24666]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.h +74235]
+  │   ├── simd8	[vim singleheader/simdjson.h +101774]
+  │   └── simd8	[vim singleheader/simdjson.h +101809]
+  ├── _mm_setzero_si128
+  │   ├── splat	[vim include/simdjson/westmere/simd.h +74]
+  │   ├── splat	[vim singleheader/simdjson.h +24959]
+  │   └── splat	[vim singleheader/simdjson.h +102102]
+  ├── _mm_shuffle_epi8
+  │   ├── json_character_block::classify	[vim src/westmere.cpp +41]
+  │   ├── lookup_16	[vim include/simdjson/westmere/simd.h +107]
+  │   ├── compress	[vim singleheader/simdjson.h +24576]
+  │   ├── lookup_16	[vim singleheader/simdjson.h +24992]
+  │   ├── if	[vim singleheader/simdjson.h +100347]
+  │   └── lookup_16	[vim singleheader/simdjson.h +102135]
+  ├── _mm_slli_epi16
+  │   ├── shl	[vim singleheader/simdjson.h +24713]
+  │   ├── get_bit	[vim singleheader/simdjson.h +24717]
+  │   ├── shl	[vim singleheader/simdjson.h +101856]
+  │   └── get_bit	[vim singleheader/simdjson.h +101860]
+  ├── _mm_srli_epi16
+  │   ├── shr	[vim singleheader/simdjson.h +24711]
+  │   └── shr	[vim singleheader/simdjson.h +101854]
+  ├── _mm_storeu_si128
+  │   ├── store	[vim include/simdjson/westmere/simd.h +94]
+  │   ├── compress	[vim singleheader/simdjson.cpp +17816]
+  │   ├── compress	[vim singleheader/simdjson.h +24576]
+  │   ├── store	[vim singleheader/simdjson.h +24979]
+  │   ├── if	[vim singleheader/simdjson.h +58817]
+  │   ├── if	[vim singleheader/simdjson.h +100347]
+  │   └── store	[vim singleheader/simdjson.h +102122]
+  ├── _mm_sub_epi8
+  │   ├── parse_eight_digits_unrolled	[vim include/simdjson/icelake/numberparsing_defs.h +14]
+  │   ├── operator+	[vim include/simdjson/westmere/simd.h +100]
+  │   ├── parse_eight_digits_unrolled	[vim include/simdjson/westmere/numberparsing_defs.h +16]
+  │   ├── parse_eight_digits_unrolled	[vim include/simdjson/haswell/numberparsing_defs.h +18]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.cpp +14920]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.cpp +21712]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.h +16196]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.h +19332]
+  │   ├── operator+	[vim singleheader/simdjson.h +24985]
+  │   ├── parse_eight_digits_unrolled	[vim singleheader/simdjson.h +74235]
+  │   └── operator+	[vim singleheader/simdjson.h +102128]
+  ├── _mm_subs_epu8
+  │   ├── saturating_add	[vim singleheader/simdjson.h +24685]
+  │   └── saturating_add	[vim singleheader/simdjson.h +101828]
+  ├── _mm_testz_si128
+  │   ├── to_bitmask	[vim include/simdjson/westmere/simd.h +67]
+  │   ├── bits_not_set	[vim singleheader/simdjson.h +24701]
+  │   ├── to_bitmask	[vim singleheader/simdjson.h +24952]
+  │   ├── bits_not_set	[vim singleheader/simdjson.h +101844]
+  │   └── to_bitmask	[vim singleheader/simdjson.h +102095]
+  └── _mm_xor_si128
+      ├── operator|	[vim include/simdjson/westmere/simd.h +30]
+      ├── operator|	[vim singleheader/simdjson.h +24915]
+      └── operator|	[vim singleheader/simdjson.h +102058]

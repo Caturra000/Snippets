@@ -1,0 +1,277 @@
+  \b_mm(_|128|256|512)\w+
+  ├── _mm256_add_epi64
+  │   ├── XXH3_accumulate_512_avx2	[vim velox/external/xxhash/xxhash.h +3827]
+  │   ├── XXH3_scrambleAcc_avx2	[vim velox/external/xxhash/xxhash.h +3861]
+  │   └── XXH3_initCustomSecret_avx2	[vim velox/external/xxhash/xxhash.h +3889]
+  ├── _mm256_castsi128_si256
+  │   └── toUint16x8	[vim velox/dwio/dwrf/reader/SelectiveStringDirectColumnReader.cpp +149]
+  ├── _mm256_castsi256_si128
+  │   └── toUint16x8	[vim velox/dwio/dwrf/reader/SelectiveStringDirectColumnReader.cpp +149]
+  ├── _mm256_cvtepi16_epi32
+  │   ├── apply	[vim velox/dwio/common/ColumnVisitors.h +591]
+  │   └── filterHalf	[vim velox/common/base/SimdUtil-inl.h +1268]
+  ├── _mm256_cvtepi32_epi64
+  │   └── apply	[vim velox/common/base/SimdUtil-inl.h +1150]
+  ├── _mm256_cvtepi8_epi16
+  │   └── unpack4x1	[vim velox/dwio/common/IntDecoder.cpp +207]
+  ├── _mm256_cvtepi8_epi32
+  │   └── unpack4x1	[vim velox/dwio/common/IntDecoder.cpp +200]
+  ├── _mm256_cvtepi8_epi64
+  │   ├── unpack4x1	[vim velox/dwio/common/IntDecoder.cpp +187]
+  │   └── unpack4x1	[vim velox/dwio/common/IntDecoder.cpp +193]
+  ├── _mm256_cvtepu16_epi32
+  │   ├── unpack9to15	[vim velox/dwio/common/BitPackDecoder.h +475]
+  │   ├── unpack16	[vim velox/dwio/common/BitPackDecoder.h +516]
+  │   └── decode1To24	[vim velox/dwio/common/BitPackDecoder.cpp +95]
+  ├── _mm256_cvtepu32_epi64
+  │   ├── cvtU32toI64	[vim velox/dwio/common/ColumnVisitors.h +722]
+  │   ├── as4x64	[vim velox/dwio/common/BitPackDecoder.cpp +33]
+  │   └── apply	[vim velox/common/base/SimdUtil-inl.h +1206]
+  ├── _mm256_cvtepu8_epi16
+  │   ├── unpack1to4	[vim velox/dwio/common/BitPackDecoder.h +186]
+  │   ├── unpack5to8	[vim velox/dwio/common/BitPackDecoder.h +239]
+  │   └── unpack8_cast	[vim velox/dwio/common/BitPackDecoder.h +292]
+  ├── _mm256_cvtepu8_epi32
+  │   ├── unpack1to7	[vim velox/dwio/common/BitPackDecoder.h +387]
+  │   ├── unpack8	[vim velox/dwio/common/BitPackDecoder.h +453]
+  │   └── decode1To24	[vim velox/dwio/common/BitPackDecoder.cpp +95]
+  ├── _mm256_extractf128_si256
+  │   └── filterHalf	[vim velox/common/base/SimdUtil-inl.h +1268]
+  ├── _mm256_extracti128_si256
+  │   ├── as4x64	[vim velox/dwio/common/BitPackDecoder.cpp +33]
+  │   ├── toUint16x8	[vim velox/dwio/dwrf/reader/SelectiveStringDirectColumnReader.cpp +149]
+  │   ├── pack32	[vim velox/common/base/SimdUtil-inl.h +926]
+  │   ├── apply	[vim velox/common/base/SimdUtil-inl.h +1150]
+  │   ├── apply	[vim velox/common/base/SimdUtil-inl.h +1206]
+  │   └── filterHalf	[vim velox/common/base/SimdUtil-inl.h +1268]
+  ├── _mm256_i32gather_epi32
+  │   ├── gather8Sparse	[vim velox/dwio/common/BitPackDecoder.cpp +65]
+  │   └── apply	[vim velox/common/base/SimdUtil-inl.h +538]
+  ├── _mm256_i32gather_epi64
+  │   └── apply	[vim velox/common/base/SimdUtil-inl.h +698]
+  ├── _mm256_i64gather_epi64
+  │   └── apply	[vim velox/common/base/SimdUtil-inl.h +810]
+  ├── _mm256_inserti128_si256
+  │   └── pack32	[vim velox/common/base/SimdUtil-inl.h +926]
+  ├── _mm256_loadu_si256
+  │   ├── ByteStreamSplitDecodeAvx2	[vim velox/dwio/parquet/writer/arrow/util/ByteStreamSplitInternal.h +194]
+  │   ├── ByteStreamSplitEncodeAvx2	[vim velox/dwio/parquet/writer/arrow/util/ByteStreamSplitInternal.h +286]
+  │   ├── XXH3_accumulate_512_avx2	[vim velox/external/xxhash/xxhash.h +3827]
+  │   └── XXH3_scrambleAcc_avx2	[vim velox/external/xxhash/xxhash.h +3861]
+  ├── _mm256_mask_i32gather_epi32
+  │   └── maskApply	[vim velox/common/base/SimdUtil-inl.h +587]
+  ├── _mm256_mask_i32gather_epi64
+  │   └── maskApply	[vim velox/common/base/SimdUtil-inl.h +774]
+  ├── _mm256_mask_i64gather_epi64
+  │   └── maskApply	[vim velox/common/base/SimdUtil-inl.h +847]
+  ├── _mm256_maskload_epi32
+  │   └── apply	[vim velox/common/base/SimdUtil-inl.h +1121]
+  ├── _mm256_maskload_epi64
+  │   └── apply	[vim velox/common/base/SimdUtil-inl.h +1136]
+  ├── _mm256_maskstore_epi32
+  │   └── storeLeading	[vim velox/common/base/SimdUtil.h +454]
+  ├── _mm256_maskstore_epi64
+  │   └── storeLeading	[vim velox/common/base/SimdUtil.h +454]
+  ├── _mm256_movemask_epi8
+  │   ├── toBitMask	[vim velox/common/base/SimdUtil-inl.h +81]
+  │   └── toBitMask	[vim velox/common/base/SimdUtil-inl.h +112]
+  ├── _mm256_movemask_pd
+  │   └── toBitMask	[vim velox/common/base/SimdUtil-inl.h +165]
+  ├── _mm256_movemask_ps
+  │   └── toBitMask	[vim velox/common/base/SimdUtil-inl.h +138]
+  ├── _mm256_mul_epu32
+  │   ├── XXH3_accumulate_512_avx2	[vim velox/external/xxhash/xxhash.h +3827]
+  │   └── XXH3_scrambleAcc_avx2	[vim velox/external/xxhash/xxhash.h +3861]
+  ├── _mm256_packus_epi32
+  │   ├── toUint16x8	[vim velox/dwio/dwrf/reader/SelectiveStringDirectColumnReader.cpp +149]
+  │   └── pack32	[vim velox/common/base/SimdUtil-inl.h +926]
+  ├── _mm256_permute2x128_si256
+  │   ├── ByteStreamSplitDecodeAvx2	[vim velox/dwio/parquet/writer/arrow/util/ByteStreamSplitInternal.h +194]
+  │   └── ByteStreamSplitEncodeAvx2	[vim velox/dwio/parquet/writer/arrow/util/ByteStreamSplitInternal.h +286]
+  ├── _mm256_permutevar8x32_epi32
+  │   ├── gather8Sparse	[vim velox/dwio/common/BitPackDecoder.cpp +65]
+  │   ├── ByteStreamSplitEncodeAvx2	[vim velox/dwio/parquet/writer/arrow/util/ByteStreamSplitInternal.h +286]
+  │   ├── apply	[vim velox/common/base/SimdUtil-inl.h +999]
+  │   └── apply	[vim velox/common/base/SimdUtil-inl.h +1337]
+  ├── _mm256_set1_epi32
+  │   ├── decode1To24	[vim velox/dwio/common/BitPackDecoder.cpp +95]
+  │   └── XXH3_scrambleAcc_avx2	[vim velox/external/xxhash/xxhash.h +3861]
+  ├── _mm256_set_epi32
+  │   ├── unpack1to7_shuffle	[vim velox/dwio/common/BitPackDecoder.h +419]
+  │   └── ByteStreamSplitEncodeAvx2	[vim velox/dwio/parquet/writer/arrow/util/ByteStreamSplitInternal.h +286]
+  ├── _mm256_set_epi64x
+  │   ├── unpack1to7_shuffle	[vim velox/dwio/common/BitPackDecoder.h +419]
+  │   └── XXH3_initCustomSecret_avx2	[vim velox/external/xxhash/xxhash.h +3889]
+  ├── _mm256_shuffle_epi32
+  │   ├── XXH3_accumulate_512_avx2	[vim velox/external/xxhash/xxhash.h +3827]
+  │   └── XXH3_scrambleAcc_avx2	[vim velox/external/xxhash/xxhash.h +3861]
+  ├── _mm256_shuffle_epi8
+  │   └── unpack1to7_shuffle	[vim velox/dwio/common/BitPackDecoder.h +419]
+  ├── _mm256_slli_epi64
+  │   └── XXH3_scrambleAcc_avx2	[vim velox/external/xxhash/xxhash.h +3861]
+  ├── _mm256_srli_epi64
+  │   └── XXH3_scrambleAcc_avx2	[vim velox/external/xxhash/xxhash.h +3861]
+  ├── _mm256_storeu_si256
+  │   ├── unpack1to4	[vim velox/dwio/common/BitPackDecoder.h +186]
+  │   ├── unpack5to8	[vim velox/dwio/common/BitPackDecoder.h +239]
+  │   ├── unpack8_cast	[vim velox/dwio/common/BitPackDecoder.h +292]
+  │   ├── unpack1to7	[vim velox/dwio/common/BitPackDecoder.h +387]
+  │   ├── unpack1to7_shuffle	[vim velox/dwio/common/BitPackDecoder.h +419]
+  │   ├── unpack8	[vim velox/dwio/common/BitPackDecoder.h +453]
+  │   ├── unpack9to15	[vim velox/dwio/common/BitPackDecoder.h +475]
+  │   ├── unpack16	[vim velox/dwio/common/BitPackDecoder.h +516]
+  │   ├── store8Ints	[vim velox/dwio/common/BitPackDecoder.cpp +38]
+  │   ├── ByteStreamSplitDecodeAvx2	[vim velox/dwio/parquet/writer/arrow/util/ByteStreamSplitInternal.h +194]
+  │   └── ByteStreamSplitEncodeAvx2	[vim velox/dwio/parquet/writer/arrow/util/ByteStreamSplitInternal.h +286]
+  ├── _mm256_stream_load_si256
+  │   └── XXH3_initCustomSecret_avx2	[vim velox/external/xxhash/xxhash.h +3889]
+  ├── _mm256_testz_si256
+  │   └── isAscii	[vim velox/functions/lib/string/StringCore.h +75]
+  ├── _mm256_unpackhi_epi8
+  │   ├── ByteStreamSplitDecodeAvx2	[vim velox/dwio/parquet/writer/arrow/util/ByteStreamSplitInternal.h +194]
+  │   └── ByteStreamSplitEncodeAvx2	[vim velox/dwio/parquet/writer/arrow/util/ByteStreamSplitInternal.h +286]
+  ├── _mm256_unpacklo_epi8
+  │   ├── ByteStreamSplitDecodeAvx2	[vim velox/dwio/parquet/writer/arrow/util/ByteStreamSplitInternal.h +194]
+  │   └── ByteStreamSplitEncodeAvx2	[vim velox/dwio/parquet/writer/arrow/util/ByteStreamSplitInternal.h +286]
+  ├── _mm256_xor_si256
+  │   ├── XXH3_accumulate_512_avx2	[vim velox/external/xxhash/xxhash.h +3827]
+  │   └── XXH3_scrambleAcc_avx2	[vim velox/external/xxhash/xxhash.h +3861]
+  ├── _mm512_add_epi64
+  │   ├── XXH3_accumulate_512_avx512	[vim velox/external/xxhash/xxhash.h +3718]
+  │   ├── XXH3_scrambleAcc_avx512	[vim velox/external/xxhash/xxhash.h +3767]
+  │   └── XXH3_initCustomSecret_avx512	[vim velox/external/xxhash/xxhash.h +3791]
+  ├── _mm512_loadu_si512
+  │   ├── ByteStreamSplitDecodeAvx512	[vim velox/dwio/parquet/writer/arrow/util/ByteStreamSplitInternal.h +371]
+  │   ├── ByteStreamSplitEncodeAvx512	[vim velox/dwio/parquet/writer/arrow/util/ByteStreamSplitInternal.h +493]
+  │   ├── XXH3_accumulate_512_avx512	[vim velox/external/xxhash/xxhash.h +3718]
+  │   └── XXH3_scrambleAcc_avx512	[vim velox/external/xxhash/xxhash.h +3767]
+  ├── _mm512_mask_set1_epi64
+  │   └── XXH3_initCustomSecret_avx512	[vim velox/external/xxhash/xxhash.h +3791]
+  ├── _mm512_mul_epu32
+  │   ├── XXH3_accumulate_512_avx512	[vim velox/external/xxhash/xxhash.h +3718]
+  │   └── XXH3_scrambleAcc_avx512	[vim velox/external/xxhash/xxhash.h +3767]
+  ├── _mm512_permutexvar_epi16
+  │   └── ByteStreamSplitEncodeAvx512	[vim velox/dwio/parquet/writer/arrow/util/ByteStreamSplitInternal.h +493]
+  ├── _mm512_permutexvar_epi32
+  │   └── ByteStreamSplitEncodeAvx512	[vim velox/dwio/parquet/writer/arrow/util/ByteStreamSplitInternal.h +493]
+  ├── _mm512_set1_epi32
+  │   └── XXH3_scrambleAcc_avx512	[vim velox/external/xxhash/xxhash.h +3767]
+  ├── _mm512_set1_epi64
+  │   └── XXH3_initCustomSecret_avx512	[vim velox/external/xxhash/xxhash.h +3791]
+  ├── _mm512_set_epi32
+  │   └── ByteStreamSplitEncodeAvx512	[vim velox/dwio/parquet/writer/arrow/util/ByteStreamSplitInternal.h +493]
+  ├── _mm512_shuffle_epi32
+  │   ├── XXH3_accumulate_512_avx512	[vim velox/external/xxhash/xxhash.h +3718]
+  │   └── XXH3_scrambleAcc_avx512	[vim velox/external/xxhash/xxhash.h +3767]
+  ├── _mm512_shuffle_i32x4
+  │   ├── ByteStreamSplitDecodeAvx512	[vim velox/dwio/parquet/writer/arrow/util/ByteStreamSplitInternal.h +371]
+  │   └── ByteStreamSplitEncodeAvx512	[vim velox/dwio/parquet/writer/arrow/util/ByteStreamSplitInternal.h +493]
+  ├── _mm512_slli_epi64
+  │   └── XXH3_scrambleAcc_avx512	[vim velox/external/xxhash/xxhash.h +3767]
+  ├── _mm512_srli_epi64
+  │   └── XXH3_scrambleAcc_avx512	[vim velox/external/xxhash/xxhash.h +3767]
+  ├── _mm512_storeu_si512
+  │   ├── ByteStreamSplitDecodeAvx512	[vim velox/dwio/parquet/writer/arrow/util/ByteStreamSplitInternal.h +371]
+  │   └── ByteStreamSplitEncodeAvx512	[vim velox/dwio/parquet/writer/arrow/util/ByteStreamSplitInternal.h +493]
+  ├── _mm512_stream_load_si512
+  │   └── XXH3_initCustomSecret_avx512	[vim velox/external/xxhash/xxhash.h +3791]
+  ├── _mm512_unpackhi_epi8
+  │   ├── ByteStreamSplitDecodeAvx512	[vim velox/dwio/parquet/writer/arrow/util/ByteStreamSplitInternal.h +371]
+  │   └── ByteStreamSplitEncodeAvx512	[vim velox/dwio/parquet/writer/arrow/util/ByteStreamSplitInternal.h +493]
+  ├── _mm512_unpacklo_epi8
+  │   ├── ByteStreamSplitDecodeAvx512	[vim velox/dwio/parquet/writer/arrow/util/ByteStreamSplitInternal.h +371]
+  │   └── ByteStreamSplitEncodeAvx512	[vim velox/dwio/parquet/writer/arrow/util/ByteStreamSplitInternal.h +493]
+  ├── _mm512_xor_si512
+  │   ├── XXH3_accumulate_512_avx512	[vim velox/external/xxhash/xxhash.h +3718]
+  │   └── XXH3_scrambleAcc_avx512	[vim velox/external/xxhash/xxhash.h +3767]
+  ├── _mm_add_epi64
+  │   ├── XXH3_accumulate_512_sse2	[vim velox/external/xxhash/xxhash.h +3932]
+  │   ├── XXH3_scrambleAcc_sse2	[vim velox/external/xxhash/xxhash.h +3967]
+  │   └── XXH3_initCustomSecret_sse2	[vim velox/external/xxhash/xxhash.h +3995]
+  ├── _mm_crc32_u64
+  │   └── apply	[vim velox/common/base/SimdUtil-inl.h +1351]
+  ├── _mm_cvtepi32_epi64
+  │   └── apply	[vim velox/common/base/SimdUtil-inl.h +1159]
+  ├── _mm_cvtepu32_epi64
+  │   └── apply	[vim velox/common/base/SimdUtil-inl.h +1215]
+  ├── _mm_extract_epi64
+  │   ├── apply	[vim velox/common/base/SimdUtil-inl.h +1159]
+  │   └── apply	[vim velox/common/base/SimdUtil-inl.h +1215]
+  ├── _mm_lddqu_si128
+  │   └── loadIndices	[vim velox/common/base/SimdUtil-inl.h +619]
+  ├── _mm_load_si128
+  │   ├── unpack1to4	[vim velox/dwio/common/BitPackDecoder.h +186]
+  │   ├── unpack5to8	[vim velox/dwio/common/BitPackDecoder.h +239]
+  │   ├── unpack9to15	[vim velox/dwio/common/BitPackDecoder.h +475]
+  │   ├── decode1To24	[vim velox/dwio/common/BitPackDecoder.cpp +95]
+  │   └── XXH3_initCustomSecret_sse2	[vim velox/external/xxhash/xxhash.h +3995]
+  ├── _mm_loadl_epi64
+  │   ├── unpack1to4	[vim velox/dwio/common/BitPackDecoder.h +186]
+  │   ├── unpack5to8	[vim velox/dwio/common/BitPackDecoder.h +239]
+  │   ├── unpack8_cast	[vim velox/dwio/common/BitPackDecoder.h +292]
+  │   ├── unpack1to7	[vim velox/dwio/common/BitPackDecoder.h +387]
+  │   └── decode1To24	[vim velox/dwio/common/BitPackDecoder.cpp +95]
+  ├── _mm_loadu_si128
+  │   ├── apply	[vim velox/dwio/common/ColumnVisitors.h +591]
+  │   ├── unpack16	[vim velox/dwio/common/BitPackDecoder.h +516]
+  │   ├── ByteStreamSplitDecodeSse2	[vim velox/dwio/parquet/writer/arrow/util/ByteStreamSplitInternal.h +42]
+  │   ├── ByteStreamSplitEncodeSse2	[vim velox/dwio/parquet/writer/arrow/util/ByteStreamSplitInternal.h +102]
+  │   ├── loadTags	[vim velox/exec/HashTable.h +418]
+  │   ├── XXH3_accumulate_512_sse2	[vim velox/external/xxhash/xxhash.h +3932]
+  │   └── XXH3_scrambleAcc_sse2	[vim velox/external/xxhash/xxhash.h +3967]
+  ├── _mm_movemask_epi8
+  │   ├── toBitMask	[vim velox/common/base/SimdUtil-inl.h +87]
+  │   └── toBitMask	[vim velox/common/base/SimdUtil-inl.h +123]
+  ├── _mm_movemask_pd
+  │   └── toBitMask	[vim velox/common/base/SimdUtil-inl.h +171]
+  ├── _mm_movemask_ps
+  │   └── toBitMask	[vim velox/common/base/SimdUtil-inl.h +144]
+  ├── _mm_mul_epu32
+  │   ├── XXH3_accumulate_512_sse2	[vim velox/external/xxhash/xxhash.h +3932]
+  │   └── XXH3_scrambleAcc_sse2	[vim velox/external/xxhash/xxhash.h +3967]
+  ├── _mm_packs_epi32
+  │   └── filterHalf	[vim velox/common/base/SimdUtil-inl.h +1268]
+  ├── _mm_packus_epi32
+  │   └── pack32	[vim velox/common/base/SimdUtil-inl.h +886]
+  ├── _mm_permutevar_ps
+  │   └── apply	[vim velox/common/base/SimdUtil-inl.h +1010]
+  ├── _mm_set1_epi32
+  │   ├── unpack4x1	[vim velox/dwio/common/IntDecoder.cpp +187]
+  │   ├── unpack4x1	[vim velox/dwio/common/IntDecoder.cpp +193]
+  │   ├── unpack4x1	[vim velox/dwio/common/IntDecoder.cpp +200]
+  │   ├── unpack4x1	[vim velox/dwio/common/IntDecoder.cpp +207]
+  │   └── XXH3_scrambleAcc_sse2	[vim velox/external/xxhash/xxhash.h +3967]
+  ├── _mm_set_epi64x
+  │   ├── unpack8	[vim velox/dwio/common/BitPackDecoder.h +453]
+  │   ├── apply	[vim velox/common/base/SimdUtil-inl.h +1159]
+  │   ├── apply	[vim velox/common/base/SimdUtil-inl.h +1215]
+  │   └── XXH3_initCustomSecret_sse2	[vim velox/external/xxhash/xxhash.h +3995]
+  ├── _mm_shuffle_epi32
+  │   ├── XXH3_accumulate_512_sse2	[vim velox/external/xxhash/xxhash.h +3932]
+  │   └── XXH3_scrambleAcc_sse2	[vim velox/external/xxhash/xxhash.h +3967]
+  ├── _mm_slli_epi64
+  │   └── XXH3_scrambleAcc_sse2	[vim velox/external/xxhash/xxhash.h +3967]
+  ├── _mm_slli_si128
+  │   └── allSmallEnough	[vim velox/dwio/dwrf/reader/SelectiveStringDirectColumnReader.cpp +155]
+  ├── _mm_srli_epi64
+  │   └── XXH3_scrambleAcc_sse2	[vim velox/external/xxhash/xxhash.h +3967]
+  ├── _mm_storeu_si128
+  │   ├── ByteStreamSplitDecodeSse2	[vim velox/dwio/parquet/writer/arrow/util/ByteStreamSplitInternal.h +42]
+  │   └── ByteStreamSplitEncodeSse2	[vim velox/dwio/parquet/writer/arrow/util/ByteStreamSplitInternal.h +102]
+  ├── _mm_unpackhi_epi32
+  │   └── ByteStreamSplitEncodeSse2	[vim velox/dwio/parquet/writer/arrow/util/ByteStreamSplitInternal.h +102]
+  ├── _mm_unpackhi_epi64
+  │   └── ByteStreamSplitEncodeSse2	[vim velox/dwio/parquet/writer/arrow/util/ByteStreamSplitInternal.h +102]
+  ├── _mm_unpackhi_epi8
+  │   ├── ByteStreamSplitDecodeSse2	[vim velox/dwio/parquet/writer/arrow/util/ByteStreamSplitInternal.h +42]
+  │   └── ByteStreamSplitEncodeSse2	[vim velox/dwio/parquet/writer/arrow/util/ByteStreamSplitInternal.h +102]
+  ├── _mm_unpacklo_epi32
+  │   └── ByteStreamSplitEncodeSse2	[vim velox/dwio/parquet/writer/arrow/util/ByteStreamSplitInternal.h +102]
+  ├── _mm_unpacklo_epi64
+  │   └── ByteStreamSplitEncodeSse2	[vim velox/dwio/parquet/writer/arrow/util/ByteStreamSplitInternal.h +102]
+  ├── _mm_unpacklo_epi8
+  │   ├── ByteStreamSplitDecodeSse2	[vim velox/dwio/parquet/writer/arrow/util/ByteStreamSplitInternal.h +42]
+  │   └── ByteStreamSplitEncodeSse2	[vim velox/dwio/parquet/writer/arrow/util/ByteStreamSplitInternal.h +102]
+  └── _mm_xor_si128
+      ├── XXH3_accumulate_512_sse2	[vim velox/external/xxhash/xxhash.h +3932]
+      └── XXH3_scrambleAcc_sse2	[vim velox/external/xxhash/xxhash.h +3967]

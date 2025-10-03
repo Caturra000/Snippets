@@ -1,0 +1,3937 @@
+  \b_mm(_|128|256|512)\w+
+  ├── _mm256_abs_epi16
+  │   └── abs	[vim vectori256.h +1864]
+  ├── _mm256_abs_epi32
+  │   └── abs	[vim vectori256.h +2714]
+  ├── _mm256_abs_epi64
+  │   └── abs	[vim vectori256.h +3575]
+  ├── _mm256_abs_epi8
+  │   └── abs	[vim vectori256.h +998]
+  ├── _mm256_abs_ph
+  │   └── abs	[vim vectorfp16.h +1278]
+  ├── _mm256_acos_pd
+  │   └── acos	[vim vectormath_lib.h +780]
+  ├── _mm256_acos_ps
+  │   └── acos	[vim vectormath_lib.h +780]
+  ├── _mm256_acosh_pd
+  │   └── sinh	[vim vectormath_lib.h +801]
+  ├── _mm256_acosh_ps
+  │   └── sinh	[vim vectormath_lib.h +801]
+  ├── _mm256_add_epi16
+  │   ├── horizontal_add	[vim vectori256.h +945]
+  │   ├── horizontal_add_x	[vim vectori256.h +957]
+  │   ├── horizontal_add	[vim vectori256.h +1248]
+  │   ├── horizontal_add_x	[vim vectori256.h +1260]
+  │   ├── operator / 	[vim vectori256.h +5414]
+  │   ├── operator / 	[vim vectori256.h +5427]
+  │   └── divide_by_i	[vim vectori256.h +5640]
+  ├── _mm256_add_epi32
+  │   ├── horizontal_add_x	[vim vectori256.h +1832]
+  │   ├── horizontal_add_x	[vim vectori256.h +2112]
+  │   ├── add_saturated	[vim vectori256.h +2678]
+  │   ├── sub_saturated	[vim vectori256.h +2691]
+  │   ├── operator / 	[vim vectori256.h +5383]
+  │   ├── operator / 	[vim vectori256.h +5400]
+  │   └── divide_by_i	[vim vectori256.h +5522]
+  ├── _mm256_add_epi64
+  │   ├── horizontal_add	[vim vectori256.h +3556]
+  │   └── divide_by_ui	[vim vectori256.h +5576]
+  ├── _mm256_adds_epi16
+  │   └── add_saturated	[vim vectori256.h +1844]
+  ├── _mm256_adds_epi8
+  │   └── add_saturated	[vim vectori256.h +978]
+  ├── _mm256_adds_epu16
+  │   └── add_saturated	[vim vectori256.h +2128]
+  ├── _mm256_adds_epu8
+  │   └── add_saturated	[vim vectori256.h +1270]
+  ├── _mm256_alignr_epi32
+  │   ├── permute8	[vim vectori256.h +3951]
+  │   ├── shift_bytes_up	[vim vectori256.h +4822]
+  │   ├── shift_bytes_down	[vim vectori256.h +4847]
+  │   └── permute8	[vim vectorf256.h +2548]
+  ├── _mm256_alignr_epi8
+  │   ├── permute16	[vim vectori256.h +4050]
+  │   ├── permute32	[vim vectori256.h +4177]
+  │   ├── blend4	[vim vectori256.h +4291]
+  │   ├── blend8	[vim vectori256.h +4377]
+  │   ├── blend16	[vim vectori256.h +4465]
+  │   ├── shift_bytes_up	[vim vectori256.h +4822]
+  │   └── shift_bytes_down	[vim vectori256.h +4847]
+  ├── _mm256_and_ps
+  │   └── operator & 	[vim vectorfp16.h +1089]
+  ├── _mm256_and_si256
+  │   ├── load_bits	[vim vectori256.h +545]
+  │   ├── rotate_left	[vim vectori256.h +1015]
+  │   ├── load_bits	[vim vectori256.h +1495]
+  │   ├── load_bits	[vim vectori256.h +2342]
+  │   ├── sub_saturated	[vim vectori256.h +2691]
+  │   ├── load_bits	[vim vectori256.h +3205]
+  │   ├── compress	[vim vectori256.h +5154]
+  │   └── compress	[vim vectori256.h +5189]
+  ├── _mm256_andnot_pd
+  │   ├── insert	[vim vectorf256.h +417]
+  │   └── andnot	[vim vectorf256.h +537]
+  ├── _mm256_andnot_ps
+  │   ├── insert	[vim vectorf256.h +173]
+  │   └── andnot	[vim vectorf256.h +293]
+  ├── _mm256_andnot_si256
+  │   ├── andnot	[vim vectori256.h +296]
+  │   ├── rotate_left	[vim vectori256.h +1015]
+  │   └── add_saturated	[vim vectori256.h +2678]
+  ├── _mm256_asin_pd
+  │   └── asin	[vim vectormath_lib.h +773]
+  ├── _mm256_asin_ps
+  │   └── asin	[vim vectormath_lib.h +773]
+  ├── _mm256_asinh_pd
+  │   └── sinh	[vim vectormath_lib.h +801]
+  ├── _mm256_asinh_ps
+  │   └── sinh	[vim vectormath_lib.h +801]
+  ├── _mm256_atan2_pd
+  │   └── atan	[vim vectormath_lib.h +787]
+  ├── _mm256_atan2_ps
+  │   └── atan	[vim vectormath_lib.h +787]
+  ├── _mm256_atan_pd
+  │   └── atan	[vim vectormath_lib.h +787]
+  ├── _mm256_atan_ps
+  │   └── atan	[vim vectormath_lib.h +787]
+  ├── _mm256_atanh_pd
+  │   └── sinh	[vim vectormath_lib.h +801]
+  ├── _mm256_atanh_ps
+  │   └── sinh	[vim vectormath_lib.h +801]
+  ├── _mm256_blend_epi32
+  │   ├── operator / 	[vim vectori256.h +5383]
+  │   ├── operator / 	[vim vectori256.h +5400]
+  │   └── divide_by_ui	[vim vectori256.h +5576]
+  ├── _mm256_blendv_epi8
+  │   └── selectb	[vim vectori256.h +311]
+  ├── _mm256_broadcastb_epi8
+  │   └── permute32	[vim vectori256.h +4177]
+  ├── _mm256_broadcastd_epi32
+  │   └── permute8	[vim vectori256.h +3951]
+  ├── _mm256_broadcastq_epi64
+  │   ├── permute4	[vim vectori256.h +3871]
+  │   ├── operator / 	[vim vectori256.h +5383]
+  │   └── operator / 	[vim vectori256.h +5414]
+  ├── _mm256_broadcastsd_pd
+  │   └── permute4	[vim vectorf256.h +2459]
+  ├── _mm256_broadcastss_ps
+  │   └── permute8	[vim vectorf256.h +2548]
+  ├── _mm256_broadcastw_epi16
+  │   └── permute16	[vim vectori256.h +4050]
+  ├── _mm256_castpd256_pd128
+  │   ├── get_low	[vim vectorf256.h +443]
+  │   ├── get_low	[vim vectorf256.h +1571]
+  │   └── permute4	[vim vectorf256.h +2459]
+  ├── _mm256_castpd_ps
+  │   ├── get_low	[vim vectorf512.h +182]
+  │   ├── reinterpret_f	[vim vectorf256.h +2323]
+  │   ├── permute8	[vim vectorf256.h +2548]
+  │   └── blend8	[vim vectorf256.h +2725]
+  ├── _mm256_castpd_si256
+  │   ├── blend4	[vim vectori256.h +4291]
+  │   ├── Vec4qb	[vim vectorf256.h +389]
+  │   ├── horizontal_and	[vim vectorf256.h +542]
+  │   ├── horizontal_or	[vim vectorf256.h +551]
+  │   ├── exponent	[vim vectorf256.h +2212]
+  │   ├── sign_bit	[vim vectorf256.h +2263]
+  │   ├── reinterpret_i	[vim vectorf256.h +2311]
+  │   ├── permute4	[vim vectorf256.h +2459]
+  │   └── fraction_2	[vim vectormath_exp.h +629]
+  ├── _mm256_castph256_ph128
+  │   └── operator [] 	[vim vectorfp16.h +923]
+  ├── _mm256_castph_pd
+  │   └── reinterpret_d	[vim vectorfp16.h +1478]
+  ├── _mm256_castph_ps
+  │   ├── store_nt	[vim vectorfp16.h +880]
+  │   ├── operator [] 	[vim vectorfp16.h +923]
+  │   ├── operator - 	[vim vectorfp16.h +995]
+  │   ├── operator & 	[vim vectorfp16.h +1089]
+  │   ├── operator | 	[vim vectorfp16.h +1108]
+  │   ├── operator ^ 	[vim vectorfp16.h +1119]
+  │   ├── change_sign	[vim vectorfp16.h +1429]
+  │   ├── reinterpret_f	[vim vectorfp16.h +1474]
+  │   └── Vec32h	[vim vectorfp16.h +1594]
+  ├── _mm256_castph_si256
+  │   ├── store_partial	[vim vectorfp16.h +889]
+  │   ├── cutoff	[vim vectorfp16.h +893]
+  │   ├── insert	[vim vectorfp16.h +898]
+  │   ├── extract	[vim vectorfp16.h +904]
+  │   ├── operator & 	[vim vectorfp16.h +1100]
+  │   ├── select	[vim vectorfp16.h +1143]
+  │   ├── sign_bit	[vim vectorfp16.h +1173]
+  │   ├── nan_code	[vim vectorfp16.h +1245]
+  │   ├── horizontal_add_x	[vim vectorfp16.h +1260]
+  │   ├── exponent	[vim vectorfp16.h +1394]
+  │   ├── to_float	[vim vectorfp16.h +1450]
+  │   ├── reinterpret_i	[vim vectorfp16.h +1466]
+  │   ├── permute16	[vim vectorfp16.h +1503]
+  │   ├── blend16	[vim vectorfp16.h +1519]
+  │   ├── lookup16	[vim vectorfp16.h +1537]
+  │   └── horizontal_add_x	[vim vectorfp16.h +2015]
+  ├── _mm256_castps128_ps256
+  │   ├── lookup8	[vim vectorf128.h +2764]
+  │   └── Vec16h	[vim vectorfp16.h +838]
+  ├── _mm256_castps256_ps128
+  │   ├── lookup8	[vim vectorf128.h +2764]
+  │   ├── lookup	[vim vectorf128.h +2791]
+  │   ├── get_low	[vim vectorf256.h +198]
+  │   ├── get_low	[vim vectorf256.h +721]
+  │   ├── extend_low	[vim vectorf256.h +2137]
+  │   └── permute8	[vim vectorf256.h +2548]
+  ├── _mm256_castps_pd
+  │   ├── Vec16f	[vim vectorf512.h +109]
+  │   ├── Vec4db	[vim vectorf256.h +340]
+  │   ├── operator ~ 	[vim vectorf256.h +503]
+  │   ├── Vec4d	[vim vectorf256.h +1448]
+  │   ├── operator - 	[vim vectorf256.h +1640]
+  │   ├── change_sign	[vim vectorf256.h +2280]
+  │   ├── reinterpret_d	[vim vectorf256.h +2331]
+  │   ├── permute8	[vim vectorf256.h +2548]
+  │   └── blend8	[vim vectorf256.h +2725]
+  ├── _mm256_castps_ph
+  │   ├── Vec16h	[vim vectorfp16.h +838]
+  │   ├── change_sign	[vim vectorfp16.h +1429]
+  │   └── operator [] 	[vim vectorfp16.h +1679]
+  ├── _mm256_castps_si256
+  │   ├── blend8	[vim vectori256.h +4377]
+  │   ├── Vec8ib	[vim vectorf256.h +145]
+  │   ├── sign_bit	[vim vectorf256.h +1015]
+  │   ├── exponent	[vim vectorf256.h +1380]
+  │   ├── reinterpret_i	[vim vectorf256.h +2307]
+  │   ├── permute8	[vim vectorf256.h +2548]
+  │   └── fraction_2	[vim vectormath_exp.h +619]
+  ├── _mm256_castsi128_si256
+  │   ├── lookup8	[vim vectorf128.h +2764]
+  │   ├── lookup	[vim vectorf128.h +2791]
+  │   └── lookup16	[vim vectori128.h +5654]
+  ├── _mm256_castsi256_pd
+  │   ├── blend4	[vim vectori256.h +4291]
+  │   ├── Vec4db	[vim vectorf256.h +330]
+  │   ├── Vec4db	[vim vectorf256.h +354]
+  │   ├── Vec4db	[vim vectorf256.h +373]
+  │   ├── load_bits	[vim vectorf256.h +382]
+  │   ├── exp2	[vim vectorf256.h +2244]
+  │   ├── reinterpret_d	[vim vectorf256.h +2327]
+  │   ├── permute4	[vim vectorf256.h +2459]
+  │   └── fraction_2	[vim vectormath_exp.h +629]
+  ├── _mm256_castsi256_ph
+  │   ├── load_partial	[vim vectorfp16.h +884]
+  │   ├── cutoff	[vim vectorfp16.h +893]
+  │   ├── insert	[vim vectorfp16.h +898]
+  │   ├── extract	[vim vectorfp16.h +904]
+  │   ├── select	[vim vectorfp16.h +1143]
+  │   ├── infinite16h	[vim vectorfp16.h +1222]
+  │   ├── exp2	[vim vectorfp16.h +1415]
+  │   ├── to_float16	[vim vectorfp16.h +1455]
+  │   ├── reinterpret_h	[vim vectorfp16.h +1470]
+  │   ├── permute16	[vim vectorfp16.h +1503]
+  │   ├── blend16	[vim vectorfp16.h +1519]
+  │   ├── lookup16	[vim vectorfp16.h +1537]
+  │   └── lookup	[vim vectorfp16.h +1542]
+  ├── _mm256_castsi256_ps
+  │   ├── blend8	[vim vectori256.h +4377]
+  │   ├── constant8f	[vim vectorf256.h +54]
+  │   ├── Vec8fb	[vim vectorf256.h +86]
+  │   ├── Vec8fb	[vim vectorf256.h +109]
+  │   ├── Vec8fb	[vim vectorf256.h +129]
+  │   ├── load_bits	[vim vectorf256.h +138]
+  │   ├── exp2	[vim vectorf256.h +1412]
+  │   ├── reinterpret_f	[vim vectorf256.h +2315]
+  │   ├── permute8	[vim vectorf256.h +2548]
+  │   ├── operator - 	[vim vectorfp16.h +995]
+  │   ├── change_sign	[vim vectorfp16.h +1429]
+  │   └── fraction_2	[vim vectormath_exp.h +619]
+  ├── _mm256_castsi256_si128
+  │   ├── lookup16	[vim vectori128.h +5654]
+  │   ├── get_low	[vim vectori256.h +233]
+  │   ├── extract	[vim vectori256.h +447]
+  │   ├── get_low	[vim vectori256.h +463]
+  │   ├── horizontal_add	[vim vectori256.h +945]
+  │   ├── horizontal_add_x	[vim vectori256.h +957]
+  │   ├── get_low	[vim vectori256.h +1088]
+  │   ├── horizontal_add	[vim vectori256.h +1248]
+  │   ├── horizontal_add_x	[vim vectori256.h +1260]
+  │   ├── extract	[vim vectori256.h +1402]
+  │   ├── get_low	[vim vectori256.h +1418]
+  │   ├── horizontal_add	[vim vectori256.h +1821]
+  │   ├── horizontal_add_x	[vim vectori256.h +1832]
+  │   ├── get_low	[vim vectori256.h +1946]
+  │   ├── horizontal_add_x	[vim vectori256.h +2112]
+  │   ├── extract	[vim vectori256.h +2255]
+  │   ├── get_low	[vim vectori256.h +2271]
+  │   ├── horizontal_add	[vim vectori256.h +2665]
+  │   ├── get_low	[vim vectori256.h +2799]
+  │   ├── extract	[vim vectori256.h +3118]
+  │   ├── get_low	[vim vectori256.h +3134]
+  │   ├── horizontal_add	[vim vectori256.h +3556]
+  │   ├── get_low	[vim vectori256.h +3666]
+  │   ├── permute4	[vim vectori256.h +3871]
+  │   ├── permute8	[vim vectori256.h +3951]
+  │   ├── permute16	[vim vectori256.h +4050]
+  │   ├── permute32	[vim vectori256.h +4177]
+  │   ├── shift_bytes_up	[vim vectori256.h +4822]
+  │   └── permute8	[vim vectorf256.h +2548]
+  ├── _mm256_cbrt_pd
+  │   └── exp	[vim vectormath_lib.h +651]
+  ├── _mm256_cbrt_ps
+  │   └── exp	[vim vectormath_lib.h +651]
+  ├── _mm256_cdfnorm_pd
+  │   └── cdfnorm	[vim vectormath_lib.h +858]
+  ├── _mm256_cdfnorm_ps
+  │   └── cdfnorm	[vim vectormath_lib.h +858]
+  ├── _mm256_cdfnorminv_pd
+  │   └── cdfnorm	[vim vectormath_lib.h +858]
+  ├── _mm256_cdfnorminv_ps
+  │   └── cdfnorm	[vim vectormath_lib.h +858]
+  ├── _mm256_cmp_epu32_mask
+  │   ├── add_saturated	[vim vectori256.h +2969]
+  │   └── sub_saturated	[vim vectori256.h +2982]
+  ├── _mm256_cmp_pd_mask
+  │   └── exponent_f	[vim vectormath_exp.h +735]
+  ├── _mm256_cmp_ps_mask
+  │   └── exponent_f	[vim vectormath_exp.h +716]
+  ├── _mm256_cmpeq_epi32
+  │   └── compress_saturated	[vim vectori256.h +5251]
+  ├── _mm256_cmpeq_epi8
+  │   └── load_bits	[vim vectori256.h +545]
+  ├── _mm256_cmpgt_epi16
+  │   └── load_bits	[vim vectori256.h +1495]
+  ├── _mm256_cmpgt_epi32
+  │   └── load_bits	[vim vectori256.h +2342]
+  ├── _mm256_cmpgt_epi64
+  │   └── load_bits	[vim vectori256.h +3205]
+  ├── _mm256_cmpgt_epi8
+  │   ├── extend_low	[vim vectori256.h +5069]
+  │   └── extend_high	[vim vectori256.h +5076]
+  ├── _mm256_cmplt_epu32_mask
+  │   ├── scatter	[vim vectorf512.h +2038]
+  │   ├── scatter	[vim vectori512.h +1872]
+  │   ├── scatter	[vim vectori256.h +5011]
+  │   └── scatter	[vim vectorf256.h +3011]
+  ├── _mm256_cmplt_epu64_mask
+  │   ├── scatter	[vim vectori256.h +5028]
+  │   └── scatter	[vim vectorf256.h +3025]
+  ├── _mm256_cos_pd
+  │   └── sin	[vim vectormath_lib.h +720]
+  ├── _mm256_cos_ps
+  │   └── sin	[vim vectormath_lib.h +720]
+  ├── _mm256_cosh_pd
+  │   └── sinh	[vim vectormath_lib.h +801]
+  ├── _mm256_cosh_ps
+  │   └── sinh	[vim vectormath_lib.h +801]
+  ├── _mm256_cospi_pd
+  │   └── sinpi	[vim vectormath_lib.h +752]
+  ├── _mm256_cospi_ps
+  │   └── sinpi	[vim vectormath_lib.h +752]
+  ├── _mm256_cvtepi16_epi32
+  │   └── extend	[vim vector_convert.h +51]
+  ├── _mm256_cvtepi16_epi8
+  │   ├── compress	[vim vector_convert.h +143]
+  │   └── compress	[vim vector_convert.h +147]
+  ├── _mm256_cvtepi16_ph
+  │   └── to_float16	[vim vectorfp16.h +1351]
+  ├── _mm256_cvtepi32_epi16
+  │   ├── compress	[vim vector_convert.h +151]
+  │   └── compress	[vim vector_convert.h +155]
+  ├── _mm256_cvtepi32_epi64
+  │   └── extend	[vim vector_convert.h +61]
+  ├── _mm256_cvtepi32_pd
+  │   └── to_double	[vim vectorf256.h +2125]
+  ├── _mm256_cvtepi32_ps
+  │   └── to_float	[vim vectorf256.h +1239]
+  ├── _mm256_cvtepi64_epi32
+  │   ├── compress	[vim vector_convert.h +159]
+  │   └── compress	[vim vector_convert.h +163]
+  ├── _mm256_cvtepi8_epi16
+  │   └── extend	[vim vector_convert.h +41]
+  ├── _mm256_cvtepu16_epi32
+  │   ├── permute16	[vim vectori256.h +4050]
+  │   └── extend	[vim vector_convert.h +56]
+  ├── _mm256_cvtepu16_ph
+  │   └── to_float16	[vim vectorfp16.h +1356]
+  ├── _mm256_cvtepu32_epi64
+  │   ├── permute8	[vim vectori256.h +3951]
+  │   ├── permute8	[vim vectorf256.h +2548]
+  │   └── extend	[vim vector_convert.h +66]
+  ├── _mm256_cvtepu32_ps
+  │   └── to_float	[vim vectorf256.h +1244]
+  ├── _mm256_cvtepu64_pd
+  │   └── to_double	[vim vectorf256.h +2090]
+  ├── _mm256_cvtepu8_epi16
+  │   ├── permute32	[vim vectori256.h +4177]
+  │   └── extend	[vim vector_convert.h +46]
+  ├── _mm256_cvtpd_epi32
+  │   └── round_to_int32	[vim vectorf256.h +2047]
+  ├── _mm256_cvtpd_epi64
+  │   └── roundi	[vim vectorf256.h +2071]
+  ├── _mm256_cvtpd_ps
+  │   ├── compress	[vim vectorf256.h +2130]
+  │   └── to_float	[vim vector_convert.h +113]
+  ├── _mm256_cvtph_epi16
+  │   └── roundi	[vim vectorfp16.h +1340]
+  ├── _mm256_cvtph_ps
+  │   ├── to_float	[vim vectorfp16e.h +440]
+  │   ├── horizontal_add_x	[vim vectorfp16.h +508]
+  │   └── to_float	[vim vectorfp16.h +706]
+  ├── _mm256_cvtps_epi32
+  │   └── roundi	[vim vectorf256.h +1227]
+  ├── _mm256_cvtps_pd
+  │   ├── extend_low	[vim vectorf256.h +2137]
+  │   ├── extend_high	[vim vectorf256.h +2142]
+  │   └── to_double	[vim vector_convert.h +108]
+  ├── _mm256_cvtps_ph
+  │   ├── to_float16	[vim vectorfp16e.h +445]
+  │   └── to_float16	[vim vectorfp16.h +711]
+  ├── _mm256_cvtsd_f64
+  │   └── extract	[vim vectorf256.h +1555]
+  ├── _mm256_cvtsepi16_epi8
+  │   └── compress_saturated	[vim vector_convert.h +168]
+  ├── _mm256_cvtsepi32_epi16
+  │   └── compress_saturated	[vim vector_convert.h +176]
+  ├── _mm256_cvtsepi64_epi32
+  │   └── compress_saturated	[vim vector_convert.h +184]
+  ├── _mm256_cvtsh_h
+  │   └── extract	[vim vectorfp16.h +904]
+  ├── _mm256_cvtss_f32
+  │   └── extract	[vim vectorf256.h +705]
+  ├── _mm256_cvttpd_epi32
+  │   └── truncate_to_int32	[vim vectorf256.h +2053]
+  ├── _mm256_cvttpd_epi64
+  │   └── truncatei	[vim vectorf256.h +2060]
+  ├── _mm256_cvttph_epi16
+  │   └── truncatei	[vim vectorfp16.h +1346]
+  ├── _mm256_cvttps_epi32
+  │   └── truncatei	[vim vectorf256.h +1234]
+  ├── _mm256_cvtusepi16_epi8
+  │   └── compress_saturated	[vim vector_convert.h +172]
+  ├── _mm256_cvtusepi32_epi16
+  │   └── compress_saturated	[vim vector_convert.h +180]
+  ├── _mm256_cvtusepi64_epi32
+  │   └── compress_saturated	[vim vector_convert.h +188]
+  ├── _mm256_erf_pd
+  │   └── erf	[vim vectormath_lib.h +839]
+  ├── _mm256_erf_ps
+  │   └── erf	[vim vectormath_lib.h +839]
+  ├── _mm256_erfc_pd
+  │   └── erf	[vim vectormath_lib.h +839]
+  ├── _mm256_erfc_ps
+  │   └── erf	[vim vectormath_lib.h +839]
+  ├── _mm256_erfinv_pd
+  │   └── erf	[vim vectormath_lib.h +839]
+  ├── _mm256_erfinv_ps
+  │   └── erf	[vim vectormath_lib.h +839]
+  ├── _mm256_exp10_pd
+  │   └── exp	[vim vectormath_lib.h +651]
+  ├── _mm256_exp10_ps
+  │   └── exp	[vim vectormath_lib.h +651]
+  ├── _mm256_exp2_pd
+  │   └── exp	[vim vectormath_lib.h +651]
+  ├── _mm256_exp2_ps
+  │   └── exp	[vim vectormath_lib.h +651]
+  ├── _mm256_exp_pd
+  │   └── exp	[vim vectormath_lib.h +651]
+  ├── _mm256_exp_ps
+  │   └── exp	[vim vectormath_lib.h +651]
+  ├── _mm256_expm1_pd
+  │   └── exp	[vim vectormath_lib.h +651]
+  ├── _mm256_expm1_ps
+  │   └── exp	[vim vectormath_lib.h +651]
+  ├── _mm256_extractf128_pd
+  │   ├── get_low	[vim vectorf256.h +443]
+  │   ├── get_low	[vim vectorf256.h +1571]
+  │   └── permute4	[vim vectorf256.h +2459]
+  ├── _mm256_extractf128_ps
+  │   ├── get_low	[vim vectorf256.h +198]
+  │   ├── get_low	[vim vectorf256.h +721]
+  │   ├── extend_high	[vim vectorf256.h +2142]
+  │   └── operator [] 	[vim vectorfp16.h +923]
+  ├── _mm256_extractf128_si256
+  │   ├── get_low	[vim vectori256.h +233]
+  │   ├── get_low	[vim vectori256.h +1088]
+  │   ├── get_low	[vim vectori256.h +1418]
+  │   ├── get_low	[vim vectori256.h +1946]
+  │   ├── get_low	[vim vectori256.h +2271]
+  │   ├── get_low	[vim vectori256.h +2799]
+  │   ├── get_low	[vim vectori256.h +3134]
+  │   └── get_low	[vim vectori256.h +3666]
+  ├── _mm256_extracti128_si256
+  │   ├── get_low	[vim vectori256.h +463]
+  │   ├── horizontal_add	[vim vectori256.h +945]
+  │   ├── horizontal_add_x	[vim vectori256.h +957]
+  │   ├── horizontal_add	[vim vectori256.h +1248]
+  │   ├── horizontal_add_x	[vim vectori256.h +1260]
+  │   ├── horizontal_add	[vim vectori256.h +1821]
+  │   ├── horizontal_add_x	[vim vectori256.h +1832]
+  │   ├── horizontal_add_x	[vim vectori256.h +2112]
+  │   ├── horizontal_add	[vim vectori256.h +2665]
+  │   ├── horizontal_add	[vim vectori256.h +3556]
+  │   ├── permute4	[vim vectori256.h +3871]
+  │   └── shift_bytes_down	[vim vectori256.h +4847]
+  ├── _mm256_fixupimm_pd
+  │   └── log_special_cases	[vim vectormath_exp.h +835]
+  ├── _mm256_fixupimm_ps
+  │   └── log_special_cases	[vim vectormath_exp.h +861]
+  ├── _mm256_fmadd_pd
+  │   └── mul_add	[vim vectorf256.h +2149]
+  ├── _mm256_fmadd_ph
+  │   └── mul_add	[vim vectorfp16.h +1375]
+  ├── _mm256_fmadd_ps
+  │   └── mul_add	[vim vectorf256.h +1285]
+  ├── _mm256_fmsub_pd
+  │   ├── mul_sub	[vim vectorf256.h +2161]
+  │   └── mul_sub_x	[vim vectorf256.h +2186]
+  ├── _mm256_fmsub_ph
+  │   └── mul_sub	[vim vectorfp16.h +1380]
+  ├── _mm256_fmsub_ps
+  │   ├── mul_sub	[vim vectorf256.h +1296]
+  │   └── mul_sub_x	[vim vectorf256.h +1322]
+  ├── _mm256_fnmadd_pd
+  │   └── nmul_add	[vim vectorf256.h +2172]
+  ├── _mm256_fnmadd_ph
+  │   └── nmul_add	[vim vectorfp16.h +1385]
+  ├── _mm256_fnmadd_ps
+  │   └── nmul_add	[vim vectorf256.h +1307]
+  ├── _mm256_fpclass_pd_mask
+  │   ├── is_finite	[vim vectorf256.h +1875]
+  │   ├── is_inf	[vim vectorf256.h +1893]
+  │   ├── is_nan	[vim vectorf256.h +1909]
+  │   ├── is_subnormal	[vim vectorf256.h +1936]
+  │   ├── is_zero_or_subnormal	[vim vectorf256.h +1953]
+  │   └── log_special_cases	[vim vectormath_exp.h +835]
+  ├── _mm256_fpclass_ph_mask
+  │   ├── is_finite	[vim vectorfp16.h +1190]
+  │   ├── is_inf	[vim vectorfp16.h +1197]
+  │   ├── is_nan	[vim vectorfp16.h +1204]
+  │   ├── is_subnormal	[vim vectorfp16.h +1211]
+  │   └── is_zero_or_subnormal	[vim vectorfp16.h +1217]
+  ├── _mm256_fpclass_ps_mask
+  │   ├── is_finite	[vim vectorf256.h +1045]
+  │   ├── is_inf	[vim vectorf256.h +1061]
+  │   ├── is_nan	[vim vectorf256.h +1077]
+  │   ├── is_subnormal	[vim vectorf256.h +1104]
+  │   ├── is_zero_or_subnormal	[vim vectorf256.h +1121]
+  │   └── log_special_cases	[vim vectormath_exp.h +861]
+  ├── _mm256_getmant_pd
+  │   └── fraction	[vim vectorf256.h +2227]
+  ├── _mm256_getmant_ph
+  │   └── fraction	[vim vectorfp16.h +1406]
+  ├── _mm256_getmant_ps
+  │   └── fraction	[vim vectorf256.h +1395]
+  ├── _mm256_i32gather_epi32
+  │   ├── lookup	[vim vectori256.h +4670]
+  │   ├── lookup	[vim vectori256.h +4715]
+  │   ├── lookup	[vim vectori256.h +4747]
+  │   └── gather8i	[vim vectori256.h +4878]
+  ├── _mm256_i32gather_epi64
+  │   └── gather4q	[vim vectori256.h +4916]
+  ├── _mm256_i32gather_ps
+  │   └── lookup	[vim vectorf256.h +2832]
+  ├── _mm256_i64gather_epi64
+  │   └── lookup	[vim vectori256.h +4782]
+  ├── _mm256_i64gather_pd
+  │   └── lookup	[vim vectorf256.h +2899]
+  ├── _mm256_insertf128_ps
+  │   ├── lookup8	[vim vectorf128.h +2764]
+  │   └── Vec16h	[vim vectorfp16.h +838]
+  ├── _mm256_inserti128_si256
+  │   ├── lookup16	[vim vectori128.h +5654]
+  │   ├── shift_bytes_up	[vim vectori256.h +4822]
+  │   └── shift_bytes_down	[vim vectori256.h +4847]
+  ├── _mm256_load_pd
+  │   └── load_a	[vim vectorf256.h +1473]
+  ├── _mm256_load_ph
+  │   └── load_a	[vim vectorfp16.h +862]
+  ├── _mm256_load_ps
+  │   └── load_a	[vim vectorf256.h +612]
+  ├── _mm256_load_si256
+  │   ├── load_a	[vim vectori256.h +211]
+  │   ├── load_a	[vim vectori256.h +375]
+  │   ├── load_a	[vim vectori256.h +1069]
+  │   ├── load_a	[vim vectori256.h +1336]
+  │   ├── load_a	[vim vectori256.h +1927]
+  │   ├── load_a	[vim vectori256.h +2189]
+  │   ├── load_a	[vim vectori256.h +2780]
+  │   ├── load_a	[vim vectori256.h +3045]
+  │   └── load_a	[vim vectori256.h +3647]
+  ├── _mm256_loadu_pd
+  │   ├── insert	[vim vectorf256.h +417]
+  │   └── load	[vim vectorf256.h +1466]
+  ├── _mm256_loadu_ph
+  │   └── load	[vim vectorfp16.h +855]
+  ├── _mm256_loadu_ps
+  │   ├── lookup	[vim vectorf128.h +2791]
+  │   ├── insert	[vim vectorf256.h +173]
+  │   └── load	[vim vectorf256.h +606]
+  ├── _mm256_loadu_si256
+  │   ├── load	[vim vectori256.h +204]
+  │   ├── load	[vim vectori256.h +370]
+  │   ├── load	[vim vectori256.h +1064]
+  │   ├── load	[vim vectori256.h +1331]
+  │   ├── load	[vim vectori256.h +1922]
+  │   ├── load	[vim vectori256.h +2184]
+  │   ├── load	[vim vectori256.h +2775]
+  │   ├── load	[vim vectori256.h +3040]
+  │   └── load	[vim vectori256.h +3642]
+  ├── _mm256_log10_pd
+  │   └── log	[vim vectormath_lib.h +694]
+  ├── _mm256_log10_ps
+  │   └── log	[vim vectormath_lib.h +694]
+  ├── _mm256_log1p_pd
+  │   └── log	[vim vectormath_lib.h +694]
+  ├── _mm256_log1p_ps
+  │   └── log	[vim vectormath_lib.h +694]
+  ├── _mm256_log2_pd
+  │   └── log	[vim vectormath_lib.h +694]
+  ├── _mm256_log2_ps
+  │   └── log	[vim vectormath_lib.h +694]
+  ├── _mm256_log_pd
+  │   └── log	[vim vectormath_lib.h +694]
+  ├── _mm256_log_ps
+  │   └── log	[vim vectormath_lib.h +694]
+  ├── _mm256_mask_add_epi16
+  │   ├── if_add	[vim vectori256.h +1794]
+  │   └── if_add	[vim vectori256.h +2079]
+  ├── _mm256_mask_add_epi32
+  │   ├── if_add	[vim vectori256.h +2638]
+  │   └── if_add	[vim vectori256.h +2933]
+  ├── _mm256_mask_add_epi64
+  │   ├── if_add	[vim vectori256.h +3529]
+  │   └── if_add	[vim vectori256.h +3792]
+  ├── _mm256_mask_add_epi8
+  │   ├── if_add	[vim vectori256.h +922]
+  │   └── if_add	[vim vectori256.h +1224]
+  ├── _mm256_mask_add_pd
+  │   └── if_add	[vim vectorf256.h +1825]
+  ├── _mm256_mask_add_ph
+  │   └── if_add	[vim vectorfp16.h +1148]
+  ├── _mm256_mask_add_ps
+  │   └── if_add	[vim vectorf256.h +975]
+  ├── _mm256_mask_broadcastsd_pd
+  │   └── insert	[vim vectorf256.h +1536]
+  ├── _mm256_mask_broadcastss_ps
+  │   └── insert	[vim vectorf256.h +678]
+  ├── _mm256_mask_div_pd
+  │   └── if_div	[vim vectorf256.h +1852]
+  ├── _mm256_mask_div_ph
+  │   └── if_div	[vim vectorfp16.h +1163]
+  ├── _mm256_mask_div_ps
+  │   └── if_div	[vim vectorf256.h +1002]
+  ├── _mm256_mask_i32scatter_epi32
+  │   ├── scatter	[vim vectori256.h +4965]
+  │   └── scatter	[vim vectori256.h +5011]
+  ├── _mm256_mask_i32scatter_epi64
+  │   ├── scatter	[vim vectori256.h +4986]
+  │   └── scatter	[vim vectori256.h +5044]
+  ├── _mm256_mask_i32scatter_pd
+  │   ├── scatter	[vim vectorf256.h +2987]
+  │   └── scatter	[vim vectorf256.h +3039]
+  ├── _mm256_mask_i32scatter_ps
+  │   ├── scatter	[vim vectorf256.h +2967]
+  │   └── scatter	[vim vectorf256.h +3011]
+  ├── _mm256_mask_i64scatter_epi64
+  │   └── scatter	[vim vectori256.h +5028]
+  ├── _mm256_mask_i64scatter_pd
+  │   └── scatter	[vim vectorf256.h +3025]
+  ├── _mm256_mask_mov_epi16
+  │   ├── select	[vim vectori256.h +1785]
+  │   ├── select	[vim vectori256.h +2070]
+  │   ├── blend16	[vim vectori256.h +4465]
+  │   ├── select	[vim vectorfp16e.h +1637]
+  │   ├── insert	[vim vectorfp16.h +898]
+  │   └── select	[vim vectorfp16.h +1143]
+  ├── _mm256_mask_mov_epi32
+  │   ├── select	[vim vectori256.h +2629]
+  │   ├── select	[vim vectori256.h +2924]
+  │   └── blend8	[vim vectori256.h +4377]
+  ├── _mm256_mask_mov_epi64
+  │   ├── select	[vim vectori256.h +3520]
+  │   ├── select	[vim vectori256.h +3783]
+  │   └── blend4	[vim vectori256.h +4291]
+  ├── _mm256_mask_mov_epi8
+  │   ├── operator * 	[vim vectori256.h +748]
+  │   ├── operator >> 	[vim vectori256.h +785]
+  │   ├── select	[vim vectori256.h +913]
+  │   ├── select	[vim vectori256.h +1215]
+  │   ├── blend32	[vim vectori256.h +4564]
+  │   ├── operator / 	[vim vectori256.h +5437]
+  │   └── operator / 	[vim vectori256.h +5457]
+  ├── _mm256_mask_mov_pd
+  │   ├── select	[vim vectorf256.h +1816]
+  │   ├── blend4	[vim vectorf256.h +2651]
+  │   └── log_special_cases	[vim vectormath_exp.h +835]
+  ├── _mm256_mask_mov_ps
+  │   ├── select	[vim vectorf256.h +966]
+  │   ├── blend8	[vim vectorf256.h +2725]
+  │   └── log_special_cases	[vim vectormath_exp.h +861]
+  ├── _mm256_mask_mul_pd
+  │   └── if_mul	[vim vectorf256.h +1843]
+  ├── _mm256_mask_mul_ph
+  │   └── if_mul	[vim vectorfp16.h +1158]
+  ├── _mm256_mask_mul_ps
+  │   └── if_mul	[vim vectorf256.h +993]
+  ├── _mm256_mask_mullo_epi16
+  │   ├── if_mul	[vim vectori256.h +1812]
+  │   └── if_mul	[vim vectori256.h +2097]
+  ├── _mm256_mask_mullo_epi32
+  │   ├── if_mul	[vim vectori256.h +2656]
+  │   └── if_mul	[vim vectori256.h +2951]
+  ├── _mm256_mask_mullo_epi64
+  │   ├── if_mul	[vim vectori256.h +3547]
+  │   └── if_mul	[vim vectori256.h +3810]
+  ├── _mm256_mask_set1_epi16
+  │   └── insert	[vim vectori256.h +1390]
+  ├── _mm256_mask_set1_epi32
+  │   ├── insert	[vim vectori256.h +2243]
+  │   └── add_saturated	[vim vectori256.h +2969]
+  ├── _mm256_mask_set1_epi64
+  │   └── insert	[vim vectori256.h +3099]
+  ├── _mm256_mask_set1_epi8
+  │   └── insert	[vim vectori256.h +434]
+  ├── _mm256_mask_storeu_epi16
+  │   ├── store_partial	[vim vectori256.h +1361]
+  │   └── store_partial	[vim vectorfp16.h +889]
+  ├── _mm256_mask_storeu_epi32
+  │   └── store_partial	[vim vectori256.h +2214]
+  ├── _mm256_mask_storeu_epi64
+  │   └── store_partial	[vim vectori256.h +3070]
+  ├── _mm256_mask_storeu_epi8
+  │   └── store_partial	[vim vectori256.h +400]
+  ├── _mm256_mask_storeu_pd
+  │   └── store_partial	[vim vectorf256.h +1512]
+  ├── _mm256_mask_storeu_ps
+  │   └── store_partial	[vim vectorf256.h +650]
+  ├── _mm256_mask_sub_epi16
+  │   ├── if_sub	[vim vectori256.h +1803]
+  │   └── if_sub	[vim vectori256.h +2088]
+  ├── _mm256_mask_sub_epi32
+  │   ├── if_sub	[vim vectori256.h +2647]
+  │   └── if_sub	[vim vectori256.h +2942]
+  ├── _mm256_mask_sub_epi64
+  │   ├── if_sub	[vim vectori256.h +3538]
+  │   └── if_sub	[vim vectori256.h +3801]
+  ├── _mm256_mask_sub_epi8
+  │   ├── if_sub	[vim vectori256.h +931]
+  │   └── if_sub	[vim vectori256.h +1233]
+  ├── _mm256_mask_sub_pd
+  │   └── if_sub	[vim vectorf256.h +1834]
+  ├── _mm256_mask_sub_ph
+  │   └── if_sub	[vim vectorfp16.h +1153]
+  ├── _mm256_mask_sub_ps
+  │   └── if_sub	[vim vectorf256.h +984]
+  ├── _mm256_maskz_alignr_epi32
+  │   └── permute8	[vim vectori256.h +3951]
+  ├── _mm256_maskz_alignr_epi64
+  │   ├── permute4	[vim vectori256.h +3871]
+  │   └── permute4	[vim vectorf256.h +2459]
+  ├── _mm256_maskz_compress_epi16
+  │   ├── extract	[vim vectori256.h +1402]
+  │   ├── permute16	[vim vectori256.h +4050]
+  │   └── extract	[vim vectorfp16.h +904]
+  ├── _mm256_maskz_compress_epi32
+  │   ├── extract	[vim vectori256.h +2255]
+  │   └── permute8	[vim vectori256.h +3951]
+  ├── _mm256_maskz_compress_epi64
+  │   └── extract	[vim vectori256.h +3118]
+  ├── _mm256_maskz_compress_epi8
+  │   ├── extract	[vim vectori256.h +447]
+  │   └── permute32	[vim vectori256.h +4177]
+  ├── _mm256_maskz_compress_pd
+  │   └── extract	[vim vectorf256.h +1555]
+  ├── _mm256_maskz_compress_ps
+  │   ├── extract	[vim vectorf256.h +705]
+  │   └── permute8	[vim vectorf256.h +2548]
+  ├── _mm256_maskz_cvtepi64_pd
+  │   └── to_double	[vim vectorf256.h +2080]
+  ├── _mm256_maskz_expand_epi16
+  │   └── permute16	[vim vectori256.h +4050]
+  ├── _mm256_maskz_expand_epi32
+  │   └── permute8	[vim vectori256.h +3951]
+  ├── _mm256_maskz_expand_epi8
+  │   └── permute32	[vim vectori256.h +4177]
+  ├── _mm256_maskz_expand_ps
+  │   └── permute8	[vim vectorf256.h +2548]
+  ├── _mm256_maskz_getexp_pd
+  │   └── exponent_f	[vim vectormath_exp.h +735]
+  ├── _mm256_maskz_getexp_ps
+  │   └── exponent_f	[vim vectormath_exp.h +716]
+  ├── _mm256_maskz_loadu_epi16
+  │   ├── load_partial	[vim vectori256.h +1341]
+  │   └── load_partial	[vim vectorfp16.h +884]
+  ├── _mm256_maskz_loadu_epi32
+  │   └── load_partial	[vim vectori256.h +2194]
+  ├── _mm256_maskz_loadu_epi64
+  │   └── load_partial	[vim vectori256.h +3050]
+  ├── _mm256_maskz_loadu_epi8
+  │   └── load_partial	[vim vectori256.h +380]
+  ├── _mm256_maskz_loadu_pd
+  │   └── load_partial	[vim vectorf256.h +1495]
+  ├── _mm256_maskz_loadu_ps
+  │   └── load_partial	[vim vectorf256.h +633]
+  ├── _mm256_maskz_mov_epi16
+  │   ├── cutoff	[vim vectori256.h +1381]
+  │   ├── horizontal_add_x	[vim vectori256.h +2112]
+  │   ├── permute16	[vim vectori256.h +4050]
+  │   ├── blend16	[vim vectori256.h +4465]
+  │   ├── operator & 	[vim vectorfp16e.h +1543]
+  │   ├── cutoff	[vim vectorfp16.h +893]
+  │   └── operator & 	[vim vectorfp16.h +1100]
+  ├── _mm256_maskz_mov_epi32
+  │   ├── cutoff	[vim vectori256.h +2234]
+  │   ├── sub_saturated	[vim vectori256.h +2982]
+  │   ├── permute8	[vim vectori256.h +3951]
+  │   └── blend8	[vim vectori256.h +4377]
+  ├── _mm256_maskz_mov_epi64
+  │   ├── cutoff	[vim vectori256.h +3090]
+  │   ├── permute4	[vim vectori256.h +3871]
+  │   └── blend4	[vim vectori256.h +4291]
+  ├── _mm256_maskz_mov_epi8
+  │   ├── cutoff	[vim vectori256.h +420]
+  │   ├── permute32	[vim vectori256.h +4177]
+  │   └── blend32	[vim vectori256.h +4564]
+  ├── _mm256_maskz_mov_pd
+  │   ├── cutoff	[vim vectorf256.h +1526]
+  │   ├── permute4	[vim vectorf256.h +2459]
+  │   └── blend4	[vim vectorf256.h +2651]
+  ├── _mm256_maskz_mov_ps
+  │   ├── cutoff	[vim vectorf256.h +664]
+  │   ├── permute8	[vim vectorf256.h +2548]
+  │   └── blend8	[vim vectorf256.h +2725]
+  ├── _mm256_maskz_permutex2var_epi16
+  │   └── blend16	[vim vectori256.h +4465]
+  ├── _mm256_maskz_permutex2var_epi32
+  │   └── blend8	[vim vectori256.h +4377]
+  ├── _mm256_maskz_permutex2var_epi64
+  │   └── blend4	[vim vectori256.h +4291]
+  ├── _mm256_maskz_permutex2var_epi8
+  │   └── blend32	[vim vectori256.h +4564]
+  ├── _mm256_maskz_permutex2var_pd
+  │   └── blend4	[vim vectorf256.h +2651]
+  ├── _mm256_maskz_permutex2var_ps
+  │   └── blend8	[vim vectorf256.h +2725]
+  ├── _mm256_maskz_permutex_epi64
+  │   └── permute4	[vim vectori256.h +3871]
+  ├── _mm256_maskz_permutexvar_epi32
+  │   └── permute8	[vim vectori256.h +3951]
+  ├── _mm256_maskz_set1_epi32
+  │   └── divide_by_ui	[vim vectori256.h +5576]
+  ├── _mm256_max_epi16
+  │   └── max	[vim vectori256.h +1854]
+  ├── _mm256_max_epi32
+  │   └── max	[vim vectori256.h +2704]
+  ├── _mm256_max_epi8
+  │   └── max	[vim vectori256.h +988]
+  ├── _mm256_max_epu16
+  │   └── max	[vim vectori256.h +2138]
+  ├── _mm256_max_epu32
+  │   └── max	[vim vectori256.h +2994]
+  ├── _mm256_max_epu64
+  │   └── max	[vim vectori256.h +3840]
+  ├── _mm256_max_epu8
+  │   └── max	[vim vectori256.h +1280]
+  ├── _mm256_max_pd
+  │   └── max	[vim vectorf256.h +1973]
+  ├── _mm256_max_ph
+  │   └── max	[vim vectorfp16.h +1267]
+  ├── _mm256_max_ps
+  │   └── max	[vim vectorf256.h +1152]
+  ├── _mm256_min_epi16
+  │   └── min	[vim vectori256.h +1859]
+  ├── _mm256_min_epi32
+  │   └── min	[vim vectori256.h +2709]
+  ├── _mm256_min_epi8
+  │   └── min	[vim vectori256.h +993]
+  ├── _mm256_min_epu16
+  │   ├── abs_saturated	[vim vectori256.h +1869]
+  │   ├── min	[vim vectori256.h +2143]
+  │   └── compress_saturated	[vim vectori256.h +5177]
+  ├── _mm256_min_epu32
+  │   ├── abs_saturated	[vim vectori256.h +2719]
+  │   ├── min	[vim vectori256.h +2999]
+  │   └── compress_saturated	[vim vectori256.h +5212]
+  ├── _mm256_min_epu64
+  │   ├── abs_saturated	[vim vectori256.h +3586]
+  │   └── min	[vim vectori256.h +3849]
+  ├── _mm256_min_epu8
+  │   ├── abs_saturated	[vim vectori256.h +1003]
+  │   └── min	[vim vectori256.h +1285]
+  ├── _mm256_min_pd
+  │   └── min	[vim vectorf256.h +1978]
+  ├── _mm256_min_ph
+  │   └── min	[vim vectorfp16.h +1272]
+  ├── _mm256_min_ps
+  │   └── min	[vim vectorf256.h +1157]
+  ├── _mm256_mul_epi32
+  │   └── operator / 	[vim vectori256.h +5383]
+  ├── _mm256_mul_epu32
+  │   ├── operator / 	[vim vectori256.h +5400]
+  │   └── divide_by_ui	[vim vectori256.h +5576]
+  ├── _mm256_mulhi_epi16
+  │   └── operator / 	[vim vectori256.h +5414]
+  ├── _mm256_mulhi_epu16
+  │   ├── operator / 	[vim vectori256.h +5427]
+  │   └── divide_by_ui	[vim vectori256.h +5696]
+  ├── _mm256_mullo_epi16
+  │   └── operator * 	[vim vectori256.h +748]
+  ├── _mm256_or_pd
+  │   └── insert	[vim vectorf256.h +417]
+  ├── _mm256_or_ps
+  │   ├── insert	[vim vectorf256.h +173]
+  │   └── operator | 	[vim vectorfp16.h +1108]
+  ├── _mm256_or_si256
+  │   ├── rotate_left	[vim vectori256.h +1015]
+  │   ├── rotate_left	[vim vectori256.h +1881]
+  │   └── compress_saturated	[vim vectori256.h +5251]
+  ├── _mm256_packs_epi16
+  │   └── compress_saturated	[vim vectori256.h +5164]
+  ├── _mm256_packs_epi32
+  │   └── compress_saturated	[vim vectori256.h +5199]
+  ├── _mm256_packus_epi16
+  │   ├── compress	[vim vectori256.h +5154]
+  │   └── compress_saturated	[vim vectori256.h +5177]
+  ├── _mm256_packus_epi32
+  │   ├── compress	[vim vectori256.h +5189]
+  │   └── compress_saturated	[vim vectori256.h +5212]
+  ├── _mm256_permute2f128_pd
+  │   ├── permute4	[vim vectorf256.h +2459]
+  │   └── blend4	[vim vectorf256.h +2651]
+  ├── _mm256_permute2x128_si256
+  │   ├── permute4	[vim vectori256.h +3871]
+  │   └── blend4	[vim vectori256.h +4291]
+  ├── _mm256_permute4x64_epi64
+  │   ├── permute16	[vim vectori256.h +4050]
+  │   ├── permute32	[vim vectori256.h +4177]
+  │   ├── extend_low	[vim vectori256.h +5069]
+  │   ├── extend_high	[vim vectori256.h +5076]
+  │   ├── extend_low	[vim vectori256.h +5083]
+  │   ├── extend_high	[vim vectori256.h +5089]
+  │   ├── extend_low	[vim vectori256.h +5097]
+  │   ├── extend_high	[vim vectori256.h +5104]
+  │   ├── extend_low	[vim vectori256.h +5111]
+  │   ├── extend_high	[vim vectori256.h +5117]
+  │   ├── extend_low	[vim vectori256.h +5125]
+  │   ├── extend_high	[vim vectori256.h +5132]
+  │   ├── extend_low	[vim vectori256.h +5139]
+  │   ├── extend_high	[vim vectori256.h +5145]
+  │   ├── compress	[vim vectori256.h +5154]
+  │   ├── compress_saturated	[vim vectori256.h +5164]
+  │   ├── compress_saturated	[vim vectori256.h +5177]
+  │   ├── compress	[vim vectori256.h +5189]
+  │   ├── compress_saturated	[vim vectori256.h +5199]
+  │   ├── compress_saturated	[vim vectori256.h +5212]
+  │   └── compress	[vim vectori256.h +5224]
+  ├── _mm256_permute4x64_pd
+  │   └── permute4	[vim vectorf256.h +2459]
+  ├── _mm256_permute_pd
+  │   └── permute4	[vim vectorf256.h +2459]
+  ├── _mm256_permutevar8x32_epi32
+  │   ├── lookup16	[vim vectori128.h +5654]
+  │   └── lookup8	[vim vectori256.h +4742]
+  ├── _mm256_permutevar8x32_ps
+  │   ├── lookup8	[vim vectorf128.h +2764]
+  │   ├── lookup	[vim vectorf128.h +2791]
+  │   ├── permute8	[vim vectorf256.h +2548]
+  │   └── lookup8	[vim vectorf256.h +2810]
+  ├── _mm256_permutevar_ps
+  │   └── permute8	[vim vectorf256.h +2548]
+  ├── _mm256_permutexvar_epi16
+  │   └── permute16	[vim vectori256.h +4050]
+  ├── _mm256_permutexvar_epi8
+  │   └── permute32	[vim vectori256.h +4177]
+  ├── _mm256_permutexvar_pd
+  │   └── lookup4	[vim vectorf256.h +2866]
+  ├── _mm256_pow_pd
+  │   └── exp	[vim vectormath_lib.h +651]
+  ├── _mm256_pow_ps
+  │   └── exp	[vim vectormath_lib.h +651]
+  ├── _mm256_range_pd
+  │   └── abs	[vim vectorf256.h +1984]
+  ├── _mm256_range_ps
+  │   └── abs	[vim vectorf256.h +1163]
+  ├── _mm256_rcp_ph
+  │   └── approx_recipr	[vim vectorfp16.h +1363]
+  ├── _mm256_rol_epi32
+  │   └── permute16	[vim vectori256.h +4050]
+  ├── _mm256_rolv_epi32
+  │   └── rotate_left	[vim vectori256.h +2731]
+  ├── _mm256_rolv_epi64
+  │   └── rotate_left	[vim vectori256.h +3598]
+  ├── _mm256_round_pd
+  │   ├── round	[vim vectorf256.h +2027]
+  │   ├── truncate	[vim vectorf256.h +2032]
+  │   ├── floor	[vim vectorf256.h +2037]
+  │   └── ceil	[vim vectorf256.h +2042]
+  ├── _mm256_round_ps
+  │   ├── round	[vim vectorf256.h +1205]
+  │   ├── truncate	[vim vectorf256.h +1210]
+  │   ├── floor	[vim vectorf256.h +1215]
+  │   └── ceil	[vim vectorf256.h +1220]
+  ├── _mm256_roundscale_ph
+  │   ├── round	[vim vectorfp16.h +1320]
+  │   ├── truncate	[vim vectorfp16.h +1325]
+  │   ├── floor	[vim vectorfp16.h +1330]
+  │   └── ceil	[vim vectorfp16.h +1335]
+  ├── _mm256_rsqrt_ph
+  │   └── approx_rsqrt	[vim vectorfp16.h +1368]
+  ├── _mm256_sad_epu8
+  │   ├── horizontal_add	[vim vectori256.h +945]
+  │   ├── horizontal_add	[vim vectori256.h +1248]
+  │   └── horizontal_add_x	[vim vectori256.h +1260]
+  ├── _mm256_set1_epi16
+  │   ├── Vec16s	[vim vectori256.h +1301]
+  │   ├── load_bits	[vim vectori256.h +1495]
+  │   ├── Vec16us	[vim vectori256.h +1899]
+  │   ├── divide_by_ui	[vim vectori256.h +5696]
+  │   └── infinite16h	[vim vectorfp16.h +1222]
+  ├── _mm256_set1_epi32
+  │   ├── operator ~ 	[vim vectori256.h +273]
+  │   ├── horizontal_and	[vim vectori256.h +316]
+  │   ├── load_bits	[vim vectori256.h +545]
+  │   ├── Vec8i	[vim vectori256.h +2159]
+  │   ├── load_bits	[vim vectori256.h +2342]
+  │   ├── rotate_left	[vim vectori256.h +2731]
+  │   ├── Vec8ui	[vim vectori256.h +2754]
+  │   ├── load_bits	[vim vectori256.h +3205]
+  │   ├── compress	[vim vectori256.h +5154]
+  │   ├── compress_saturated	[vim vectori256.h +5177]
+  │   ├── compress	[vim vectori256.h +5189]
+  │   ├── compress_saturated	[vim vectori256.h +5212]
+  │   ├── compress_saturated	[vim vectori256.h +5251]
+  │   ├── Vec8fb	[vim vectorf256.h +109]
+  │   ├── operator = 	[vim vectorf256.h +363]
+  │   ├── operator - 	[vim vectorfp16e.h +1429]
+  │   └── operator - 	[vim vectorfp16.h +995]
+  ├── _mm256_set1_epi64x
+  │   ├── Vec4q	[vim vectori256.h +3015]
+  │   ├── rotate_left	[vim vectori256.h +3598]
+  │   └── Vec4db	[vim vectorf256.h +354]
+  ├── _mm256_set1_epi8
+  │   ├── Vec32c	[vim vectori256.h +337]
+  │   ├── operator ++ 	[vim vectori256.h +771]
+  │   ├── rotate_left	[vim vectori256.h +1015]
+  │   ├── Vec32uc	[vim vectori256.h +1039]
+  │   ├── operator ++ 	[vim vectori256.h +1117]
+  │   └── operator >> 	[vim vectori256.h +1130]
+  ├── _mm256_set1_pd
+  │   └── Vec4d	[vim vectorf256.h +1440]
+  ├── _mm256_set1_ph
+  │   ├── Vec16h	[vim vectorfp16.h +829]
+  │   └── insert	[vim vectorfp16.h +898]
+  ├── _mm256_set1_ps
+  │   └── Vec8f	[vim vectorf256.h +580]
+  ├── _mm256_setr_epi16
+  │   ├── Vec16s	[vim vectori256.h +1305]
+  │   └── Vec16us	[vim vectori256.h +1903]
+  ├── _mm256_setr_epi32
+  │   ├── constant8ui	[vim vectori256.h +58]
+  │   ├── Vec8i	[vim vectori256.h +2163]
+  │   ├── Vec8ui	[vim vectori256.h +2758]
+  │   ├── constant8f	[vim vectorf256.h +54]
+  │   └── Vec8fb	[vim vectorf256.h +86]
+  ├── _mm256_setr_epi64x
+  │   ├── Vec4q	[vim vectori256.h +3019]
+  │   └── Vec4db	[vim vectorf256.h +330]
+  ├── _mm256_setr_epi8
+  │   ├── Vec32c	[vim vectori256.h +341]
+  │   └── Vec32uc	[vim vectori256.h +1043]
+  ├── _mm256_setr_pd
+  │   └── Vec4d	[vim vectorf256.h +1444]
+  ├── _mm256_setr_ph
+  │   └── Vec16h	[vim vectorfp16.h +833]
+  ├── _mm256_setr_ps
+  │   └── Vec8f	[vim vectorf256.h +584]
+  ├── _mm256_setzero_pd
+  │   ├── permute4	[vim vectorf256.h +2459]
+  │   └── blend4	[vim vectorf256.h +2651]
+  ├── _mm256_setzero_ps
+  │   ├── permute8	[vim vectorf256.h +2548]
+  │   └── blend8	[vim vectorf256.h +2725]
+  ├── _mm256_setzero_si256
+  │   ├── load_bits	[vim vectori256.h +545]
+  │   ├── operator - 	[vim vectori256.h +726]
+  │   ├── operator ! 	[vim vectori256.h +901]
+  │   ├── horizontal_add	[vim vectori256.h +945]
+  │   ├── horizontal_add	[vim vectori256.h +1248]
+  │   ├── horizontal_add_x	[vim vectori256.h +1260]
+  │   ├── load_bits	[vim vectori256.h +1495]
+  │   ├── operator - 	[vim vectori256.h +1623]
+  │   ├── operator ! 	[vim vectori256.h +1773]
+  │   ├── load_bits	[vim vectori256.h +2342]
+  │   ├── operator - 	[vim vectori256.h +2468]
+  │   ├── operator ! 	[vim vectori256.h +2617]
+  │   ├── load_bits	[vim vectori256.h +3205]
+  │   ├── operator - 	[vim vectori256.h +3331]
+  │   ├── operator ! 	[vim vectori256.h +3508]
+  │   ├── horizontal_add_x	[vim vectori256.h +3832]
+  │   ├── permute4	[vim vectori256.h +3871]
+  │   ├── permute8	[vim vectori256.h +3951]
+  │   ├── permute16	[vim vectori256.h +4050]
+  │   ├── permute32	[vim vectori256.h +4177]
+  │   ├── blend4	[vim vectori256.h +4291]
+  │   ├── blend8	[vim vectori256.h +4377]
+  │   ├── blend16	[vim vectori256.h +4465]
+  │   ├── blend32	[vim vectori256.h +4564]
+  │   ├── shift_bytes_up	[vim vectori256.h +4822]
+  │   ├── shift_bytes_down	[vim vectori256.h +4847]
+  │   ├── extend_low	[vim vectori256.h +5069]
+  │   ├── extend_high	[vim vectori256.h +5076]
+  │   ├── extend_low	[vim vectori256.h +5083]
+  │   ├── extend_high	[vim vectori256.h +5089]
+  │   ├── extend_low	[vim vectori256.h +5111]
+  │   ├── extend_high	[vim vectori256.h +5117]
+  │   ├── extend_low	[vim vectori256.h +5139]
+  │   ├── extend_high	[vim vectori256.h +5145]
+  │   ├── compress_saturated	[vim vectori256.h +5251]
+  │   ├── divide_by_i	[vim vectori256.h +5522]
+  │   ├── divide_by_i	[vim vectori256.h +5640]
+  │   └── divide_by_ui	[vim vectori256.h +5696]
+  ├── _mm256_shuffle_epi32
+  │   ├── horizontal_add	[vim vectori256.h +945]
+  │   ├── horizontal_add	[vim vectori256.h +1248]
+  │   ├── horizontal_add_x	[vim vectori256.h +1260]
+  │   ├── horizontal_add	[vim vectori256.h +3556]
+  │   ├── permute4	[vim vectori256.h +3871]
+  │   ├── permute8	[vim vectori256.h +3951]
+  │   └── compress	[vim vectori256.h +5224]
+  ├── _mm256_shuffle_epi8
+  │   ├── load_bits	[vim vectori256.h +545]
+  │   ├── load_bits	[vim vectori256.h +1495]
+  │   ├── permute8	[vim vectori256.h +3951]
+  │   ├── permute16	[vim vectori256.h +4050]
+  │   └── permute32	[vim vectori256.h +4177]
+  ├── _mm256_shuffle_pd
+  │   ├── blend4	[vim vectori256.h +4291]
+  │   └── blend4	[vim vectorf256.h +2651]
+  ├── _mm256_shuffle_ps
+  │   ├── blend8	[vim vectori256.h +4377]
+  │   ├── permute8	[vim vectorf256.h +2548]
+  │   └── blend8	[vim vectorf256.h +2725]
+  ├── _mm256_shufflehi_epi16
+  │   └── permute16	[vim vectori256.h +4050]
+  ├── _mm256_shufflelo_epi16
+  │   └── permute16	[vim vectori256.h +4050]
+  ├── _mm256_sin_pd
+  │   └── sin	[vim vectormath_lib.h +720]
+  ├── _mm256_sin_ps
+  │   └── sin	[vim vectormath_lib.h +720]
+  ├── _mm256_sincos_pd
+  │   └── sin	[vim vectormath_lib.h +720]
+  ├── _mm256_sincos_ps
+  │   └── sin	[vim vectormath_lib.h +720]
+  ├── _mm256_sinh_pd
+  │   └── sinh	[vim vectormath_lib.h +801]
+  ├── _mm256_sinh_ps
+  │   └── sinh	[vim vectormath_lib.h +801]
+  ├── _mm256_sinpi_pd
+  │   └── sinpi	[vim vectormath_lib.h +752]
+  ├── _mm256_sinpi_ps
+  │   └── sinpi	[vim vectormath_lib.h +752]
+  ├── _mm256_sll_epi16
+  │   ├── operator ++ 	[vim vectori256.h +771]
+  │   ├── rotate_left	[vim vectori256.h +1015]
+  │   ├── operator ++ 	[vim vectori256.h +1117]
+  │   └── rotate_left	[vim vectori256.h +1881]
+  ├── _mm256_slli_epi16
+  │   ├── operator * 	[vim vectori256.h +748]
+  │   ├── horizontal_add_x	[vim vectori256.h +957]
+  │   ├── operator / 	[vim vectori256.h +5437]
+  │   └── operator / 	[vim vectori256.h +5457]
+  ├── _mm256_slli_epi32
+  │   ├── horizontal_add_x	[vim vectori256.h +1832]
+  │   └── lookup	[vim vectori256.h +4670]
+  ├── _mm256_sqrt_pd
+  │   └── sqrt	[vim vectorf256.h +1994]
+  ├── _mm256_sqrt_ph
+  │   └── sqrt	[vim vectorfp16.h +1283]
+  ├── _mm256_sqrt_ps
+  │   └── sqrt	[vim vectorf256.h +1173]
+  ├── _mm256_sra_epi16
+  │   ├── operator >> 	[vim vectori256.h +785]
+  │   └── operator / 	[vim vectori256.h +5414]
+  ├── _mm256_sra_epi32
+  │   └── operator / 	[vim vectori256.h +5383]
+  ├── _mm256_srai_epi16
+  │   ├── horizontal_add_x	[vim vectori256.h +957]
+  │   ├── extend_low	[vim vectori256.h +5097]
+  │   ├── extend_high	[vim vectori256.h +5104]
+  │   ├── operator / 	[vim vectori256.h +5414]
+  │   ├── operator / 	[vim vectori256.h +5437]
+  │   └── divide_by_i	[vim vectori256.h +5640]
+  ├── _mm256_srai_epi32
+  │   ├── horizontal_add_x	[vim vectori256.h +1832]
+  │   ├── add_saturated	[vim vectori256.h +2678]
+  │   ├── sub_saturated	[vim vectori256.h +2691]
+  │   ├── horizontal_add_x	[vim vectori256.h +3825]
+  │   ├── extend_low	[vim vectori256.h +5125]
+  │   ├── extend_high	[vim vectori256.h +5132]
+  │   ├── operator / 	[vim vectori256.h +5383]
+  │   └── divide_by_i	[vim vectori256.h +5522]
+  ├── _mm256_srl_epi16
+  │   ├── rotate_left	[vim vectori256.h +1015]
+  │   ├── operator >> 	[vim vectori256.h +1130]
+  │   ├── rotate_left	[vim vectori256.h +1881]
+  │   └── operator / 	[vim vectori256.h +5427]
+  ├── _mm256_srl_epi32
+  │   └── operator / 	[vim vectori256.h +5400]
+  ├── _mm256_srli_epi16
+  │   ├── operator * 	[vim vectori256.h +748]
+  │   ├── operator / 	[vim vectori256.h +5457]
+  │   ├── divide_by_i	[vim vectori256.h +5640]
+  │   └── divide_by_ui	[vim vectori256.h +5696]
+  ├── _mm256_srli_epi32
+  │   ├── horizontal_add_x	[vim vectori256.h +2112]
+  │   ├── add_saturated	[vim vectori256.h +2678]
+  │   ├── sub_saturated	[vim vectori256.h +2691]
+  │   ├── lookup	[vim vectori256.h +4670]
+  │   ├── lookup	[vim vectori256.h +4715]
+  │   ├── divide_by_i	[vim vectori256.h +5522]
+  │   └── divide_by_ui	[vim vectori256.h +5576]
+  ├── _mm256_srli_epi64
+  │   ├── compress_saturated	[vim vectori256.h +5251]
+  │   ├── operator / 	[vim vectori256.h +5383]
+  │   ├── operator / 	[vim vectori256.h +5400]
+  │   └── divide_by_ui	[vim vectori256.h +5576]
+  ├── _mm256_store_pd
+  │   └── store_a	[vim vectorf256.h +1484]
+  ├── _mm256_store_ph
+  │   └── store_a	[vim vectorfp16.h +873]
+  ├── _mm256_store_ps
+  │   └── store_a	[vim vectorf256.h +622]
+  ├── _mm256_store_si256
+  │   └── store_a	[vim vectori256.h +222]
+  ├── _mm256_storeu_pd
+  │   ├── extract	[vim vectorf256.h +430]
+  │   └── store	[vim vectorf256.h +1478]
+  ├── _mm256_storeu_ph
+  │   └── store	[vim vectorfp16.h +867]
+  ├── _mm256_storeu_ps
+  │   ├── extract	[vim vectorf256.h +185]
+  │   └── store	[vim vectorf256.h +617]
+  ├── _mm256_storeu_si256
+  │   └── store	[vim vectori256.h +216]
+  ├── _mm256_stream_pd
+  │   └── store_nt	[vim vectorf256.h +1491]
+  ├── _mm256_stream_ps
+  │   ├── store_nt	[vim vectorf256.h +629]
+  │   └── store_nt	[vim vectorfp16.h +880]
+  ├── _mm256_stream_si256
+  │   └── store_nt	[vim vectori256.h +229]
+  ├── _mm256_sub_epi16
+  │   ├── operator / 	[vim vectori256.h +5414]
+  │   ├── operator / 	[vim vectori256.h +5427]
+  │   └── divide_by_i	[vim vectori256.h +5640]
+  ├── _mm256_sub_epi32
+  │   ├── sub_saturated	[vim vectori256.h +2691]
+  │   ├── operator / 	[vim vectori256.h +5383]
+  │   ├── operator / 	[vim vectori256.h +5400]
+  │   └── divide_by_i	[vim vectori256.h +5522]
+  ├── _mm256_subs_epi16
+  │   └── sub_saturated	[vim vectori256.h +1849]
+  ├── _mm256_subs_epi8
+  │   └── sub_saturated	[vim vectori256.h +983]
+  ├── _mm256_subs_epu16
+  │   └── sub_saturated	[vim vectori256.h +2133]
+  ├── _mm256_subs_epu8
+  │   └── sub_saturated	[vim vectori256.h +1275]
+  ├── _mm256_tan_pd
+  │   └── sin	[vim vectormath_lib.h +720]
+  ├── _mm256_tan_ps
+  │   └── sin	[vim vectormath_lib.h +720]
+  ├── _mm256_tanh_pd
+  │   └── sinh	[vim vectormath_lib.h +801]
+  ├── _mm256_tanh_ps
+  │   └── sinh	[vim vectormath_lib.h +801]
+  ├── _mm256_tanpi_pd
+  │   └── sinpi	[vim vectormath_lib.h +752]
+  ├── _mm256_tanpi_ps
+  │   └── sinpi	[vim vectormath_lib.h +752]
+  ├── _mm256_testc_ps
+  │   └── horizontal_and	[vim vectorf256.h +298]
+  ├── _mm256_testc_si256
+  │   └── horizontal_and	[vim vectori256.h +316]
+  ├── _mm256_testz_ps
+  │   └── horizontal_or	[vim vectorf256.h +303]
+  ├── _mm256_testz_si256
+  │   └── horizontal_or	[vim vectori256.h +321]
+  ├── _mm256_unpackhi_epi16
+  │   ├── permute16	[vim vectori256.h +4050]
+  │   ├── blend16	[vim vectori256.h +4465]
+  │   ├── extend_high	[vim vectori256.h +5104]
+  │   └── extend_high	[vim vectori256.h +5117]
+  ├── _mm256_unpackhi_epi32
+  │   ├── horizontal_add_x	[vim vectori256.h +3825]
+  │   ├── horizontal_add_x	[vim vectori256.h +3832]
+  │   ├── permute8	[vim vectori256.h +3951]
+  │   ├── blend8	[vim vectori256.h +4377]
+  │   ├── extend_high	[vim vectori256.h +5132]
+  │   └── extend_high	[vim vectori256.h +5145]
+  ├── _mm256_unpackhi_epi64
+  │   ├── permute4	[vim vectori256.h +3871]
+  │   └── blend4	[vim vectori256.h +4291]
+  ├── _mm256_unpackhi_epi8
+  │   ├── permute32	[vim vectori256.h +4177]
+  │   ├── extend_high	[vim vectori256.h +5076]
+  │   └── extend_high	[vim vectori256.h +5089]
+  ├── _mm256_unpackhi_pd
+  │   ├── permute4	[vim vectorf256.h +2459]
+  │   └── blend4	[vim vectorf256.h +2651]
+  ├── _mm256_unpackhi_ps
+  │   ├── permute8	[vim vectorf256.h +2548]
+  │   └── blend8	[vim vectorf256.h +2725]
+  ├── _mm256_unpacklo_epi16
+  │   ├── permute16	[vim vectori256.h +4050]
+  │   ├── blend16	[vim vectori256.h +4465]
+  │   ├── extend_low	[vim vectori256.h +5097]
+  │   └── extend_low	[vim vectori256.h +5111]
+  ├── _mm256_unpacklo_epi32
+  │   ├── horizontal_add_x	[vim vectori256.h +3825]
+  │   ├── horizontal_add_x	[vim vectori256.h +3832]
+  │   ├── permute8	[vim vectori256.h +3951]
+  │   ├── blend8	[vim vectori256.h +4377]
+  │   ├── extend_low	[vim vectori256.h +5125]
+  │   └── extend_low	[vim vectori256.h +5139]
+  ├── _mm256_unpacklo_epi64
+  │   ├── permute4	[vim vectori256.h +3871]
+  │   ├── blend4	[vim vectori256.h +4291]
+  │   └── compress	[vim vectori256.h +5224]
+  ├── _mm256_unpacklo_epi8
+  │   ├── permute32	[vim vectori256.h +4177]
+  │   ├── extend_low	[vim vectori256.h +5069]
+  │   └── extend_low	[vim vectori256.h +5083]
+  ├── _mm256_unpacklo_pd
+  │   ├── permute4	[vim vectorf256.h +2459]
+  │   └── blend4	[vim vectorf256.h +2651]
+  ├── _mm256_unpacklo_ps
+  │   ├── permute8	[vim vectorf256.h +2548]
+  │   └── blend8	[vim vectorf256.h +2725]
+  ├── _mm256_xor_pd
+  │   └── change_sign	[vim vectorf256.h +2280]
+  ├── _mm256_xor_ps
+  │   ├── change_sign	[vim vectorf256.h +1136]
+  │   ├── operator - 	[vim vectorfp16.h +995]
+  │   ├── operator ^ 	[vim vectorfp16.h +1119]
+  │   └── change_sign	[vim vectorfp16.h +1429]
+  ├── _mm256_xor_si256
+  │   ├── add_saturated	[vim vectori256.h +2678]
+  │   ├── sub_saturated	[vim vectori256.h +2691]
+  │   ├── compress_saturated	[vim vectori256.h +5251]
+  │   ├── operator / 	[vim vectori256.h +5383]
+  │   ├── operator / 	[vim vectori256.h +5414]
+  │   └── change_sign	[vim vectorfp16e.h +1930]
+  ├── _mm256_zextpd128_pd256
+  │   └── permute4	[vim vectorf256.h +2459]
+  ├── _mm256_zextph128_ph256
+  │   └── extend_z	[vim vectorfp16.h +1482]
+  ├── _mm256_zextsi128_si256
+  │   └── permute4	[vim vectori256.h +3871]
+  ├── _mm512_abs_epi16
+  │   └── abs	[vim vectori512s.h +1163]
+  ├── _mm512_abs_epi32
+  │   └── abs	[vim vectori512.h +516]
+  ├── _mm512_abs_epi64
+  │   └── abs	[vim vectori512.h +1067]
+  ├── _mm512_abs_epi8
+  │   └── abs	[vim vectori512s.h +596]
+  ├── _mm512_abs_ph
+  │   └── abs	[vim vectorfp16.h +2033]
+  ├── _mm512_acos_pd
+  │   └── acos	[vim vectormath_lib.h +1567]
+  ├── _mm512_acos_ps
+  │   └── acos	[vim vectormath_lib.h +1567]
+  ├── _mm512_acosh_pd
+  │   └── sinh	[vim vectormath_lib.h +1588]
+  ├── _mm512_acosh_ps
+  │   └── sinh	[vim vectormath_lib.h +1588]
+  ├── _mm512_add_epi16
+  │   ├── operator / 	[vim vectori512s.h +2075]
+  │   ├── operator / 	[vim vectori512s.h +2088]
+  │   └── divide_by_i	[vim vectori512s.h +2154]
+  ├── _mm512_add_epi32
+  │   ├── add_saturated	[vim vectori512.h +478]
+  │   ├── sub_saturated	[vim vectori512.h +492]
+  │   ├── operator / 	[vim vectori512.h +1987]
+  │   ├── operator / 	[vim vectori512.h +2004]
+  │   └── divide_by_i	[vim vectori512.h +2038]
+  ├── _mm512_add_epi64
+  │   └── divide_by_ui	[vim vectori512.h +2094]
+  ├── _mm512_adds_epi16
+  │   └── add_saturated	[vim vectori512s.h +1143]
+  ├── _mm512_adds_epi8
+  │   └── add_saturated	[vim vectori512s.h +575]
+  ├── _mm512_adds_epu16
+  │   └── add_saturated	[vim vectori512s.h +1365]
+  ├── _mm512_adds_epu8
+  │   └── add_saturated	[vim vectori512s.h +813]
+  ├── _mm512_alignr_epi32
+  │   ├── permute16	[vim vectorf512.h +1587]
+  │   ├── permute16	[vim vectori512.h +1370]
+  │   ├── blend16	[vim vectori512.h +1541]
+  │   ├── shift_bytes_up	[vim vectori512s.h +1823]
+  │   └── shift_bytes_down	[vim vectori512s.h +1853]
+  ├── _mm512_alignr_epi64
+  │   ├── permute8	[vim vectorf512.h +1511]
+  │   ├── permute8	[vim vectori512.h +1295]
+  │   ├── blend8	[vim vectori512.h +1456]
+  │   ├── permute32	[vim vectori512s.h +1399]
+  │   └── permute64	[vim vectori512s.h +1483]
+  ├── _mm512_alignr_epi8
+  │   ├── permute32	[vim vectori512s.h +1399]
+  │   ├── permute64	[vim vectori512s.h +1483]
+  │   ├── shift_bytes_up	[vim vectori512s.h +1823]
+  │   └── shift_bytes_down	[vim vectori512s.h +1853]
+  ├── _mm512_and_ps
+  │   └── operator & 	[vim vectorfp16.h +1845]
+  ├── _mm512_and_si512
+  │   ├── sub_saturated	[vim vectori512.h +492]
+  │   └── rotate_left	[vim vectori512s.h +607]
+  ├── _mm512_andnot_epi32
+  │   ├── andnot	[vim vectori512.h +198]
+  │   └── add_saturated	[vim vectori512.h +478]
+  ├── _mm512_andnot_si512
+  │   └── rotate_left	[vim vectori512s.h +607]
+  ├── _mm512_asin_pd
+  │   └── asin	[vim vectormath_lib.h +1560]
+  ├── _mm512_asin_ps
+  │   └── asin	[vim vectormath_lib.h +1560]
+  ├── _mm512_asinh_pd
+  │   └── sinh	[vim vectormath_lib.h +1588]
+  ├── _mm512_asinh_ps
+  │   └── sinh	[vim vectormath_lib.h +1588]
+  ├── _mm512_atan2_pd
+  │   └── atan	[vim vectormath_lib.h +1574]
+  ├── _mm512_atan2_ps
+  │   └── atan	[vim vectormath_lib.h +1574]
+  ├── _mm512_atan_pd
+  │   └── atan	[vim vectormath_lib.h +1574]
+  ├── _mm512_atan_ps
+  │   └── atan	[vim vectormath_lib.h +1574]
+  ├── _mm512_atanh_pd
+  │   └── sinh	[vim vectormath_lib.h +1588]
+  ├── _mm512_atanh_ps
+  │   └── sinh	[vim vectormath_lib.h +1588]
+  ├── _mm512_broadcast_i32x4
+  │   └── operator / 	[vim vectori512.h +1987]
+  ├── _mm512_broadcastb_epi8
+  │   └── permute64	[vim vectori512s.h +1483]
+  ├── _mm512_broadcastd_epi32
+  │   └── permute16	[vim vectori512.h +1370]
+  ├── _mm512_broadcastq_epi64
+  │   ├── permute8	[vim vectori512.h +1295]
+  │   └── operator / 	[vim vectori512s.h +2075]
+  ├── _mm512_broadcastsd_pd
+  │   └── permute8	[vim vectorf512.h +1511]
+  ├── _mm512_broadcastss_ps
+  │   └── permute16	[vim vectorf512.h +1587]
+  ├── _mm512_broadcastw_epi16
+  │   └── permute32	[vim vectori512s.h +1399]
+  ├── _mm512_castpd256_pd512
+  │   └── Vec8d	[vim vectorf512.h +750]
+  ├── _mm512_castpd512_pd128
+  │   └── permute8	[vim vectorf512.h +1511]
+  ├── _mm512_castpd512_pd256
+  │   └── get_low	[vim vectorf512.h +831]
+  ├── _mm512_castpd_ps
+  │   ├── tanpi	[vim vectormath_lib.h +1549]
+  │   ├── Vec16f	[vim vectorf512.h +109]
+  │   ├── reinterpret_f	[vim vectorf512.h +1443]
+  │   ├── permute16	[vim vectorf512.h +1587]
+  │   └── blend16	[vim vectorf512.h +1741]
+  ├── _mm512_castpd_si512
+  │   ├── operator - 	[vim vectorf512.h +900]
+  │   ├── operator & 	[vim vectorf512.h +994]
+  │   ├── operator | 	[vim vectorf512.h +1014]
+  │   ├── operator ^ 	[vim vectorf512.h +1025]
+  │   ├── sign_bit	[vim vectorf512.h +1077]
+  │   ├── sign_combine	[vim vectorf512.h +1084]
+  │   ├── exponent	[vim vectorf512.h +1384]
+  │   ├── reinterpret_i	[vim vectorf512.h +1431]
+  │   ├── permute8	[vim vectorf512.h +1511]
+  │   └── blend8	[vim vectori512.h +1456]
+  ├── _mm512_castph512_ph256
+  │   └── operator [] 	[vim vectorfp16.h +1679]
+  ├── _mm512_castph_pd
+  │   └── reinterpret_d	[vim vectorfp16.h +2228]
+  ├── _mm512_castph_ps
+  │   ├── store_nt	[vim vectorfp16.h +1636]
+  │   ├── operator [] 	[vim vectorfp16.h +1679]
+  │   ├── operator - 	[vim vectorfp16.h +1751]
+  │   ├── operator & 	[vim vectorfp16.h +1845]
+  │   ├── operator | 	[vim vectorfp16.h +1864]
+  │   ├── operator ^ 	[vim vectorfp16.h +1875]
+  │   ├── change_sign	[vim vectorfp16.h +2185]
+  │   └── reinterpret_f	[vim vectorfp16.h +2224]
+  ├── _mm512_castph_si512
+  │   ├── store_partial	[vim vectorfp16.h +1645]
+  │   ├── cutoff	[vim vectorfp16.h +1649]
+  │   ├── insert	[vim vectorfp16.h +1654]
+  │   ├── extract	[vim vectorfp16.h +1660]
+  │   ├── operator & 	[vim vectorfp16.h +1856]
+  │   ├── select	[vim vectorfp16.h +1899]
+  │   ├── sign_bit	[vim vectorfp16.h +1929]
+  │   ├── nan_code	[vim vectorfp16.h +2001]
+  │   ├── exponent	[vim vectorfp16.h +2148]
+  │   ├── reinterpret_i	[vim vectorfp16.h +2216]
+  │   ├── permute32	[vim vectorfp16.h +2254]
+  │   ├── blend32	[vim vectorfp16.h +2273]
+  │   └── lookup32	[vim vectorfp16.h +2292]
+  ├── _mm512_castps128_ps512
+  │   ├── approx_recipr	[vim vectorf128.h +1279]
+  │   ├── approx_rsqrt	[vim vectorf128.h +1293]
+  │   ├── exp	[vim vectormath_exp.h +467]
+  │   ├── exp2	[vim vectormath_exp.h +479]
+  │   └── exp10	[vim vectormath_exp.h +487]
+  ├── _mm512_castps256_ps512
+  │   ├── Vec16f	[vim vectorf512.h +109]
+  │   ├── approx_recipr	[vim vectorf256.h +1346]
+  │   ├── approx_rsqrt	[vim vectorf256.h +1360]
+  │   ├── Vec32h	[vim vectorfp16.h +1594]
+  │   ├── exp	[vim vectormath_exp.h +497]
+  │   ├── exp2	[vim vectormath_exp.h +509]
+  │   └── exp10	[vim vectormath_exp.h +517]
+  ├── _mm512_castps512_ps128
+  │   ├── approx_recipr	[vim vectorf128.h +1279]
+  │   ├── approx_rsqrt	[vim vectorf128.h +1293]
+  │   ├── permute16	[vim vectorf512.h +1587]
+  │   ├── exp	[vim vectormath_exp.h +467]
+  │   ├── exp2	[vim vectormath_exp.h +479]
+  │   └── exp10	[vim vectormath_exp.h +487]
+  ├── _mm512_castps512_ps256
+  │   ├── get_low	[vim vectorf512.h +182]
+  │   ├── extend_low	[vim vectorf512.h +1346]
+  │   ├── approx_recipr	[vim vectorf256.h +1346]
+  │   ├── approx_rsqrt	[vim vectorf256.h +1360]
+  │   ├── exp	[vim vectormath_exp.h +497]
+  │   ├── exp2	[vim vectormath_exp.h +509]
+  │   └── exp10	[vim vectormath_exp.h +517]
+  ├── _mm512_castps_pd
+  │   ├── tanpi	[vim vectormath_lib.h +1549]
+  │   ├── Vec16f	[vim vectorf512.h +109]
+  │   ├── get_low	[vim vectorf512.h +182]
+  │   ├── reinterpret_d	[vim vectorf512.h +1451]
+  │   ├── permute16	[vim vectorf512.h +1587]
+  │   └── blend16	[vim vectorf512.h +1741]
+  ├── _mm512_castps_ph
+  │   ├── Vec32h	[vim vectorfp16.h +1594]
+  │   └── change_sign	[vim vectorfp16.h +2185]
+  ├── _mm512_castps_si512
+  │   ├── operator - 	[vim vectorf512.h +251]
+  │   ├── operator & 	[vim vectorf512.h +349]
+  │   ├── operator | 	[vim vectorf512.h +368]
+  │   ├── operator ^ 	[vim vectorf512.h +379]
+  │   ├── sign_bit	[vim vectorf512.h +434]
+  │   ├── sign_combine	[vim vectorf512.h +441]
+  │   ├── exponent	[vim vectorf512.h +698]
+  │   ├── reinterpret_i	[vim vectorf512.h +1427]
+  │   ├── permute16	[vim vectorf512.h +1587]
+  │   └── blend16	[vim vectori512.h +1541]
+  ├── _mm512_castsi256_si512
+  │   ├── Vec512b	[vim vectori512.h +90]
+  │   ├── Vec16i	[vim vectori512.h +223]
+  │   ├── Vec8q	[vim vectori512.h +764]
+  │   ├── Vec64c	[vim vectori512s.h +83]
+  │   ├── Vec64uc	[vim vectori512s.h +649]
+  │   ├── Vec32s	[vim vectori512s.h +865]
+  │   └── Vec32us	[vim vectori512s.h +1205]
+  ├── _mm512_castsi512_pd
+  │   ├── sign_combine	[vim vectorf512.h +1084]
+  │   ├── change_sign	[vim vectorf512.h +1178]
+  │   ├── exp2	[vim vectorf512.h +1404]
+  │   ├── reinterpret_d	[vim vectorf512.h +1447]
+  │   ├── permute8	[vim vectorf512.h +1511]
+  │   └── blend8	[vim vectori512.h +1456]
+  ├── _mm512_castsi512_ph
+  │   ├── load_partial	[vim vectorfp16.h +1640]
+  │   ├── cutoff	[vim vectorfp16.h +1649]
+  │   ├── insert	[vim vectorfp16.h +1654]
+  │   ├── extract	[vim vectorfp16.h +1660]
+  │   ├── select	[vim vectorfp16.h +1899]
+  │   ├── infinite32h	[vim vectorfp16.h +1978]
+  │   ├── exp2	[vim vectorfp16.h +2169]
+  │   ├── reinterpret_h	[vim vectorfp16.h +2220]
+  │   ├── permute32	[vim vectorfp16.h +2254]
+  │   ├── blend32	[vim vectorfp16.h +2273]
+  │   ├── lookup32	[vim vectorfp16.h +2292]
+  │   └── lookup	[vim vectorfp16.h +2297]
+  ├── _mm512_castsi512_ps
+  │   ├── sign_combine	[vim vectorf512.h +441]
+  │   ├── change_sign	[vim vectorf512.h +536]
+  │   ├── exp2	[vim vectorf512.h +719]
+  │   ├── reinterpret_f	[vim vectorf512.h +1435]
+  │   ├── permute16	[vim vectorf512.h +1587]
+  │   ├── blend16	[vim vectori512.h +1541]
+  │   ├── operator - 	[vim vectorfp16.h +1751]
+  │   └── change_sign	[vim vectorfp16.h +2185]
+  ├── _mm512_castsi512_si128
+  │   ├── extract	[vim vectori512.h +269]
+  │   ├── extract	[vim vectori512.h +815]
+  │   ├── permute8	[vim vectori512.h +1295]
+  │   ├── permute16	[vim vectori512.h +1370]
+  │   ├── extract	[vim vectori512s.h +142]
+  │   ├── extract	[vim vectori512s.h +911]
+  │   ├── permute32	[vim vectori512s.h +1399]
+  │   └── permute64	[vim vectori512s.h +1483]
+  ├── _mm512_castsi512_si256
+  │   ├── permute16	[vim vectorf512.h +1587]
+  │   ├── get_low	[vim vectori512.h +136]
+  │   ├── get_low	[vim vectori512.h +279]
+  │   ├── get_low	[vim vectori512.h +825]
+  │   ├── permute16	[vim vectori512.h +1370]
+  │   ├── get_low	[vim vectori512s.h +158]
+  │   ├── get_low	[vim vectori512s.h +927]
+  │   ├── permute32	[vim vectori512s.h +1399]
+  │   └── permute64	[vim vectori512s.h +1483]
+  ├── _mm512_cbrt_pd
+  │   └── exp	[vim vectormath_lib.h +1431]
+  ├── _mm512_cbrt_ps
+  │   └── exp	[vim vectormath_lib.h +1431]
+  ├── _mm512_cdfnorm_pd
+  │   └── cdfnorm	[vim vectormath_lib.h +1645]
+  ├── _mm512_cdfnorm_ps
+  │   └── cdfnorm	[vim vectormath_lib.h +1645]
+  ├── _mm512_cdfnorminv_pd
+  │   └── cdfnorm	[vim vectormath_lib.h +1645]
+  ├── _mm512_cdfnorminv_ps
+  │   └── cdfnorm	[vim vectormath_lib.h +1645]
+  ├── _mm512_cmpeq_epi64_mask
+  │   └── operator == 	[vim vectori512.h +938]
+  ├── _mm512_cmpgt_epi16_mask
+  │   ├── extend_low	[vim vectori512s.h +1920]
+  │   └── extend_high	[vim vectori512s.h +1928]
+  ├── _mm512_cmpgt_epi8_mask
+  │   ├── extend_low	[vim vectori512s.h +1890]
+  │   └── extend_high	[vim vectori512s.h +1898]
+  ├── _mm512_cmpneq_epi32_mask
+  │   ├── add_saturated	[vim vectori512.h +478]
+  │   └── sub_saturated	[vim vectori512.h +492]
+  ├── _mm512_cmpneq_epi64_mask
+  │   └── operator != 	[vim vectori512.h +943]
+  ├── _mm512_cos_pd
+  │   └── sin	[vim vectormath_lib.h +1500]
+  ├── _mm512_cos_ps
+  │   └── sin	[vim vectormath_lib.h +1500]
+  ├── _mm512_cosh_pd
+  │   └── sinh	[vim vectormath_lib.h +1588]
+  ├── _mm512_cosh_ps
+  │   └── sinh	[vim vectormath_lib.h +1588]
+  ├── _mm512_cospi_pd
+  │   └── sinpi	[vim vectormath_lib.h +1533]
+  ├── _mm512_cospi_ps
+  │   └── sinpi	[vim vectormath_lib.h +1533]
+  ├── _mm512_cvt_roundpd_epi32
+  │   └── round_to_int32	[vim vectorf512.h +1276]
+  ├── _mm512_cvt_roundps_epi32
+  │   └── roundi	[vim vectorf512.h +625]
+  ├── _mm512_cvtepi16_epi32
+  │   └── extend	[vim vector_convert.h +340]
+  ├── _mm512_cvtepi16_epi8
+  │   └── compress	[vim vector_convert.h +404]
+  ├── _mm512_cvtepi16_ph
+  │   └── to_float16	[vim vectorfp16.h +2105]
+  ├── _mm512_cvtepi32_epi16
+  │   ├── compress	[vim vector_convert.h +416]
+  │   └── compress	[vim vector_convert.h +420]
+  ├── _mm512_cvtepi32_epi64
+  │   ├── horizontal_add_x	[vim vectori512.h +1042]
+  │   ├── extend_low	[vim vectori512.h +1891]
+  │   ├── extend_high	[vim vectori512.h +1896]
+  │   └── extend	[vim vector_convert.h +350]
+  ├── _mm512_cvtepi32_pd
+  │   └── to_double	[vim vectorf512.h +1334]
+  ├── _mm512_cvtepi32_ps
+  │   └── to_float	[vim vectorf512.h +637]
+  ├── _mm512_cvtepi64_epi32
+  │   ├── compress	[vim vectori512.h +1914]
+  │   ├── compress	[vim vector_convert.h +424]
+  │   └── compress	[vim vector_convert.h +428]
+  ├── _mm512_cvtepi64_pd
+  │   └── to_double	[vim vectorf512.h +1313]
+  ├── _mm512_cvtepi8_epi16
+  │   └── extend	[vim vector_convert.h +322]
+  ├── _mm512_cvtepu16_epi32
+  │   ├── extend	[vim vector_convert.h +345]
+  │   └── permute32	[vim vectori512s.h +1399]
+  ├── _mm512_cvtepu16_ph
+  │   └── to_float16	[vim vectorfp16.h +2110]
+  ├── _mm512_cvtepu32_epi64
+  │   ├── permute16	[vim vectorf512.h +1587]
+  │   ├── horizontal_add_x	[vim vectori512.h +1050]
+  │   ├── permute16	[vim vectori512.h +1370]
+  │   ├── extend_low	[vim vectori512.h +1901]
+  │   ├── extend_high	[vim vectori512.h +1906]
+  │   └── extend	[vim vector_convert.h +355]
+  ├── _mm512_cvtepu32_ps
+  │   └── to_float	[vim vectorf512.h +642]
+  ├── _mm512_cvtepu64_pd
+  │   └── to_double	[vim vectorf512.h +1323]
+  ├── _mm512_cvtepu8_epi16
+  │   ├── extend	[vim vector_convert.h +331]
+  │   └── permute64	[vim vectori512s.h +1483]
+  ├── _mm512_cvtpd_epi64
+  │   └── roundi	[vim vectorf512.h +1303]
+  ├── _mm512_cvtpd_ps
+  │   ├── compress	[vim vectorf512.h +1339]
+  │   └── to_float	[vim vector_convert.h +475]
+  ├── _mm512_cvtph_epi16
+  │   └── roundi	[vim vectorfp16.h +2094]
+  ├── _mm512_cvtph_ps
+  │   ├── to_float	[vim vectorfp16e.h +1356]
+  │   ├── horizontal_add_x	[vim vectorfp16.h +1260]
+  │   ├── to_float	[vim vectorfp16.h +1450]
+  │   └── horizontal_add_x	[vim vectorfp16.h +2015]
+  ├── _mm512_cvtps_pd
+  │   ├── extend_low	[vim vectorf512.h +1346]
+  │   ├── extend_high	[vim vectorf512.h +1351]
+  │   └── to_double	[vim vector_convert.h +470]
+  ├── _mm512_cvtps_ph
+  │   ├── to_float16	[vim vectorfp16e.h +1361]
+  │   └── to_float16	[vim vectorfp16.h +1455]
+  ├── _mm512_cvtsd_f64
+  │   └── extract	[vim vectorf512.h +815]
+  ├── _mm512_cvtsepi16_epi8
+  │   └── compress_saturated	[vim vector_convert.h +260]
+  ├── _mm512_cvtsepi32_epi16
+  │   └── compress_saturated	[vim vector_convert.h +268]
+  ├── _mm512_cvtsepi64_epi32
+  │   ├── compress_saturated	[vim vectori512.h +1925]
+  │   └── compress_saturated	[vim vector_convert.h +276]
+  ├── _mm512_cvtsh_h
+  │   └── extract	[vim vectorfp16.h +1660]
+  ├── _mm512_cvtss_f32
+  │   └── extract	[vim vectorf512.h +172]
+  ├── _mm512_cvtt_roundps_epi32
+  │   └── truncatei	[vim vectorf512.h +631]
+  ├── _mm512_cvttpd_epi32
+  │   └── truncate_to_int32	[vim vectorf512.h +1284]
+  ├── _mm512_cvttpd_epi64
+  │   └── truncatei	[vim vectorf512.h +1291]
+  ├── _mm512_cvttph_epi16
+  │   └── truncatei	[vim vectorfp16.h +2100]
+  ├── _mm512_cvtusepi16_epi8
+  │   └── compress_saturated	[vim vector_convert.h +264]
+  ├── _mm512_cvtusepi32_epi16
+  │   └── compress_saturated	[vim vector_convert.h +272]
+  ├── _mm512_cvtusepi64_epi32
+  │   ├── compress_saturated	[vim vectori512.h +1933]
+  │   └── compress_saturated	[vim vector_convert.h +280]
+  ├── _mm512_erf_pd
+  │   └── erf	[vim vectormath_lib.h +1626]
+  ├── _mm512_erf_ps
+  │   └── erf	[vim vectormath_lib.h +1626]
+  ├── _mm512_erfc_pd
+  │   └── erf	[vim vectormath_lib.h +1626]
+  ├── _mm512_erfc_ps
+  │   └── erf	[vim vectormath_lib.h +1626]
+  ├── _mm512_erfinv_pd
+  │   └── erf	[vim vectormath_lib.h +1626]
+  ├── _mm512_erfinv_ps
+  │   └── erf	[vim vectormath_lib.h +1626]
+  ├── _mm512_exp10_pd
+  │   └── exp	[vim vectormath_lib.h +1431]
+  ├── _mm512_exp10_ps
+  │   └── exp	[vim vectormath_lib.h +1431]
+  ├── _mm512_exp2_pd
+  │   └── exp	[vim vectormath_lib.h +1431]
+  ├── _mm512_exp2_ps
+  │   └── exp	[vim vectormath_lib.h +1431]
+  ├── _mm512_exp2a23_round_pd
+  │   └── vm_pow2n	[vim vectormath_exp.h +98]
+  ├── _mm512_exp2a23_round_ps
+  │   ├── vm_pow2n	[vim vectormath_exp.h +112]
+  │   ├── exp	[vim vectormath_exp.h +529]
+  │   ├── exp2	[vim vectormath_exp.h +557]
+  │   └── exp10	[vim vectormath_exp.h +565]
+  ├── _mm512_exp_pd
+  │   └── exp	[vim vectormath_lib.h +1431]
+  ├── _mm512_exp_ps
+  │   └── exp	[vim vectormath_lib.h +1431]
+  ├── _mm512_expm1_pd
+  │   └── exp	[vim vectormath_lib.h +1431]
+  ├── _mm512_expm1_ps
+  │   └── exp	[vim vectormath_lib.h +1431]
+  ├── _mm512_extractf32x8_ps
+  │   └── operator [] 	[vim vectorfp16.h +1679]
+  ├── _mm512_extractf64x4_pd
+  │   ├── get_low	[vim vectorf512.h +182]
+  │   └── get_low	[vim vectorf512.h +831]
+  ├── _mm512_extracti64x4_epi64
+  │   ├── get_low	[vim vectori512.h +136]
+  │   ├── get_low	[vim vectori512.h +279]
+  │   ├── get_low	[vim vectori512.h +825]
+  │   ├── get_low	[vim vectori512s.h +158]
+  │   └── get_low	[vim vectori512s.h +927]
+  ├── _mm512_fixupimm_pd
+  │   └── log_special_cases	[vim vectormath_exp.h +780]
+  ├── _mm512_fixupimm_ps
+  │   └── log_special_cases	[vim vectormath_exp.h +806]
+  ├── _mm512_fmadd_pd
+  │   └── mul_add	[vim vectorf512.h +1359]
+  ├── _mm512_fmadd_ph
+  │   └── mul_add	[vim vectorfp16.h +2129]
+  ├── _mm512_fmadd_ps
+  │   └── mul_add	[vim vectorf512.h +672]
+  ├── _mm512_fmsub_pd
+  │   ├── mul_sub	[vim vectorf512.h +1364]
+  │   └── mul_sub_x	[vim vectorf512.h +1374]
+  ├── _mm512_fmsub_ph
+  │   └── mul_sub	[vim vectorfp16.h +2134]
+  ├── _mm512_fmsub_ps
+  │   ├── mul_sub	[vim vectorf512.h +677]
+  │   └── mul_sub_x	[vim vectorf512.h +688]
+  ├── _mm512_fnmadd_pd
+  │   └── nmul_add	[vim vectorf512.h +1369]
+  ├── _mm512_fnmadd_ph
+  │   └── nmul_add	[vim vectorfp16.h +2139]
+  ├── _mm512_fnmadd_ps
+  │   └── nmul_add	[vim vectorf512.h +682]
+  ├── _mm512_fpclass_pd_mask
+  │   ├── is_finite	[vim vectorf512.h +1094]
+  │   ├── is_inf	[vim vectorf512.h +1109]
+  │   ├── is_nan	[vim vectorf512.h +1123]
+  │   ├── is_subnormal	[vim vectorf512.h +1150]
+  │   ├── is_zero_or_subnormal	[vim vectorf512.h +1165]
+  │   └── log_special_cases	[vim vectormath_exp.h +780]
+  ├── _mm512_fpclass_ph_mask
+  │   ├── is_finite	[vim vectorfp16.h +1946]
+  │   ├── is_inf	[vim vectorfp16.h +1953]
+  │   ├── is_nan	[vim vectorfp16.h +1960]
+  │   ├── is_subnormal	[vim vectorfp16.h +1967]
+  │   └── is_zero_or_subnormal	[vim vectorfp16.h +1973]
+  ├── _mm512_fpclass_ps_mask
+  │   ├── is_finite	[vim vectorf512.h +452]
+  │   ├── is_inf	[vim vectorf512.h +467]
+  │   ├── is_nan	[vim vectorf512.h +481]
+  │   ├── is_subnormal	[vim vectorf512.h +508]
+  │   ├── is_zero_or_subnormal	[vim vectorf512.h +523]
+  │   └── log_special_cases	[vim vectormath_exp.h +806]
+  ├── _mm512_getmant_pd
+  │   ├── fraction	[vim vectorf512.h +1395]
+  │   └── fraction_2	[vim vectormath_exp.h +652]
+  ├── _mm512_getmant_ph
+  │   └── fraction	[vim vectorfp16.h +2160]
+  ├── _mm512_getmant_ps
+  │   ├── fraction	[vim vectorf512.h +710]
+  │   └── fraction_2	[vim vectormath_exp.h +643]
+  ├── _mm512_i32gather_epi32
+  │   ├── lookup	[vim vectori512.h +1666]
+  │   └── gather16i	[vim vectori512.h +1736]
+  ├── _mm512_i32gather_ps
+  │   ├── lookup	[vim vectorf512.h +1839]
+  │   └── gather16f	[vim vectorf512.h +1902]
+  ├── _mm512_i64gather_epi64
+  │   ├── lookup	[vim vectori512.h +1700]
+  │   └── gather8q	[vim vectori512.h +1787]
+  ├── _mm512_i64gather_pd
+  │   ├── lookup	[vim vectorf512.h +1869]
+  │   └── gather8d	[vim vectorf512.h +1953]
+  ├── _mm512_insertf32x8
+  │   └── Vec32h	[vim vectorfp16.h +1594]
+  ├── _mm512_insertf64x4
+  │   ├── Vec16f	[vim vectorf512.h +109]
+  │   └── Vec8d	[vim vectorf512.h +750]
+  ├── _mm512_inserti64x4
+  │   ├── Vec512b	[vim vectori512.h +90]
+  │   ├── Vec16i	[vim vectori512.h +223]
+  │   ├── Vec8q	[vim vectori512.h +764]
+  │   ├── Vec64c	[vim vectori512s.h +83]
+  │   ├── Vec64uc	[vim vectori512s.h +649]
+  │   ├── Vec32s	[vim vectori512s.h +865]
+  │   └── Vec32us	[vim vectori512s.h +1205]
+  ├── _mm512_kandn
+  │   ├── andnot	[vim vectori128.h +462]
+  │   └── andnot	[vim vectori128.h +569]
+  ├── _mm512_knot
+  │   ├── is_finite	[vim vectorf512.h +452]
+  │   └── is_finite	[vim vectorf512.h +1094]
+  ├── _mm512_load_pd
+  │   └── load_a	[vim vectorf512.h +774]
+  ├── _mm512_load_ph
+  │   └── load_a	[vim vectorfp16.h +1618]
+  ├── _mm512_load_ps
+  │   └── load_a	[vim vectorf512.h +132]
+  ├── _mm512_load_si512
+  │   ├── load_a	[vim vectori512.h +114]
+  │   ├── load_a	[vim vectori512.h +245]
+  │   ├── load_a	[vim vectori512.h +786]
+  │   ├── load_a	[vim vectori512s.h +105]
+  │   └── load_a	[vim vectori512s.h +887]
+  ├── _mm512_loadu_pd
+  │   └── load	[vim vectorf512.h +767]
+  ├── _mm512_loadu_ph
+  │   └── load	[vim vectorfp16.h +1611]
+  ├── _mm512_loadu_ps
+  │   └── load	[vim vectorf512.h +126]
+  ├── _mm512_loadu_si512
+  │   ├── load	[vim vectori512.h +107]
+  │   ├── load	[vim vectori512.h +240]
+  │   ├── load	[vim vectori512.h +781]
+  │   ├── load	[vim vectori512s.h +100]
+  │   ├── load_partial	[vim vectori512s.h +110]
+  │   └── load	[vim vectori512s.h +882]
+  ├── _mm512_log10_pd
+  │   └── log	[vim vectormath_lib.h +1474]
+  ├── _mm512_log10_ps
+  │   └── log	[vim vectormath_lib.h +1474]
+  ├── _mm512_log1p_pd
+  │   └── log	[vim vectormath_lib.h +1474]
+  ├── _mm512_log1p_ps
+  │   └── log	[vim vectormath_lib.h +1474]
+  ├── _mm512_log2_pd
+  │   └── log	[vim vectormath_lib.h +1474]
+  ├── _mm512_log2_ps
+  │   └── log	[vim vectormath_lib.h +1474]
+  ├── _mm512_log_pd
+  │   └── log	[vim vectormath_lib.h +1474]
+  ├── _mm512_log_ps
+  │   └── log	[vim vectormath_lib.h +1474]
+  ├── _mm512_mask_add_epi16
+  │   ├── if_add	[vim vectori512s.h +1115]
+  │   └── if_add	[vim vectori512s.h +1350]
+  ├── _mm512_mask_add_epi32
+  │   └── if_add	[vim vectori512.h +453]
+  ├── _mm512_mask_add_epi64
+  │   ├── if_add	[vim vectori512.h +1013]
+  │   └── if_add	[vim vectori512.h +1247]
+  ├── _mm512_mask_add_epi8
+  │   ├── if_add	[vim vectori512s.h +547]
+  │   └── if_add	[vim vectori512s.h +797]
+  ├── _mm512_mask_add_pd
+  │   └── if_add	[vim vectorf512.h +1054]
+  ├── _mm512_mask_add_ph
+  │   └── if_add	[vim vectorfp16.h +1904]
+  ├── _mm512_mask_add_ps
+  │   └── if_add	[vim vectorf512.h +408]
+  ├── _mm512_mask_blend_epi32
+  │   ├── add_saturated	[vim vectori512.h +478]
+  │   └── sub_saturated	[vim vectori512.h +492]
+  ├── _mm512_mask_broadcastsd_pd
+  │   └── insert	[vim vectorf512.h +810]
+  ├── _mm512_mask_broadcastss_ps
+  │   └── insert	[vim vectorf512.h +167]
+  ├── _mm512_mask_div_pd
+  │   └── if_div	[vim vectorf512.h +1069]
+  ├── _mm512_mask_div_ph
+  │   └── if_div	[vim vectorfp16.h +1919]
+  ├── _mm512_mask_div_ps
+  │   └── if_div	[vim vectorf512.h +423]
+  ├── _mm512_mask_fixupimm_pd
+  │   └── wm_pow_case_x0	[vim vectormath_exp.h +1439]
+  ├── _mm512_mask_fixupimm_ps
+  │   └── wm_pow_case_x0	[vim vectormath_exp.h +1450]
+  ├── _mm512_mask_i32scatter_epi32
+  │   ├── scatter	[vim vectori512.h +1841]
+  │   └── scatter	[vim vectori512.h +1862]
+  ├── _mm512_mask_i32scatter_epi64
+  │   ├── scatter	[vim vectori512.h +1849]
+  │   └── scatter	[vim vectori512.h +1872]
+  ├── _mm512_mask_i32scatter_pd
+  │   ├── scatter	[vim vectorf512.h +2015]
+  │   └── scatter	[vim vectorf512.h +2038]
+  ├── _mm512_mask_i32scatter_ps
+  │   ├── scatter	[vim vectorf512.h +2007]
+  │   └── scatter	[vim vectorf512.h +2028]
+  ├── _mm512_mask_i64scatter_epi64
+  │   └── scatter	[vim vectori512.h +1867]
+  ├── _mm512_mask_i64scatter_pd
+  │   └── scatter	[vim vectorf512.h +2033]
+  ├── _mm512_mask_mov_epi16
+  │   ├── select	[vim vectorfp16e.h +2425]
+  │   ├── select	[vim vectori512s.h +1110]
+  │   ├── blend32	[vim vectori512s.h +1597]
+  │   ├── insert	[vim vectorfp16.h +1654]
+  │   └── select	[vim vectorfp16.h +1899]
+  ├── _mm512_mask_mov_epi32
+  │   ├── select	[vim vectori512.h +447]
+  │   ├── blend16	[vim vectori512.h +1541]
+  │   ├── operator / 	[vim vectori512.h +1987]
+  │   ├── operator / 	[vim vectori512.h +2004]
+  │   └── divide_by_ui	[vim vectori512.h +2094]
+  ├── _mm512_mask_mov_epi64
+  │   ├── select	[vim vectori512.h +1007]
+  │   └── blend8	[vim vectori512.h +1456]
+  ├── _mm512_mask_mov_epi8
+  │   ├── operator * 	[vim vectori512s.h +423]
+  │   ├── operator >> 	[vim vectori512s.h +457]
+  │   ├── select	[vim vectori512s.h +542]
+  │   ├── blend64	[vim vectori512s.h +1646]
+  │   ├── operator / 	[vim vectori512s.h +2098]
+  │   └── operator / 	[vim vectori512s.h +2110]
+  ├── _mm512_mask_mov_pd
+  │   ├── select	[vim vectorf512.h +1049]
+  │   └── blend8	[vim vectorf512.h +1675]
+  ├── _mm512_mask_mov_ps
+  │   ├── select	[vim vectorf512.h +403]
+  │   └── blend16	[vim vectorf512.h +1741]
+  ├── _mm512_mask_mul_pd
+  │   └── if_mul	[vim vectorf512.h +1064]
+  ├── _mm512_mask_mul_ph
+  │   └── if_mul	[vim vectorfp16.h +1914]
+  ├── _mm512_mask_mul_ps
+  │   └── if_mul	[vim vectorf512.h +418]
+  ├── _mm512_mask_mullo_epi16
+  │   ├── if_mul	[vim vectori512s.h +1125]
+  │   └── if_mul	[vim vectori512s.h +1360]
+  ├── _mm512_mask_mullo_epi32
+  │   └── if_mul	[vim vectori512.h +463]
+  ├── _mm512_mask_mullo_epi64
+  │   ├── if_mul	[vim vectori512.h +1023]
+  │   └── if_mul	[vim vectori512.h +1257]
+  ├── _mm512_mask_set1_epi16
+  │   └── insert	[vim vectori512s.h +906]
+  ├── _mm512_mask_set1_epi32
+  │   ├── insert	[vim vectori512.h +264]
+  │   └── add_saturated	[vim vectori512.h +722]
+  ├── _mm512_mask_set1_epi64
+  │   └── insert	[vim vectori512.h +805]
+  ├── _mm512_mask_set1_epi8
+  │   └── insert	[vim vectori512s.h +137]
+  ├── _mm512_mask_shuffle_epi32
+  │   └── blend16	[vim vectori512.h +1541]
+  ├── _mm512_mask_shuffle_ps
+  │   └── blend16	[vim vectorf512.h +1741]
+  ├── _mm512_mask_storeu_epi16
+  │   ├── store_partial	[vim vectori512s.h +897]
+  │   └── store_partial	[vim vectorfp16.h +1645]
+  ├── _mm512_mask_storeu_epi32
+  │   └── store_partial	[vim vectori512.h +255]
+  ├── _mm512_mask_storeu_epi64
+  │   └── store_partial	[vim vectori512.h +796]
+  ├── _mm512_mask_storeu_epi8
+  │   └── store_partial	[vim vectori512s.h +120]
+  ├── _mm512_mask_storeu_pd
+  │   └── store_partial	[vim vectorf512.h +801]
+  ├── _mm512_mask_storeu_ps
+  │   └── store_partial	[vim vectorf512.h +158]
+  ├── _mm512_mask_sub_epi16
+  │   ├── if_sub	[vim vectori512s.h +1120]
+  │   └── if_sub	[vim vectori512s.h +1355]
+  ├── _mm512_mask_sub_epi32
+  │   └── if_sub	[vim vectori512.h +458]
+  ├── _mm512_mask_sub_epi64
+  │   ├── if_sub	[vim vectori512.h +1018]
+  │   └── if_sub	[vim vectori512.h +1252]
+  ├── _mm512_mask_sub_epi8
+  │   ├── if_sub	[vim vectori512s.h +552]
+  │   └── if_sub	[vim vectori512s.h +802]
+  ├── _mm512_mask_sub_pd
+  │   └── if_sub	[vim vectorf512.h +1059]
+  ├── _mm512_mask_sub_ph
+  │   └── if_sub	[vim vectorfp16.h +1909]
+  ├── _mm512_mask_sub_ps
+  │   └── if_sub	[vim vectorf512.h +413]
+  ├── _mm512_maskz_alignr_epi32
+  │   └── permute16	[vim vectori512.h +1370]
+  ├── _mm512_maskz_compress_epi16
+  │   ├── extract	[vim vectori512s.h +911]
+  │   ├── permute32	[vim vectori512s.h +1399]
+  │   └── extract	[vim vectorfp16.h +1660]
+  ├── _mm512_maskz_compress_epi32
+  │   ├── extract	[vim vectori512.h +269]
+  │   └── permute16	[vim vectori512.h +1370]
+  ├── _mm512_maskz_compress_epi64
+  │   ├── extract	[vim vectori512.h +815]
+  │   └── permute8	[vim vectori512.h +1295]
+  ├── _mm512_maskz_compress_epi8
+  │   ├── extract	[vim vectori512s.h +142]
+  │   └── permute64	[vim vectori512s.h +1483]
+  ├── _mm512_maskz_compress_pd
+  │   ├── extract	[vim vectorf512.h +815]
+  │   └── permute8	[vim vectorf512.h +1511]
+  ├── _mm512_maskz_compress_ps
+  │   ├── extract	[vim vectorf512.h +172]
+  │   └── permute16	[vim vectorf512.h +1587]
+  ├── _mm512_maskz_expand_epi16
+  │   └── permute32	[vim vectori512s.h +1399]
+  ├── _mm512_maskz_expand_epi32
+  │   └── permute16	[vim vectori512.h +1370]
+  ├── _mm512_maskz_expand_epi64
+  │   └── permute8	[vim vectori512.h +1295]
+  ├── _mm512_maskz_expand_epi8
+  │   └── permute64	[vim vectori512s.h +1483]
+  ├── _mm512_maskz_expand_pd
+  │   └── permute8	[vim vectorf512.h +1511]
+  ├── _mm512_maskz_expand_ps
+  │   └── permute16	[vim vectorf512.h +1587]
+  ├── _mm512_maskz_getexp_pd
+  │   └── exponent_f	[vim vectormath_exp.h +767]
+  ├── _mm512_maskz_getexp_ps
+  │   └── exponent_f	[vim vectormath_exp.h +757]
+  ├── _mm512_maskz_loadu_epi16
+  │   ├── load_partial	[vim vectori512s.h +892]
+  │   └── load_partial	[vim vectorfp16.h +1640]
+  ├── _mm512_maskz_loadu_epi32
+  │   └── load_partial	[vim vectori512.h +250]
+  ├── _mm512_maskz_loadu_epi64
+  │   └── load_partial	[vim vectori512.h +791]
+  ├── _mm512_maskz_loadu_epi8
+  │   └── load_partial	[vim vectori512s.h +110]
+  ├── _mm512_maskz_loadu_pd
+  │   └── load_partial	[vim vectorf512.h +796]
+  ├── _mm512_maskz_loadu_ps
+  │   └── load_partial	[vim vectorf512.h +153]
+  ├── _mm512_maskz_mov_epi16
+  │   ├── cutoff	[vim vectori512s.h +901]
+  │   ├── permute32	[vim vectori512s.h +1399]
+  │   ├── blend32	[vim vectori512s.h +1597]
+  │   ├── compress	[vim vectori512s.h +1990]
+  │   ├── cutoff	[vim vectorfp16.h +1649]
+  │   └── operator & 	[vim vectorfp16.h +1856]
+  ├── _mm512_maskz_mov_epi32
+  │   ├── cutoff	[vim vectori512.h +259]
+  │   ├── sub_saturated	[vim vectori512.h +729]
+  │   ├── permute16	[vim vectori512.h +1370]
+  │   └── blend16	[vim vectori512.h +1541]
+  ├── _mm512_maskz_mov_epi64
+  │   ├── cutoff	[vim vectori512.h +800]
+  │   ├── permute8	[vim vectori512.h +1295]
+  │   └── blend8	[vim vectori512.h +1456]
+  ├── _mm512_maskz_mov_epi8
+  │   ├── cutoff	[vim vectori512s.h +130]
+  │   ├── permute64	[vim vectori512s.h +1483]
+  │   ├── blend64	[vim vectori512s.h +1646]
+  │   └── compress	[vim vectori512s.h +1952]
+  ├── _mm512_maskz_mov_pd
+  │   ├── cutoff	[vim vectorf512.h +805]
+  │   ├── permute8	[vim vectorf512.h +1511]
+  │   └── blend8	[vim vectorf512.h +1675]
+  ├── _mm512_maskz_mov_ps
+  │   ├── cutoff	[vim vectorf512.h +162]
+  │   ├── permute16	[vim vectorf512.h +1587]
+  │   └── blend16	[vim vectorf512.h +1741]
+  ├── _mm512_maskz_permutexvar_epi32
+  │   └── permute16	[vim vectori512.h +1370]
+  ├── _mm512_maskz_set1_epi16
+  │   ├── extend_low	[vim vectori512s.h +1920]
+  │   ├── extend_high	[vim vectori512s.h +1928]
+  │   └── divide_by_i	[vim vectori512s.h +2154]
+  ├── _mm512_maskz_set1_epi32
+  │   ├── change_sign	[vim vectorf512.h +536]
+  │   ├── divide_by_i	[vim vectori512.h +2038]
+  │   └── divide_by_ui	[vim vectori512.h +2094]
+  ├── _mm512_maskz_set1_epi64
+  │   └── change_sign	[vim vectorf512.h +1178]
+  ├── _mm512_maskz_set1_epi8
+  │   ├── extend_low	[vim vectori512s.h +1890]
+  │   └── extend_high	[vim vectori512s.h +1898]
+  ├── _mm512_maskz_shuffle_epi32
+  │   └── blend16	[vim vectori512.h +1541]
+  ├── _mm512_maskz_shuffle_i64x2
+  │   ├── shift_bytes_up	[vim vectori512s.h +1823]
+  │   └── shift_bytes_down	[vim vectori512s.h +1853]
+  ├── _mm512_maskz_shuffle_ps
+  │   └── blend16	[vim vectorf512.h +1741]
+  ├── _mm512_max_epi16
+  │   └── max	[vim vectori512s.h +1153]
+  ├── _mm512_max_epi32
+  │   └── max	[vim vectori512.h +506]
+  ├── _mm512_max_epi64
+  │   └── max	[vim vectori512.h +1057]
+  ├── _mm512_max_epi8
+  │   └── max	[vim vectori512s.h +585]
+  ├── _mm512_max_epu16
+  │   └── max	[vim vectori512s.h +1375]
+  ├── _mm512_max_epu32
+  │   └── max	[vim vectori512.h +735]
+  ├── _mm512_max_epu64
+  │   └── max	[vim vectori512.h +1271]
+  ├── _mm512_max_epu8
+  │   └── max	[vim vectori512s.h +823]
+  ├── _mm512_max_pd
+  │   └── max	[vim vectorf512.h +1202]
+  ├── _mm512_max_ph
+  │   └── max	[vim vectorfp16.h +2022]
+  ├── _mm512_max_ps
+  │   └── max	[vim vectorf512.h +554]
+  ├── _mm512_min_epi16
+  │   └── min	[vim vectori512s.h +1158]
+  ├── _mm512_min_epi32
+  │   └── min	[vim vectori512.h +511]
+  ├── _mm512_min_epi64
+  │   └── min	[vim vectori512.h +1062]
+  ├── _mm512_min_epi8
+  │   └── min	[vim vectori512s.h +590]
+  ├── _mm512_min_epu16
+  │   ├── abs_saturated	[vim vectori512s.h +1168]
+  │   ├── min	[vim vectori512s.h +1380]
+  │   └── compress_saturated	[vim vectori512s.h +1977]
+  ├── _mm512_min_epu32
+  │   ├── abs_saturated	[vim vectori512.h +521]
+  │   ├── min	[vim vectori512.h +740]
+  │   └── compress_saturated	[vim vectori512s.h +2015]
+  ├── _mm512_min_epu64
+  │   ├── abs_saturated	[vim vectori512.h +1072]
+  │   └── min	[vim vectori512.h +1276]
+  ├── _mm512_min_epu8
+  │   ├── abs_saturated	[vim vectori512s.h +601]
+  │   └── min	[vim vectori512s.h +828]
+  ├── _mm512_min_pd
+  │   └── min	[vim vectorf512.h +1207]
+  ├── _mm512_min_ph
+  │   └── min	[vim vectorfp16.h +2027]
+  ├── _mm512_min_ps
+  │   └── min	[vim vectorf512.h +559]
+  ├── _mm512_mul_epi32
+  │   └── operator / 	[vim vectori512.h +1987]
+  ├── _mm512_mul_epu32
+  │   ├── operator / 	[vim vectori512.h +2004]
+  │   └── divide_by_ui	[vim vectori512.h +2094]
+  ├── _mm512_mulhi_epi16
+  │   └── operator / 	[vim vectori512s.h +2075]
+  ├── _mm512_mulhi_epu16
+  │   ├── operator / 	[vim vectori512s.h +2088]
+  │   └── divide_by_ui	[vim vectori512s.h +2211]
+  ├── _mm512_mullo_epi16
+  │   └── operator * 	[vim vectori512s.h +423]
+  ├── _mm512_or_ps
+  │   └── operator | 	[vim vectorfp16.h +1864]
+  ├── _mm512_or_si512
+  │   ├── rotate_left	[vim vectori512s.h +607]
+  │   └── rotate_left	[vim vectori512s.h +1174]
+  ├── _mm512_packs_epi16
+  │   └── compress_saturated	[vim vectori512s.h +1963]
+  ├── _mm512_packs_epi32
+  │   └── compress_saturated	[vim vectori512s.h +2001]
+  ├── _mm512_packus_epi16
+  │   ├── compress	[vim vectori512s.h +1952]
+  │   └── compress_saturated	[vim vectori512s.h +1977]
+  ├── _mm512_packus_epi32
+  │   ├── compress	[vim vectori512s.h +1990]
+  │   └── compress_saturated	[vim vectori512s.h +2015]
+  ├── _mm512_permute_pd
+  │   └── permute8	[vim vectorf512.h +1511]
+  ├── _mm512_permute_ps
+  │   └── permute16	[vim vectorf512.h +1587]
+  ├── _mm512_permutevar_pd
+  │   └── permute8	[vim vectorf512.h +1511]
+  ├── _mm512_permutevar_ps
+  │   └── permute16	[vim vectorf512.h +1587]
+  ├── _mm512_permutex2var_epi16
+  │   ├── blend32	[vim vectori512s.h +1597]
+  │   ├── lookup64	[vim vectori512s.h +1803]
+  │   └── lookup128	[vim vectori512s.h +1808]
+  ├── _mm512_permutex2var_epi32
+  │   ├── blend16	[vim vectori512.h +1541]
+  │   ├── lookup32	[vim vectori512.h +1655]
+  │   ├── lookup64	[vim vectori512.h +1659]
+  │   └── lookup	[vim vectori512.h +1666]
+  ├── _mm512_permutex2var_epi64
+  │   ├── blend8	[vim vectori512.h +1456]
+  │   └── lookup	[vim vectori512.h +1700]
+  ├── _mm512_permutex2var_epi8
+  │   ├── blend64	[vim vectori512s.h +1646]
+  │   ├── lookup128	[vim vectori512s.h +1760]
+  │   └── lookup256	[vim vectori512s.h +1782]
+  ├── _mm512_permutex2var_pd
+  │   ├── blend8	[vim vectorf512.h +1675]
+  │   └── lookup	[vim vectorf512.h +1869]
+  ├── _mm512_permutex2var_ps
+  │   ├── blend16	[vim vectorf512.h +1741]
+  │   └── lookup	[vim vectorf512.h +1839]
+  ├── _mm512_permutexvar_epi16
+  │   ├── permute32	[vim vectori512s.h +1399]
+  │   └── lookup32	[vim vectori512s.h +1798]
+  ├── _mm512_permutexvar_epi32
+  │   └── lookup16	[vim vectori512.h +1651]
+  ├── _mm512_permutexvar_epi64
+  │   ├── permute8	[vim vectori512.h +1295]
+  │   ├── lookup8	[vim vectori512.h +1695]
+  │   ├── compress	[vim vectori512s.h +1952]
+  │   ├── compress_saturated	[vim vectori512s.h +1963]
+  │   ├── compress_saturated	[vim vectori512s.h +1977]
+  │   ├── compress	[vim vectori512s.h +1990]
+  │   ├── compress_saturated	[vim vectori512s.h +2001]
+  │   └── compress_saturated	[vim vectori512s.h +2015]
+  ├── _mm512_permutexvar_epi8
+  │   ├── permute64	[vim vectori512s.h +1483]
+  │   └── lookup64	[vim vectori512s.h +1740]
+  ├── _mm512_permutexvar_pd
+  │   ├── permute8	[vim vectorf512.h +1511]
+  │   └── lookup8	[vim vectorf512.h +1864]
+  ├── _mm512_permutexvar_ps
+  │   ├── permute16	[vim vectorf512.h +1587]
+  │   └── lookup16	[vim vectorf512.h +1834]
+  ├── _mm512_pow_pd
+  │   └── exp	[vim vectormath_lib.h +1431]
+  ├── _mm512_pow_ps
+  │   └── exp	[vim vectormath_lib.h +1431]
+  ├── _mm512_range_pd
+  │   └── abs	[vim vectorf512.h +1213]
+  ├── _mm512_range_ps
+  │   └── abs	[vim vectorf512.h +565]
+  ├── _mm512_rcp28_round_ps
+  │   ├── approx_recipr	[vim vectorf128.h +1279]
+  │   ├── approx_recipr	[vim vectorf512.h +650]
+  │   └── approx_recipr	[vim vectorf256.h +1346]
+  ├── _mm512_rcp_ph
+  │   └── approx_recipr	[vim vectorfp16.h +2117]
+  ├── _mm512_reduce_add_epi32
+  │   └── horizontal_add	[vim vectori512.h +468]
+  ├── _mm512_reduce_add_epi64
+  │   └── horizontal_add	[vim vectori512.h +1032]
+  ├── _mm512_reduce_add_pd
+  │   └── horizontal_add	[vim vectorf512.h +1193]
+  ├── _mm512_reduce_add_ps
+  │   └── horizontal_add	[vim vectorf512.h +545]
+  ├── _mm512_rol_epi32
+  │   └── permute32	[vim vectori512s.h +1399]
+  ├── _mm512_rolv_epi32
+  │   └── rotate_left	[vim vectori512.h +527]
+  ├── _mm512_rolv_epi64
+  │   └── rotate_left	[vim vectori512.h +1078]
+  ├── _mm512_roundscale_pd
+  │   ├── round	[vim vectorf512.h +1256]
+  │   ├── truncate	[vim vectorf512.h +1261]
+  │   ├── floor	[vim vectorf512.h +1266]
+  │   └── ceil	[vim vectorf512.h +1271]
+  ├── _mm512_roundscale_ph
+  │   ├── round	[vim vectorfp16.h +2074]
+  │   ├── truncate	[vim vectorfp16.h +2079]
+  │   ├── floor	[vim vectorfp16.h +2084]
+  │   └── ceil	[vim vectorfp16.h +2089]
+  ├── _mm512_roundscale_ps
+  │   ├── round	[vim vectorf512.h +605]
+  │   ├── truncate	[vim vectorf512.h +610]
+  │   ├── floor	[vim vectorf512.h +615]
+  │   └── ceil	[vim vectorf512.h +620]
+  ├── _mm512_rsqrt28_round_ps
+  │   ├── approx_rsqrt	[vim vectorf128.h +1293]
+  │   ├── approx_rsqrt	[vim vectorf512.h +660]
+  │   └── approx_rsqrt	[vim vectorf256.h +1360]
+  ├── _mm512_rsqrt_ph
+  │   └── approx_rsqrt	[vim vectorfp16.h +2122]
+  ├── _mm512_sad_epu8
+  │   └── horizontal_add	[vim vectori512s.h +563]
+  ├── _mm512_set1_epi16
+  │   ├── Vec32s	[vim vectori512s.h +844]
+  │   ├── Vec32us	[vim vectori512s.h +1193]
+  │   ├── divide_by_ui	[vim vectori512s.h +2211]
+  │   └── infinite32h	[vim vectorfp16.h +1978]
+  ├── _mm512_set1_epi32
+  │   ├── operator ~ 	[vim vectori512.h +175]
+  │   ├── Vec16i	[vim vectori512.h +214]
+  │   ├── Vec16ui	[vim vectori512.h +543]
+  │   ├── operator - 	[vim vectorfp16e.h +2220]
+  │   ├── compress_saturated	[vim vectori512s.h +1977]
+  │   ├── compress_saturated	[vim vectori512s.h +2015]
+  │   └── operator - 	[vim vectorfp16.h +1751]
+  ├── _mm512_set1_epi64
+  │   └── Vec8q	[vim vectori512.h +756]
+  ├── _mm512_set1_epi8
+  │   ├── Vec64c	[vim vectori512s.h +62]
+  │   ├── operator ++ 	[vim vectori512s.h +443]
+  │   ├── rotate_left	[vim vectori512s.h +607]
+  │   ├── Vec64uc	[vim vectori512s.h +631]
+  │   └── operator >> 	[vim vectori512s.h +717]
+  ├── _mm512_set1_pd
+  │   └── Vec8d	[vim vectorf512.h +742]
+  ├── _mm512_set1_ph
+  │   ├── Vec32h	[vim vectorfp16.h +1582]
+  │   └── insert	[vim vectorfp16.h +1654]
+  ├── _mm512_set1_ps
+  │   └── Vec16f	[vim vectorf512.h +100]
+  ├── _mm512_setr_epi32
+  │   ├── constant16ui	[vim vectori512.h +54]
+  │   ├── Vec16i	[vim vectori512.h +218]
+  │   └── Vec16ui	[vim vectori512.h +547]
+  ├── _mm512_setr_epi64
+  │   └── Vec8q	[vim vectori512.h +760]
+  ├── _mm512_setr_pd
+  │   └── Vec8d	[vim vectorf512.h +746]
+  ├── _mm512_setr_ph
+  │   └── Vec32h	[vim vectorfp16.h +1586]
+  ├── _mm512_setr_ps
+  │   └── Vec16f	[vim vectorf512.h +104]
+  ├── _mm512_setzero_epi32
+  │   ├── operator - 	[vim vectori512.h +323]
+  │   ├── add_saturated	[vim vectori512.h +478]
+  │   ├── sub_saturated	[vim vectori512.h +492]
+  │   ├── operator - 	[vim vectori512.h +869]
+  │   ├── divide_by_i	[vim vectori512.h +2038]
+  │   ├── operator - 	[vim vectori512s.h +401]
+  │   └── operator - 	[vim vectori512s.h +984]
+  ├── _mm512_setzero_pd
+  │   ├── permute8	[vim vectorf512.h +1511]
+  │   └── blend8	[vim vectorf512.h +1675]
+  ├── _mm512_setzero_ps
+  │   ├── permute16	[vim vectorf512.h +1587]
+  │   └── blend16	[vim vectorf512.h +1741]
+  ├── _mm512_setzero_si512
+  │   ├── permute8	[vim vectori512.h +1295]
+  │   ├── permute16	[vim vectori512.h +1370]
+  │   ├── blend8	[vim vectori512.h +1456]
+  │   ├── blend16	[vim vectori512.h +1541]
+  │   ├── horizontal_add	[vim vectori512s.h +563]
+  │   ├── permute32	[vim vectori512s.h +1399]
+  │   ├── permute64	[vim vectori512s.h +1483]
+  │   ├── blend32	[vim vectori512s.h +1597]
+  │   ├── blend64	[vim vectori512s.h +1646]
+  │   ├── shift_bytes_up	[vim vectori512s.h +1823]
+  │   ├── shift_bytes_down	[vim vectori512s.h +1853]
+  │   ├── extend_low	[vim vectori512s.h +1890]
+  │   ├── extend_high	[vim vectori512s.h +1898]
+  │   ├── extend_low	[vim vectori512s.h +1906]
+  │   ├── extend_high	[vim vectori512s.h +1912]
+  │   ├── extend_low	[vim vectori512s.h +1920]
+  │   ├── extend_high	[vim vectori512s.h +1928]
+  │   ├── extend_low	[vim vectori512s.h +1936]
+  │   ├── extend_high	[vim vectori512s.h +1942]
+  │   ├── divide_by_i	[vim vectori512s.h +2154]
+  │   └── divide_by_ui	[vim vectori512s.h +2211]
+  ├── _mm512_shuffle_epi32
+  │   ├── permute8	[vim vectori512.h +1295]
+  │   └── permute16	[vim vectori512.h +1370]
+  ├── _mm512_shuffle_epi8
+  │   ├── permute8	[vim vectorf512.h +1511]
+  │   ├── permute16	[vim vectorf512.h +1587]
+  │   ├── permute8	[vim vectori512.h +1295]
+  │   ├── permute16	[vim vectori512.h +1370]
+  │   ├── permute32	[vim vectori512s.h +1399]
+  │   └── permute64	[vim vectori512s.h +1483]
+  ├── _mm512_shuffle_f64x2
+  │   ├── permute8	[vim vectorf512.h +1511]
+  │   └── blend8	[vim vectorf512.h +1675]
+  ├── _mm512_shuffle_i64x2
+  │   ├── permute8	[vim vectori512.h +1295]
+  │   └── blend8	[vim vectori512.h +1456]
+  ├── _mm512_shuffle_pd
+  │   ├── blend8	[vim vectorf512.h +1675]
+  │   └── blend8	[vim vectori512.h +1456]
+  ├── _mm512_shuffle_ps
+  │   ├── blend16	[vim vectorf512.h +1741]
+  │   └── blend16	[vim vectori512.h +1541]
+  ├── _mm512_sin_pd
+  │   └── sin	[vim vectormath_lib.h +1500]
+  ├── _mm512_sin_ps
+  │   └── sin	[vim vectormath_lib.h +1500]
+  ├── _mm512_sincos_pd
+  │   └── sin	[vim vectormath_lib.h +1500]
+  ├── _mm512_sincos_ps
+  │   └── sin	[vim vectormath_lib.h +1500]
+  ├── _mm512_sinh_pd
+  │   └── sinh	[vim vectormath_lib.h +1588]
+  ├── _mm512_sinh_ps
+  │   └── sinh	[vim vectormath_lib.h +1588]
+  ├── _mm512_sinpi_pd
+  │   └── sinpi	[vim vectormath_lib.h +1533]
+  ├── _mm512_sinpi_ps
+  │   └── sinpi	[vim vectormath_lib.h +1533]
+  ├── _mm512_sll_epi16
+  │   ├── operator ++ 	[vim vectori512s.h +443]
+  │   ├── rotate_left	[vim vectori512s.h +607]
+  │   └── rotate_left	[vim vectori512s.h +1174]
+  ├── _mm512_slli_epi16
+  │   ├── operator * 	[vim vectori512s.h +423]
+  │   ├── operator / 	[vim vectori512s.h +2098]
+  │   └── operator / 	[vim vectori512s.h +2110]
+  ├── _mm512_sqrt_pd
+  │   └── sqrt	[vim vectorf512.h +1222]
+  ├── _mm512_sqrt_ph
+  │   └── sqrt	[vim vectorfp16.h +2038]
+  ├── _mm512_sqrt_ps
+  │   └── sqrt	[vim vectorf512.h +574]
+  ├── _mm512_sra_epi16
+  │   ├── operator >> 	[vim vectori512s.h +457]
+  │   └── operator / 	[vim vectori512s.h +2075]
+  ├── _mm512_sra_epi32
+  │   └── operator / 	[vim vectori512.h +1987]
+  ├── _mm512_srai_epi16
+  │   ├── operator / 	[vim vectori512s.h +2075]
+  │   ├── operator / 	[vim vectori512s.h +2098]
+  │   └── divide_by_i	[vim vectori512s.h +2154]
+  ├── _mm512_srai_epi32
+  │   ├── add_saturated	[vim vectori512.h +478]
+  │   ├── sub_saturated	[vim vectori512.h +492]
+  │   ├── operator / 	[vim vectori512.h +1987]
+  │   └── divide_by_i	[vim vectori512.h +2038]
+  ├── _mm512_srl_epi16
+  │   ├── rotate_left	[vim vectori512s.h +607]
+  │   ├── operator >> 	[vim vectori512s.h +717]
+  │   ├── rotate_left	[vim vectori512s.h +1174]
+  │   └── operator / 	[vim vectori512s.h +2088]
+  ├── _mm512_srl_epi32
+  │   └── operator / 	[vim vectori512.h +2004]
+  ├── _mm512_srli_epi16
+  │   ├── operator * 	[vim vectori512s.h +423]
+  │   ├── operator / 	[vim vectori512s.h +2110]
+  │   ├── divide_by_i	[vim vectori512s.h +2154]
+  │   └── divide_by_ui	[vim vectori512s.h +2211]
+  ├── _mm512_srli_epi32
+  │   ├── add_saturated	[vim vectori512.h +478]
+  │   ├── sub_saturated	[vim vectori512.h +492]
+  │   ├── divide_by_i	[vim vectori512.h +2038]
+  │   └── divide_by_ui	[vim vectori512.h +2094]
+  ├── _mm512_srli_epi64
+  │   ├── operator / 	[vim vectori512.h +1987]
+  │   ├── operator / 	[vim vectori512.h +2004]
+  │   └── divide_by_ui	[vim vectori512.h +2094]
+  ├── _mm512_store_pd
+  │   └── store_a	[vim vectorf512.h +785]
+  ├── _mm512_store_ph
+  │   └── store_a	[vim vectorfp16.h +1629]
+  ├── _mm512_store_ps
+  │   └── store_a	[vim vectorf512.h +142]
+  ├── _mm512_store_si512
+  │   └── store_a	[vim vectori512.h +125]
+  ├── _mm512_storeu_pd
+  │   └── store	[vim vectorf512.h +779]
+  ├── _mm512_storeu_ph
+  │   └── store	[vim vectorfp16.h +1623]
+  ├── _mm512_storeu_ps
+  │   └── store	[vim vectorf512.h +137]
+  ├── _mm512_storeu_si512
+  │   ├── store	[vim vectori512.h +119]
+  │   └── store_partial	[vim vectori512s.h +120]
+  ├── _mm512_stream_pd
+  │   └── store_nt	[vim vectorf512.h +792]
+  ├── _mm512_stream_ps
+  │   ├── store_nt	[vim vectorf512.h +149]
+  │   └── store_nt	[vim vectorfp16.h +1636]
+  ├── _mm512_stream_si512
+  │   └── store_nt	[vim vectori512.h +132]
+  ├── _mm512_sub_epi16
+  │   ├── operator / 	[vim vectori512s.h +2075]
+  │   ├── operator / 	[vim vectori512s.h +2088]
+  │   └── divide_by_i	[vim vectori512s.h +2154]
+  ├── _mm512_sub_epi32
+  │   ├── sub_saturated	[vim vectori512.h +492]
+  │   ├── operator / 	[vim vectori512.h +1987]
+  │   ├── operator / 	[vim vectori512.h +2004]
+  │   └── divide_by_i	[vim vectori512.h +2038]
+  ├── _mm512_subs_epi16
+  │   └── sub_saturated	[vim vectori512s.h +1148]
+  ├── _mm512_subs_epi8
+  │   └── sub_saturated	[vim vectori512s.h +580]
+  ├── _mm512_subs_epu16
+  │   └── sub_saturated	[vim vectori512s.h +1370]
+  ├── _mm512_subs_epu8
+  │   └── sub_saturated	[vim vectori512s.h +818]
+  ├── _mm512_tan_pd
+  │   └── sin	[vim vectormath_lib.h +1500]
+  ├── _mm512_tan_ps
+  │   └── sin	[vim vectormath_lib.h +1500]
+  ├── _mm512_tanh_pd
+  │   └── sinh	[vim vectormath_lib.h +1588]
+  ├── _mm512_tanh_ps
+  │   └── sinh	[vim vectormath_lib.h +1588]
+  ├── _mm512_tanpi_pd
+  │   └── tanpi	[vim vectormath_lib.h +1549]
+  ├── _mm512_tanpi_ps
+  │   └── sinpi	[vim vectormath_lib.h +1533]
+  ├── _mm512_ternarylogic_epi32
+  │   └── sign_combine	[vim vectorf512.h +441]
+  ├── _mm512_ternarylogic_epi64
+  │   └── sign_combine	[vim vectorf512.h +1084]
+  ├── _mm512_unpackhi_epi32
+  │   ├── permute16	[vim vectori512.h +1370]
+  │   └── blend16	[vim vectori512.h +1541]
+  ├── _mm512_unpackhi_epi64
+  │   ├── permute8	[vim vectori512.h +1295]
+  │   └── blend8	[vim vectori512.h +1456]
+  ├── _mm512_unpackhi_pd
+  │   ├── permute8	[vim vectorf512.h +1511]
+  │   └── blend8	[vim vectorf512.h +1675]
+  ├── _mm512_unpackhi_ps
+  │   ├── permute16	[vim vectorf512.h +1587]
+  │   └── blend16	[vim vectorf512.h +1741]
+  ├── _mm512_unpacklo_epi16
+  │   ├── extend_low	[vim vectori512s.h +1920]
+  │   ├── extend_high	[vim vectori512s.h +1928]
+  │   ├── extend_low	[vim vectori512s.h +1936]
+  │   └── extend_high	[vim vectori512s.h +1942]
+  ├── _mm512_unpacklo_epi32
+  │   ├── permute16	[vim vectori512.h +1370]
+  │   └── blend16	[vim vectori512.h +1541]
+  ├── _mm512_unpacklo_epi64
+  │   ├── permute8	[vim vectori512.h +1295]
+  │   └── blend8	[vim vectori512.h +1456]
+  ├── _mm512_unpacklo_epi8
+  │   ├── extend_low	[vim vectori512s.h +1890]
+  │   ├── extend_high	[vim vectori512s.h +1898]
+  │   ├── extend_low	[vim vectori512s.h +1906]
+  │   └── extend_high	[vim vectori512s.h +1912]
+  ├── _mm512_unpacklo_pd
+  │   ├── permute8	[vim vectorf512.h +1511]
+  │   └── blend8	[vim vectorf512.h +1675]
+  ├── _mm512_unpacklo_ps
+  │   ├── permute16	[vim vectorf512.h +1587]
+  │   └── blend16	[vim vectorf512.h +1741]
+  ├── _mm512_xor_epi32
+  │   └── add_saturated	[vim vectori512.h +478]
+  ├── _mm512_xor_ps
+  │   ├── operator - 	[vim vectorfp16.h +1751]
+  │   ├── operator ^ 	[vim vectorfp16.h +1875]
+  │   └── change_sign	[vim vectorfp16.h +2185]
+  ├── _mm512_xor_si512
+  │   ├── sub_saturated	[vim vectori512.h +492]
+  │   ├── operator / 	[vim vectori512.h +1987]
+  │   ├── change_sign	[vim vectorfp16e.h +2706]
+  │   └── operator / 	[vim vectori512s.h +2075]
+  ├── _mm512_zextph256_ph512
+  │   └── extend_z	[vim vectorfp16.h +2232]
+  ├── _mm_abs_epi16
+  │   └── abs	[vim vectori128.h +2431]
+  ├── _mm_abs_epi32
+  │   └── abs	[vim vectori128.h +3395]
+  ├── _mm_abs_epi64
+  │   └── abs	[vim vectori128.h +4313]
+  ├── _mm_abs_epi8
+  │   └── abs	[vim vectori128.h +1548]
+  ├── _mm_abs_ph
+  │   └── abs	[vim vectorfp16.h +527]
+  ├── _mm_acos_pd
+  │   └── acos	[vim vectormath_lib.h +194]
+  ├── _mm_acos_ps
+  │   └── acos	[vim vectormath_lib.h +194]
+  ├── _mm_acosh_pd
+  │   └── sinh	[vim vectormath_lib.h +215]
+  ├── _mm_acosh_ps
+  │   └── sinh	[vim vectormath_lib.h +215]
+  ├── _mm_add_epi16
+  │   ├── horizontal_add	[vim vectori128.h +1474]
+  │   ├── horizontal_add	[vim vectori128.h +1793]
+  │   ├── horizontal_add_x	[vim vectori128.h +1803]
+  │   ├── operator / 	[vim vectori128.h +6539]
+  │   ├── operator / 	[vim vectori128.h +6550]
+  │   ├── divide_by_i	[vim vectori128.h +6743]
+  │   ├── horizontal_add	[vim vectori256.h +945]
+  │   ├── horizontal_add_x	[vim vectori256.h +957]
+  │   ├── horizontal_add	[vim vectori256.h +1248]
+  │   ├── horizontal_add_x	[vim vectori256.h +1260]
+  │   └── horizontal_add	[vim vectori256.h +1821]
+  ├── _mm_add_epi32
+  │   ├── horizontal_add_x	[vim vectori128.h +1484]
+  │   ├── horizontal_add	[vim vectori128.h +2356]
+  │   ├── horizontal_add_x	[vim vectori128.h +2384]
+  │   ├── horizontal_add	[vim vectori128.h +2679]
+  │   ├── horizontal_add_x	[vim vectori128.h +2707]
+  │   ├── horizontal_add	[vim vectori128.h +3296]
+  │   ├── add_saturated	[vim vectori128.h +3348]
+  │   ├── sub_saturated	[vim vectori128.h +3362]
+  │   ├── operator / 	[vim vectori128.h +6483]
+  │   ├── operator / 	[vim vectori128.h +6520]
+  │   ├── divide_by_i	[vim vectori128.h +6619]
+  │   ├── horizontal_add_x	[vim vectori256.h +1832]
+  │   ├── horizontal_add_x	[vim vectori256.h +2112]
+  │   └── horizontal_add	[vim vectori256.h +2665]
+  ├── _mm_add_epi64
+  │   ├── horizontal_add_x	[vim vectori128.h +3333]
+  │   ├── horizontal_add_x	[vim vectori128.h +3650]
+  │   ├── horizontal_add	[vim vectori128.h +4296]
+  │   ├── divide_by_ui	[vim vectori128.h +6673]
+  │   └── horizontal_add	[vim vectori256.h +3556]
+  ├── _mm_add_ph
+  │   └── horizontal_add	[vim vectorfp16.h +495]
+  ├── _mm_add_sh
+  │   └── horizontal_add	[vim vectorfp16.h +495]
+  ├── _mm_adds_epi16
+  │   └── add_saturated	[vim vectori128.h +2411]
+  ├── _mm_adds_epi8
+  │   └── add_saturated	[vim vectori128.h +1512]
+  ├── _mm_adds_epu16
+  │   └── add_saturated	[vim vectori128.h +2742]
+  ├── _mm_adds_epu8
+  │   └── add_saturated	[vim vectori128.h +1811]
+  ├── _mm_alignr_epi8
+  │   ├── blend4	[vim vectorf128.h +2650]
+  │   ├── permute4	[vim vectori128.h +4686]
+  │   ├── permute8	[vim vectori128.h +4759]
+  │   ├── permute16	[vim vectori128.h +4913]
+  │   ├── blend2	[vim vectori128.h +5107]
+  │   ├── blend4	[vim vectori128.h +5200]
+  │   ├── blend8	[vim vectori128.h +5295]
+  │   ├── blend16	[vim vectori128.h +5393]
+  │   ├── shift_bytes_up	[vim vectori128.h +5754]
+  │   └── shift_bytes_down	[vim vectori128.h +5775]
+  ├── _mm_and_pd
+  │   └── round	[vim vectorf128.h +2112]
+  ├── _mm_and_ps
+  │   └── operator & 	[vim vectorfp16.h +329]
+  ├── _mm_and_si128
+  │   ├── load_bits	[vim vectori128.h +1096]
+  │   ├── load_bits	[vim vectori128.h +2029]
+  │   ├── load_bits	[vim vectori128.h +2946]
+  │   ├── sub_saturated	[vim vectori128.h +3362]
+  │   ├── load_bits	[vim vectori128.h +3898]
+  │   ├── compress	[vim vectori128.h +6044]
+  │   ├── compress	[vim vectori128.h +6090]
+  │   └── abs	[vim vectorfp16e.h +967]
+  ├── _mm_andnot_pd
+  │   ├── insert	[vim vectorf128.h +342]
+  │   └── andnot	[vim vectorf128.h +457]
+  ├── _mm_andnot_ps
+  │   ├── insert	[vim vectorf128.h +152]
+  │   └── andnot	[vim vectorf128.h +267]
+  ├── _mm_andnot_si128
+  │   ├── andnot	[vim vectori128.h +853]
+  │   └── add_saturated	[vim vectori128.h +3348]
+  ├── _mm_asin_pd
+  │   └── asin	[vim vectormath_lib.h +187]
+  ├── _mm_asin_ps
+  │   └── asin	[vim vectormath_lib.h +187]
+  ├── _mm_asinh_pd
+  │   └── sinh	[vim vectormath_lib.h +215]
+  ├── _mm_asinh_ps
+  │   └── sinh	[vim vectormath_lib.h +215]
+  ├── _mm_atan2_pd
+  │   └── atan	[vim vectormath_lib.h +201]
+  ├── _mm_atan2_ps
+  │   └── atan	[vim vectormath_lib.h +201]
+  ├── _mm_atan_pd
+  │   └── atan	[vim vectormath_lib.h +201]
+  ├── _mm_atan_ps
+  │   └── atan	[vim vectormath_lib.h +201]
+  ├── _mm_atanh_pd
+  │   └── sinh	[vim vectormath_lib.h +215]
+  ├── _mm_atanh_ps
+  │   └── sinh	[vim vectormath_lib.h +215]
+  ├── _mm_blend_epi16
+  │   ├── blend8	[vim vectori128.h +5295]
+  │   ├── operator / 	[vim vectori128.h +6483]
+  │   ├── operator / 	[vim vectori128.h +6520]
+  │   └── divide_by_ui	[vim vectori128.h +6673]
+  ├── _mm_blendv_epi8
+  │   └── selectb	[vim vectori128.h +871]
+  ├── _mm_blendv_pd
+  │   ├── selectd	[vim vectorf128.h +72]
+  │   └── lookup4	[vim vectorf128.h +2835]
+  ├── _mm_blendv_ps
+  │   └── selectf	[vim vectorf128.h +54]
+  ├── _mm_broadcastb_epi8
+  │   └── permute16	[vim vectori128.h +4913]
+  ├── _mm_broadcastw_epi16
+  │   └── permute8	[vim vectori128.h +4759]
+  ├── _mm_bslli_si128
+  │   ├── permute2	[vim vectorf128.h +2446]
+  │   ├── permute4	[vim vectorf128.h +2498]
+  │   ├── permute2	[vim vectori128.h +4626]
+  │   ├── permute4	[vim vectori128.h +4686]
+  │   ├── permute8	[vim vectori128.h +4759]
+  │   └── permute16	[vim vectori128.h +4913]
+  ├── _mm_bsrli_si128
+  │   ├── permute2	[vim vectorf128.h +2446]
+  │   ├── permute4	[vim vectorf128.h +2498]
+  │   ├── permute2	[vim vectori128.h +4626]
+  │   ├── permute4	[vim vectori128.h +4686]
+  │   ├── permute8	[vim vectori128.h +4759]
+  │   └── permute16	[vim vectori128.h +4913]
+  ├── _mm_castpd_ps
+  │   ├── reinterpret_f	[vim vectorf128.h +2404]
+  │   ├── blend4	[vim vectorf128.h +2650]
+  │   ├── Vec4db	[vim vectorf256.h +340]
+  │   └── Vec4d	[vim vectorf256.h +1448]
+  ├── _mm_castpd_si128
+  │   ├── Vec2qb	[vim vectorf128.h +337]
+  │   ├── extract	[vim vectorf128.h +355]
+  │   ├── sign_bit	[vim vectorf128.h +1906]
+  │   ├── exponent	[vim vectorf128.h +2341]
+  │   ├── reinterpret_i	[vim vectorf128.h +2392]
+  │   ├── permute2	[vim vectorf128.h +2446]
+  │   ├── Vec4qb	[vim vectorf256e.h +349]
+  │   ├── blend2	[vim vectori128.h +5107]
+  │   └── fraction_2	[vim vectormath_exp.h +611]
+  ├── _mm_castph_pd
+  │   └── reinterpret_d	[vim vectorfp16.h +734]
+  ├── _mm_castph_ps
+  │   ├── store_nt	[vim vectorfp16.h +126]
+  │   ├── operator - 	[vim vectorfp16.h +235]
+  │   ├── operator & 	[vim vectorfp16.h +329]
+  │   ├── operator | 	[vim vectorfp16.h +348]
+  │   ├── operator ^ 	[vim vectorfp16.h +359]
+  │   ├── horizontal_add	[vim vectorfp16.h +495]
+  │   ├── change_sign	[vim vectorfp16.h +676]
+  │   ├── reinterpret_f	[vim vectorfp16.h +730]
+  │   └── Vec16h	[vim vectorfp16.h +838]
+  ├── _mm_castph_si128
+  │   ├── store_partial	[vim vectorfp16.h +135]
+  │   ├── cutoff	[vim vectorfp16.h +139]
+  │   ├── insert	[vim vectorfp16.h +144]
+  │   ├── extract	[vim vectorfp16.h +150]
+  │   ├── operator & 	[vim vectorfp16.h +340]
+  │   ├── select	[vim vectorfp16.h +383]
+  │   ├── sign_bit	[vim vectorfp16.h +413]
+  │   ├── nan_code	[vim vectorfp16.h +485]
+  │   ├── horizontal_add	[vim vectorfp16.h +495]
+  │   ├── horizontal_add_x	[vim vectorfp16.h +508]
+  │   ├── exponent	[vim vectorfp16.h +642]
+  │   ├── convert8h_4f	[vim vectorfp16.h +694]
+  │   ├── to_float	[vim vectorfp16.h +706]
+  │   ├── reinterpret_i	[vim vectorfp16.h +722]
+  │   ├── permute8	[vim vectorfp16.h +755]
+  │   ├── blend8	[vim vectorfp16.h +768]
+  │   ├── lookup8	[vim vectorfp16.h +784]
+  │   └── lookup16	[vim vectorfp16.h +788]
+  ├── _mm_castps_pd
+  │   ├── insert	[vim vectorf128.h +342]
+  │   ├── reinterpret_d	[vim vectorf128.h +2412]
+  │   └── blend4	[vim vectorf128.h +2650]
+  ├── _mm_castps_ph
+  │   ├── horizontal_add	[vim vectorfp16.h +495]
+  │   ├── change_sign	[vim vectorfp16.h +676]
+  │   └── operator [] 	[vim vectorfp16.h +923]
+  ├── _mm_castps_si128
+  │   ├── Vec4ib	[vim vectorf128.h +147]
+  │   ├── extract	[vim vectorf128.h +164]
+  │   ├── sign_bit	[vim vectorf128.h +920]
+  │   ├── exponent	[vim vectorf128.h +1370]
+  │   ├── reinterpret_i	[vim vectorf128.h +2388]
+  │   ├── permute4	[vim vectorf128.h +2498]
+  │   ├── blend4	[vim vectorf128.h +2650]
+  │   ├── Vec8ib	[vim vectorf256e.h +161]
+  │   ├── blend4	[vim vectori128.h +5200]
+  │   └── fraction_2	[vim vectormath_exp.h +605]
+  ├── _mm_castsi128_pd
+  │   ├── Vec2db	[vim vectorf128.h +301]
+  │   ├── Vec2db	[vim vectorf128.h +305]
+  │   ├── Vec2db	[vim vectorf128.h +323]
+  │   ├── load_bits	[vim vectorf128.h +363]
+  │   ├── operator ~ 	[vim vectorf128.h +423]
+  │   ├── operator - 	[vim vectorf128.h +1670]
+  │   ├── change_sign	[vim vectorf128.h +1897]
+  │   ├── round	[vim vectorf128.h +2112]
+  │   ├── exp2	[vim vectorf128.h +2368]
+  │   ├── reinterpret_d	[vim vectorf128.h +2408]
+  │   ├── permute2	[vim vectorf128.h +2446]
+  │   ├── lookup4	[vim vectorf128.h +2835]
+  │   ├── Vec4db	[vim vectorf256e.h +333]
+  │   ├── operator = 	[vim vectorf256e.h +338]
+  │   ├── blend2	[vim vectori128.h +5107]
+  │   └── fraction_2	[vim vectormath_exp.h +611]
+  ├── _mm_castsi128_ph
+  │   ├── load_partial	[vim vectorfp16.h +130]
+  │   ├── cutoff	[vim vectorfp16.h +139]
+  │   ├── insert	[vim vectorfp16.h +144]
+  │   ├── extract	[vim vectorfp16.h +150]
+  │   ├── select	[vim vectorfp16.h +383]
+  │   ├── infinite8h	[vim vectorfp16.h +462]
+  │   ├── horizontal_add	[vim vectorfp16.h +495]
+  │   ├── exp2	[vim vectorfp16.h +663]
+  │   ├── convert4f_8h	[vim vectorfp16.h +699]
+  │   ├── to_float16	[vim vectorfp16.h +711]
+  │   ├── reinterpret_h	[vim vectorfp16.h +726]
+  │   ├── permute8	[vim vectorfp16.h +755]
+  │   ├── blend8	[vim vectorfp16.h +768]
+  │   ├── lookup8	[vim vectorfp16.h +784]
+  │   ├── lookup16	[vim vectorfp16.h +788]
+  │   └── lookup	[vim vectorfp16.h +793]
+  ├── _mm_castsi128_ps
+  │   ├── Vec4fb	[vim vectorf128.h +98]
+  │   ├── Vec4fb	[vim vectorf128.h +111]
+  │   ├── Vec4fb	[vim vectorf128.h +120]
+  │   ├── load_bits	[vim vectorf128.h +173]
+  │   ├── operator ~ 	[vim vectorf128.h +233]
+  │   ├── operator - 	[vim vectorf128.h +694]
+  │   ├── infinite4f	[vim vectorf128.h +1029]
+  │   ├── exp2	[vim vectorf128.h +1397]
+  │   ├── change_sign	[vim vectorf128.h +1463]
+  │   ├── reinterpret_f	[vim vectorf128.h +2396]
+  │   ├── permute4	[vim vectorf128.h +2498]
+  │   ├── blend4	[vim vectorf128.h +2650]
+  │   ├── Vec8fb	[vim vectorf256e.h +145]
+  │   ├── operator = 	[vim vectorf256e.h +150]
+  │   ├── blend4	[vim vectori128.h +5200]
+  │   ├── operator - 	[vim vectorfp16.h +235]
+  │   ├── change_sign	[vim vectorfp16.h +676]
+  │   └── fraction_2	[vim vectormath_exp.h +605]
+  ├── _mm_cbrt_pd
+  │   └── exp	[vim vectormath_lib.h +65]
+  ├── _mm_cbrt_ps
+  │   └── exp	[vim vectormath_lib.h +65]
+  ├── _mm_cdfnorm_pd
+  │   └── cdfnorm	[vim vectormath_lib.h +272]
+  ├── _mm_cdfnorm_ps
+  │   └── cdfnorm	[vim vectormath_lib.h +272]
+  ├── _mm_cdfnorminv_pd
+  │   └── cdfnorm	[vim vectormath_lib.h +272]
+  ├── _mm_cdfnorminv_ps
+  │   └── cdfnorm	[vim vectormath_lib.h +272]
+  ├── _mm_cmp_epu32_mask
+  │   ├── add_saturated	[vim vectori128.h +3665]
+  │   └── sub_saturated	[vim vectori128.h +3678]
+  ├── _mm_cmp_pd_mask
+  │   └── exponent_f	[vim vectormath_exp.h +694]
+  ├── _mm_cmp_ps_mask
+  │   └── exponent_f	[vim vectormath_exp.h +677]
+  ├── _mm_cmpeq_epi32
+  │   └── compress_saturated	[vim vectori128.h +6173]
+  ├── _mm_cmpeq_epi8
+  │   └── load_bits	[vim vectori128.h +1096]
+  ├── _mm_cmpgt_epi16
+  │   └── load_bits	[vim vectori128.h +2029]
+  ├── _mm_cmpgt_epi32
+  │   ├── load_bits	[vim vectori128.h +2946]
+  │   └── load_bits	[vim vectori128.h +3898]
+  ├── _mm_cmpgt_epi8
+  │   ├── extend_low	[vim vectori128.h +5971]
+  │   └── extend_high	[vim vectori128.h +5977]
+  ├── _mm_cmplt_epu32_mask
+  │   ├── scatter	[vim vectorf128.h +2945]
+  │   ├── scatter	[vim vectori128.h +5940]
+  │   ├── scatter	[vim vectori256.h +5044]
+  │   └── scatter	[vim vectorf256.h +3039]
+  ├── _mm_cos_pd
+  │   └── sin	[vim vectormath_lib.h +134]
+  ├── _mm_cos_ps
+  │   └── sin	[vim vectormath_lib.h +134]
+  ├── _mm_cosh_pd
+  │   └── sinh	[vim vectormath_lib.h +215]
+  ├── _mm_cosh_ps
+  │   └── sinh	[vim vectormath_lib.h +215]
+  ├── _mm_cospi_pd
+  │   └── sinpi	[vim vectormath_lib.h +166]
+  ├── _mm_cospi_ps
+  │   └── sinpi	[vim vectormath_lib.h +166]
+  ├── _mm_cvtepi16_ph
+  │   └── to_float16	[vim vectorfp16.h +599]
+  ├── _mm_cvtepi32_pd
+  │   └── to_double_low	[vim vectorf128.h +2251]
+  ├── _mm_cvtepi32_ps
+  │   └── to_float	[vim vectorf128.h +1258]
+  ├── _mm_cvtepu16_ph
+  │   └── to_float16	[vim vectorfp16.h +604]
+  ├── _mm_cvtepu32_ps
+  │   └── to_float	[vim vectorf128.h +1263]
+  ├── _mm_cvtepu64_pd
+  │   └── to_double	[vim vectorf128.h +2240]
+  ├── _mm_cvtpd_epi32
+  │   ├── round_to_int32	[vim vectorf128.h +2202]
+  │   └── round_to_int32	[vim vectorf128.h +2213]
+  ├── _mm_cvtpd_epi64
+  │   └── roundi	[vim vectorf128.h +2220]
+  ├── _mm_cvtpd_ps
+  │   ├── compress	[vim vectorf128.h +2261]
+  │   └── to_float	[vim vector_convert.h +500]
+  ├── _mm_cvtph_epi16
+  │   └── roundi	[vim vectorfp16.h +588]
+  ├── _mm_cvtph_ps
+  │   ├── convert8h_4f	[vim vectorfp16e.h +353]
+  │   └── convert8h_4f	[vim vectorfp16.h +694]
+  ├── _mm_cvtps_epi32
+  │   └── roundi	[vim vectorf128.h +1245]
+  ├── _mm_cvtps_pd
+  │   ├── extend_low	[vim vectorf128.h +2268]
+  │   └── extend_high	[vim vectorf128.h +2273]
+  ├── _mm_cvtps_ph
+  │   ├── convert4f_8h	[vim vectorfp16e.h +358]
+  │   └── convert4f_8h	[vim vectorfp16.h +699]
+  ├── _mm_cvtsd_f64
+  │   ├── extract	[vim vectorf128.h +1592]
+  │   └── horizontal_add	[vim vectorf128.h +2017]
+  ├── _mm_cvtsh_h
+  │   ├── extract	[vim vectorfp16.h +150]
+  │   └── horizontal_add	[vim vectorfp16.h +495]
+  ├── _mm_cvtsi128_si32
+  │   ├── extract	[vim vectori512.h +269]
+  │   ├── extract	[vim vectori128.h +1033]
+  │   ├── horizontal_add	[vim vectori128.h +1474]
+  │   ├── horizontal_add_x	[vim vectori128.h +1484]
+  │   ├── horizontal_add	[vim vectori128.h +1793]
+  │   ├── horizontal_add_x	[vim vectori128.h +1803]
+  │   ├── extract	[vim vectori128.h +1943]
+  │   ├── horizontal_add	[vim vectori128.h +2356]
+  │   ├── horizontal_add_x	[vim vectori128.h +2384]
+  │   ├── horizontal_add	[vim vectori128.h +2679]
+  │   ├── horizontal_add_x	[vim vectori128.h +2707]
+  │   ├── extract	[vim vectori128.h +2876]
+  │   ├── horizontal_add	[vim vectori128.h +3296]
+  │   ├── extract	[vim vectori256.h +447]
+  │   ├── horizontal_add	[vim vectori256.h +945]
+  │   ├── horizontal_add_x	[vim vectori256.h +957]
+  │   ├── horizontal_add	[vim vectori256.h +1248]
+  │   ├── horizontal_add_x	[vim vectori256.h +1260]
+  │   ├── extract	[vim vectori256.h +1402]
+  │   ├── horizontal_add	[vim vectori256.h +1821]
+  │   ├── horizontal_add_x	[vim vectori256.h +1832]
+  │   ├── horizontal_add_x	[vim vectori256.h +2112]
+  │   ├── extract	[vim vectori256.h +2255]
+  │   ├── horizontal_add	[vim vectori256.h +2665]
+  │   ├── extract	[vim vectori512s.h +142]
+  │   └── extract	[vim vectori512s.h +911]
+  ├── _mm_cvtsi128_si64
+  │   └── _emulate_movq	[vim vectori128.h +3317]
+  ├── _mm_cvtsi32_si128
+  │   ├── operator ++ 	[vim vectori512.h +357]
+  │   ├── operator >> 	[vim vectori512.h +367]
+  │   ├── operator >> 	[vim vectori512.h +622]
+  │   ├── operator ++ 	[vim vectori512.h +918]
+  │   ├── operator >> 	[vim vectori512.h +928]
+  │   ├── operator >> 	[vim vectori512.h +1177]
+  │   ├── load_bits	[vim vectori128.h +1096]
+  │   ├── operator ++ 	[vim vectori128.h +1302]
+  │   ├── operator >> 	[vim vectori128.h +1315]
+  │   ├── operator ++ 	[vim vectori128.h +1648]
+  │   ├── operator >> 	[vim vectori128.h +1661]
+  │   ├── operator ++ 	[vim vectori128.h +2200]
+  │   ├── operator >> 	[vim vectori128.h +2211]
+  │   ├── operator >> 	[vim vectori128.h +2543]
+  │   ├── operator ++ 	[vim vectori128.h +2559]
+  │   ├── operator ++ 	[vim vectori128.h +3131]
+  │   ├── operator >> 	[vim vectori128.h +3141]
+  │   ├── operator >> 	[vim vectori128.h +3508]
+  │   ├── operator ++ 	[vim vectori128.h +4090]
+  │   ├── operator >> 	[vim vectori128.h +4101]
+  │   ├── operator >> 	[vim vectori128.h +4434]
+  │   ├── Divisor_i	[vim vectori128.h +6292]
+  │   ├── operator ++ 	[vim vectori256.h +771]
+  │   ├── operator >> 	[vim vectori256.h +785]
+  │   ├── rotate_left	[vim vectori256.h +1015]
+  │   ├── operator ++ 	[vim vectori256.h +1117]
+  │   ├── operator >> 	[vim vectori256.h +1130]
+  │   ├── operator ++ 	[vim vectori256.h +1658]
+  │   ├── operator >> 	[vim vectori256.h +1668]
+  │   ├── rotate_left	[vim vectori256.h +1881]
+  │   ├── operator >> 	[vim vectori256.h +1978]
+  │   ├── operator ++ 	[vim vectori256.h +1994]
+  │   ├── operator ++ 	[vim vectori256.h +2502]
+  │   ├── operator >> 	[vim vectori256.h +2512]
+  │   ├── operator >> 	[vim vectori256.h +2831]
+  │   ├── operator ++ 	[vim vectori256.h +3376]
+  │   ├── operator >> 	[vim vectori256.h +3386]
+  │   ├── operator >> 	[vim vectori256.h +3695]
+  │   ├── operator ++ 	[vim vectori512s.h +443]
+  │   ├── operator >> 	[vim vectori512s.h +457]
+  │   ├── rotate_left	[vim vectori512s.h +607]
+  │   ├── operator >> 	[vim vectori512s.h +717]
+  │   ├── operator ++ 	[vim vectori512s.h +1019]
+  │   ├── operator >> 	[vim vectori512s.h +1029]
+  │   ├── rotate_left	[vim vectori512s.h +1174]
+  │   ├── operator >> 	[vim vectori512s.h +1274]
+  │   └── operator ++ 	[vim vectori512s.h +1294]
+  ├── _mm_cvtss_f32
+  │   ├── extract	[vim vectorf128.h +616]
+  │   └── horizontal_add	[vim vectorf128.h +1041]
+  ├── _mm_cvttpd_epi32
+  │   ├── truncate_to_int32	[vim vectorf128.h +2172]
+  │   └── truncate_to_int32	[vim vectorf128.h +2181]
+  ├── _mm_cvttpd_epi64
+  │   └── truncatei	[vim vectorf128.h +2188]
+  ├── _mm_cvttph_epi16
+  │   └── truncatei	[vim vectorfp16.h +594]
+  ├── _mm_cvttps_epi32
+  │   └── truncatei	[vim vectorf128.h +1252]
+  ├── _mm_erf_pd
+  │   └── erf	[vim vectormath_lib.h +253]
+  ├── _mm_erf_ps
+  │   └── erf	[vim vectormath_lib.h +253]
+  ├── _mm_erfc_pd
+  │   └── erf	[vim vectormath_lib.h +253]
+  ├── _mm_erfc_ps
+  │   └── erf	[vim vectormath_lib.h +253]
+  ├── _mm_erfinv_pd
+  │   └── erf	[vim vectormath_lib.h +253]
+  ├── _mm_erfinv_ps
+  │   └── erf	[vim vectormath_lib.h +253]
+  ├── _mm_exp10_pd
+  │   └── exp	[vim vectormath_lib.h +65]
+  ├── _mm_exp10_ps
+  │   └── exp	[vim vectormath_lib.h +65]
+  ├── _mm_exp2_pd
+  │   └── exp	[vim vectormath_lib.h +65]
+  ├── _mm_exp2_ps
+  │   └── exp	[vim vectormath_lib.h +65]
+  ├── _mm_exp_pd
+  │   └── exp	[vim vectormath_lib.h +65]
+  ├── _mm_exp_ps
+  │   └── exp	[vim vectormath_lib.h +65]
+  ├── _mm_expm1_pd
+  │   └── exp	[vim vectormath_lib.h +65]
+  ├── _mm_expm1_ps
+  │   └── exp	[vim vectormath_lib.h +65]
+  ├── _mm_fixupimm_pd
+  │   └── log_special_cases	[vim vectormath_exp.h +889]
+  ├── _mm_fixupimm_ps
+  │   └── log_special_cases	[vim vectormath_exp.h +915]
+  ├── _mm_fmadd_pd
+  │   └── mul_add	[vim vectorf128.h +2280]
+  ├── _mm_fmadd_ph
+  │   └── mul_add	[vim vectorfp16.h +623]
+  ├── _mm_fmadd_ps
+  │   └── mul_add	[vim vectorf128.h +1310]
+  ├── _mm_fmsub_pd
+  │   ├── mul_sub	[vim vectorf128.h +2291]
+  │   └── mul_sub_x	[vim vectorf128.h +2317]
+  ├── _mm_fmsub_ph
+  │   └── mul_sub	[vim vectorfp16.h +628]
+  ├── _mm_fmsub_ps
+  │   ├── mul_sub	[vim vectorf128.h +1321]
+  │   └── mul_sub_x	[vim vectorf128.h +1346]
+  ├── _mm_fnmadd_pd
+  │   └── nmul_add	[vim vectorf128.h +2302]
+  ├── _mm_fnmadd_ph
+  │   └── nmul_add	[vim vectorfp16.h +633]
+  ├── _mm_fnmadd_ps
+  │   └── nmul_add	[vim vectorf128.h +1332]
+  ├── _mm_fpclass_pd_mask
+  │   ├── is_finite	[vim vectorf128.h +1931]
+  │   ├── is_inf	[vim vectorf128.h +1945]
+  │   ├── is_nan	[vim vectorf128.h +1959]
+  │   ├── is_subnormal	[vim vectorf128.h +1989]
+  │   ├── is_zero_or_subnormal	[vim vectorf128.h +2004]
+  │   └── log_special_cases	[vim vectormath_exp.h +889]
+  ├── _mm_fpclass_ph_mask
+  │   ├── is_finite	[vim vectorfp16.h +430]
+  │   ├── is_inf	[vim vectorfp16.h +437]
+  │   ├── is_nan	[vim vectorfp16.h +444]
+  │   ├── is_subnormal	[vim vectorfp16.h +451]
+  │   └── is_zero_or_subnormal	[vim vectorfp16.h +457]
+  ├── _mm_fpclass_ps_mask
+  │   ├── is_finite	[vim vectorf128.h +946]
+  │   ├── is_inf	[vim vectorf128.h +960]
+  │   ├── is_nan	[vim vectorf128.h +973]
+  │   ├── is_subnormal	[vim vectorf128.h +1003]
+  │   ├── is_zero_or_subnormal	[vim vectorf128.h +1018]
+  │   └── log_special_cases	[vim vectormath_exp.h +915]
+  ├── _mm_getcsr
+  │   └── get_control_word	[vim vectorf128.h +1432]
+  ├── _mm_getmant_pd
+  │   └── fraction	[vim vectorf128.h +2353]
+  ├── _mm_getmant_ph
+  │   └── fraction	[vim vectorfp16.h +654]
+  ├── _mm_getmant_ps
+  │   └── fraction	[vim vectorf128.h +1382]
+  ├── _mm_hadd_epi16
+  │   └── horizontal_add_x	[vim vectori256.h +957]
+  ├── _mm_hadd_pd
+  │   └── horizontal_add	[vim vectorf128.h +2017]
+  ├── _mm_hadd_ps
+  │   └── horizontal_add	[vim vectorf128.h +1041]
+  ├── _mm_haddq_epi16
+  │   ├── horizontal_add	[vim vectori128.h +2356]
+  │   └── horizontal_add_x	[vim vectori128.h +2384]
+  ├── _mm_haddq_epi32
+  │   ├── horizontal_add	[vim vectori128.h +3296]
+  │   └── horizontal_add_x	[vim vectori128.h +3333]
+  ├── _mm_haddq_epi8
+  │   └── horizontal_add_x	[vim vectori128.h +1484]
+  ├── _mm_haddq_epu16
+  │   ├── horizontal_add	[vim vectori128.h +2679]
+  │   └── horizontal_add_x	[vim vectori128.h +2707]
+  ├── _mm_haddq_epu32
+  │   └── horizontal_add_x	[vim vectori128.h +3650]
+  ├── _mm_i32gather_epi32
+  │   ├── lookup	[vim vectori128.h +5597]
+  │   ├── lookup	[vim vectori128.h +5686]
+  │   └── gather4i	[vim vectori128.h +5821]
+  ├── _mm_i32gather_ps
+  │   └── lookup	[vim vectorf128.h +2791]
+  ├── _mm_i64gather_pd
+  │   └── lookup	[vim vectorf128.h +2852]
+  ├── _mm_load_pd
+  │   ├── load_a	[vim vectorf128.h +1513]
+  │   └── load_a	[vim vectorf256e.h +1122]
+  ├── _mm_load_ph
+  │   └── load_a	[vim vectorfp16.h +108]
+  ├── _mm_load_ps
+  │   ├── load_a	[vim vectorf128.h +519]
+  │   └── load_a	[vim vectorf256e.h +526]
+  ├── _mm_load_si128
+  │   ├── load_a	[vim vectori128.h +773]
+  │   ├── load_a	[vim vectori128.h +962]
+  │   ├── load_a	[vim vectori128.h +1622]
+  │   ├── load_a	[vim vectori128.h +1869]
+  │   ├── load_a	[vim vectori128.h +2498]
+  │   ├── load_a	[vim vectori128.h +2815]
+  │   ├── load_a	[vim vectori128.h +3465]
+  │   ├── load_a	[vim vectori128.h +3745]
+  │   ├── load_a	[vim vectori128.h +4393]
+  │   ├── load_a	[vim vectori256e.h +86]
+  │   ├── load_a	[vim vectori256e.h +248]
+  │   ├── load_a	[vim vectori256e.h +763]
+  │   ├── load_a	[vim vectori256e.h +992]
+  │   ├── load_a	[vim vectori256e.h +1500]
+  │   ├── load_a	[vim vectori256e.h +1728]
+  │   ├── load_a	[vim vectori256e.h +2236]
+  │   ├── load_a	[vim vectori256e.h +2469]
+  │   ├── load_a	[vim vectori256e.h +2952]
+  │   └── load_a	[vim vectorfp16e.h +284]
+  ├── _mm_loadu_pd
+  │   ├── load	[vim vectorf128.h +1504]
+  │   └── load	[vim vectorf256e.h +1114]
+  ├── _mm_loadu_ph
+  │   └── load	[vim vectorfp16.h +101]
+  ├── _mm_loadu_ps
+  │   ├── insert	[vim vectorf128.h +152]
+  │   ├── insert	[vim vectorf128.h +342]
+  │   ├── load	[vim vectorf128.h +510]
+  │   └── load	[vim vectorf256e.h +519]
+  ├── _mm_loadu_si128
+  │   ├── load	[vim vectori128.h +764]
+  │   ├── load	[vim vectori128.h +957]
+  │   ├── load	[vim vectori128.h +1617]
+  │   ├── load	[vim vectori128.h +1864]
+  │   ├── load	[vim vectori128.h +2493]
+  │   ├── load	[vim vectori128.h +2810]
+  │   ├── load	[vim vectori128.h +3460]
+  │   ├── load	[vim vectori128.h +3740]
+  │   ├── load	[vim vectori128.h +4388]
+  │   ├── load	[vim vectori256e.h +78]
+  │   ├── load	[vim vectori256e.h +242]
+  │   ├── load	[vim vectori256e.h +757]
+  │   ├── load	[vim vectori256e.h +986]
+  │   ├── load	[vim vectori256e.h +1494]
+  │   ├── load	[vim vectori256e.h +1722]
+  │   ├── load	[vim vectori256e.h +2230]
+  │   ├── load	[vim vectori256e.h +2463]
+  │   ├── load	[vim vectori256e.h +2946]
+  │   └── load	[vim vectorfp16e.h +277]
+  ├── _mm_log10_pd
+  │   └── log	[vim vectormath_lib.h +108]
+  ├── _mm_log10_ps
+  │   └── log	[vim vectormath_lib.h +108]
+  ├── _mm_log1p_pd
+  │   └── log	[vim vectormath_lib.h +108]
+  ├── _mm_log1p_ps
+  │   └── log	[vim vectormath_lib.h +108]
+  ├── _mm_log2_pd
+  │   └── log	[vim vectormath_lib.h +108]
+  ├── _mm_log2_ps
+  │   └── log	[vim vectormath_lib.h +108]
+  ├── _mm_log_pd
+  │   └── log	[vim vectormath_lib.h +108]
+  ├── _mm_log_ps
+  │   └── log	[vim vectormath_lib.h +108]
+  ├── _mm_mask_add_epi16
+  │   ├── if_add	[vim vectori128.h +2329]
+  │   └── if_add	[vim vectori128.h +2651]
+  ├── _mm_mask_add_epi32
+  │   ├── if_add	[vim vectori128.h +3269]
+  │   └── if_add	[vim vectori128.h +3617]
+  ├── _mm_mask_add_epi64
+  │   ├── if_add	[vim vectori128.h +4269]
+  │   └── if_add	[vim vectori128.h +4553]
+  ├── _mm_mask_add_epi8
+  │   ├── if_add	[vim vectori128.h +1451]
+  │   └── if_add	[vim vectori128.h +1769]
+  ├── _mm_mask_add_pd
+  │   └── if_add	[vim vectorf128.h +1857]
+  ├── _mm_mask_add_ph
+  │   └── if_add	[vim vectorfp16.h +388]
+  ├── _mm_mask_add_ps
+  │   └── if_add	[vim vectorf128.h +879]
+  ├── _mm_mask_broadcastss_ps
+  │   └── insert	[vim vectorf128.h +593]
+  ├── _mm_mask_div_pd
+  │   └── if_div	[vim vectorf128.h +1884]
+  ├── _mm_mask_div_ph
+  │   └── if_div	[vim vectorfp16.h +403]
+  ├── _mm_mask_div_ps
+  │   └── if_div	[vim vectorf128.h +906]
+  ├── _mm_mask_i32scatter_epi32
+  │   ├── scatter	[vim vectori128.h +5906]
+  │   └── scatter	[vim vectori128.h +5940]
+  ├── _mm_mask_i32scatter_ps
+  │   ├── scatter	[vim vectorf128.h +2913]
+  │   └── scatter	[vim vectorf128.h +2945]
+  ├── _mm_mask_mov_epi16
+  │   ├── select	[vim vectori128.h +2320]
+  │   ├── select	[vim vectori128.h +2642]
+  │   ├── insert	[vim vectorfp16.h +144]
+  │   └── select	[vim vectorfp16.h +383]
+  ├── _mm_mask_mov_epi32
+  │   ├── select	[vim vectori128.h +3260]
+  │   ├── select	[vim vectori128.h +3608]
+  │   └── blend4	[vim vectori128.h +5200]
+  ├── _mm_mask_mov_epi64
+  │   ├── select	[vim vectori128.h +4260]
+  │   ├── select	[vim vectori128.h +4544]
+  │   └── blend2	[vim vectori128.h +5107]
+  ├── _mm_mask_mov_epi8
+  │   ├── operator * 	[vim vectori128.h +1280]
+  │   ├── operator >> 	[vim vectori128.h +1315]
+  │   ├── select	[vim vectori128.h +1442]
+  │   ├── select	[vim vectori128.h +1760]
+  │   └── blend16	[vim vectori128.h +5393]
+  ├── _mm_mask_mov_pd
+  │   ├── select	[vim vectorf128.h +1848]
+  │   ├── blend2	[vim vectorf128.h +2573]
+  │   └── log_special_cases	[vim vectormath_exp.h +889]
+  ├── _mm_mask_mov_ps
+  │   ├── select	[vim vectorf128.h +870]
+  │   ├── blend4	[vim vectorf128.h +2650]
+  │   └── log_special_cases	[vim vectormath_exp.h +915]
+  ├── _mm_mask_movedup_pd
+  │   └── insert	[vim vectorf128.h +1577]
+  ├── _mm_mask_mul_pd
+  │   └── if_mul	[vim vectorf128.h +1875]
+  ├── _mm_mask_mul_ph
+  │   └── if_mul	[vim vectorfp16.h +398]
+  ├── _mm_mask_mul_ps
+  │   └── if_mul	[vim vectorf128.h +897]
+  ├── _mm_mask_mullo_epi16
+  │   ├── if_mul	[vim vectori128.h +2347]
+  │   └── if_mul	[vim vectori128.h +2669]
+  ├── _mm_mask_mullo_epi32
+  │   ├── if_mul	[vim vectori128.h +3287]
+  │   └── if_mul	[vim vectori128.h +3635]
+  ├── _mm_mask_mullo_epi64
+  │   ├── if_mul	[vim vectori128.h +4287]
+  │   └── if_mul	[vim vectori128.h +4571]
+  ├── _mm_mask_set1_epi16
+  │   └── insert	[vim vectori128.h +1917]
+  ├── _mm_mask_set1_epi32
+  │   ├── insert	[vim vectori128.h +2864]
+  │   └── add_saturated	[vim vectori128.h +3665]
+  ├── _mm_mask_set1_epi64
+  │   └── insert	[vim vectori128.h +3794]
+  ├── _mm_mask_set1_epi8
+  │   └── insert	[vim vectori128.h +1015]
+  ├── _mm_mask_storeu_epi16
+  │   ├── store_partial	[vim vectori128.h +1895]
+  │   └── store_partial	[vim vectorfp16.h +135]
+  ├── _mm_mask_storeu_epi32
+  │   └── store_partial	[vim vectori128.h +2842]
+  ├── _mm_mask_storeu_epi64
+  │   └── store_partial	[vim vectori128.h +3769]
+  ├── _mm_mask_storeu_epi8
+  │   └── store_partial	[vim vectori128.h +989]
+  ├── _mm_mask_storeu_pd
+  │   └── store_partial	[vim vectorf128.h +1554]
+  ├── _mm_mask_storeu_ps
+  │   └── store_partial	[vim vectorf128.h +565]
+  ├── _mm_mask_sub_epi16
+  │   ├── if_sub	[vim vectori128.h +2338]
+  │   └── if_sub	[vim vectori128.h +2660]
+  ├── _mm_mask_sub_epi32
+  │   ├── if_sub	[vim vectori128.h +3278]
+  │   └── if_sub	[vim vectori128.h +3626]
+  ├── _mm_mask_sub_epi64
+  │   ├── if_sub	[vim vectori128.h +4278]
+  │   └── if_sub	[vim vectori128.h +4562]
+  ├── _mm_mask_sub_epi8
+  │   ├── if_sub	[vim vectori128.h +1460]
+  │   └── if_sub	[vim vectori128.h +1778]
+  ├── _mm_mask_sub_pd
+  │   └── if_sub	[vim vectorf128.h +1866]
+  ├── _mm_mask_sub_ph
+  │   └── if_sub	[vim vectorfp16.h +393]
+  ├── _mm_mask_sub_ps
+  │   └── if_sub	[vim vectorf128.h +888]
+  ├── _mm_mask_unpackhi_epi64
+  │   └── extract	[vim vectori128.h +3826]
+  ├── _mm_mask_unpackhi_pd
+  │   └── extract	[vim vectorf128.h +1592]
+  ├── _mm_maskz_compress_epi16
+  │   ├── extract	[vim vectori128.h +1943]
+  │   ├── permute8	[vim vectori128.h +4759]
+  │   └── extract	[vim vectorfp16.h +150]
+  ├── _mm_maskz_compress_epi32
+  │   └── extract	[vim vectori128.h +2876]
+  ├── _mm_maskz_compress_epi8
+  │   ├── extract	[vim vectori128.h +1033]
+  │   └── permute16	[vim vectori128.h +4913]
+  ├── _mm_maskz_compress_ps
+  │   └── extract	[vim vectorf128.h +616]
+  ├── _mm_maskz_cvtepi64_pd
+  │   └── to_double	[vim vectorf128.h +2230]
+  ├── _mm_maskz_expand_epi16
+  │   └── permute8	[vim vectori128.h +4759]
+  ├── _mm_maskz_expand_epi8
+  │   └── permute16	[vim vectori128.h +4913]
+  ├── _mm_maskz_getexp_pd
+  │   └── exponent_f	[vim vectormath_exp.h +694]
+  ├── _mm_maskz_getexp_ps
+  │   └── exponent_f	[vim vectormath_exp.h +677]
+  ├── _mm_maskz_loadu_epi16
+  │   ├── load_partial	[vim vectori128.h +1874]
+  │   └── load_partial	[vim vectorfp16.h +130]
+  ├── _mm_maskz_loadu_epi32
+  │   └── load_partial	[vim vectori128.h +2820]
+  ├── _mm_maskz_loadu_epi64
+  │   └── load_partial	[vim vectori128.h +3750]
+  ├── _mm_maskz_loadu_epi8
+  │   └── load_partial	[vim vectori128.h +967]
+  ├── _mm_maskz_loadu_pd
+  │   └── load_partial	[vim vectorf128.h +1537]
+  ├── _mm_maskz_loadu_ps
+  │   └── load_partial	[vim vectorf128.h +543]
+  ├── _mm_maskz_mov_epi16
+  │   ├── cutoff	[vim vectori128.h +1908]
+  │   ├── permute8	[vim vectori128.h +4759]
+  │   ├── blend8	[vim vectori128.h +5295]
+  │   ├── cutoff	[vim vectorfp16.h +139]
+  │   └── operator & 	[vim vectorfp16.h +340]
+  ├── _mm_maskz_mov_epi32
+  │   ├── cutoff	[vim vectori128.h +2855]
+  │   ├── sub_saturated	[vim vectori128.h +3678]
+  │   ├── permute4	[vim vectori128.h +4686]
+  │   └── blend4	[vim vectori128.h +5200]
+  ├── _mm_maskz_mov_epi64
+  │   ├── cutoff	[vim vectori128.h +3784]
+  │   ├── permute2	[vim vectori128.h +4626]
+  │   └── blend2	[vim vectori128.h +5107]
+  ├── _mm_maskz_mov_epi8
+  │   ├── cutoff	[vim vectori128.h +1003]
+  │   ├── permute16	[vim vectori128.h +4913]
+  │   └── blend16	[vim vectori128.h +5393]
+  ├── _mm_maskz_mov_pd
+  │   ├── cutoff	[vim vectorf128.h +1567]
+  │   ├── permute2	[vim vectorf128.h +2446]
+  │   └── blend2	[vim vectorf128.h +2573]
+  ├── _mm_maskz_mov_ps
+  │   ├── cutoff	[vim vectorf128.h +579]
+  │   ├── permute4	[vim vectorf128.h +2498]
+  │   └── blend4	[vim vectorf128.h +2650]
+  ├── _mm_maskz_permutex2var_epi16
+  │   └── blend8	[vim vectori128.h +5295]
+  ├── _mm_maskz_permutex2var_epi8
+  │   └── blend16	[vim vectori128.h +5393]
+  ├── _mm_maskz_set1_epi32
+  │   └── divide_by_ui	[vim vectori128.h +6673]
+  ├── _mm_max_epi16
+  │   └── max	[vim vectori128.h +2421]
+  ├── _mm_max_epi32
+  │   └── max	[vim vectori128.h +3375]
+  ├── _mm_max_epi8
+  │   └── max	[vim vectori128.h +1522]
+  ├── _mm_max_epu16
+  │   └── max	[vim vectori128.h +2752]
+  ├── _mm_max_epu32
+  │   └── max	[vim vectori128.h +3690]
+  ├── _mm_max_epu8
+  │   └── max	[vim vectori128.h +1821]
+  ├── _mm_max_pd
+  │   └── max	[vim vectorf128.h +2042]
+  ├── _mm_max_ph
+  │   └── max	[vim vectorfp16.h +516]
+  ├── _mm_max_ps
+  │   └── max	[vim vectorf128.h +1057]
+  ├── _mm_min_epi16
+  │   └── min	[vim vectori128.h +2426]
+  ├── _mm_min_epi32
+  │   └── min	[vim vectori128.h +3385]
+  ├── _mm_min_epi8
+  │   └── min	[vim vectori128.h +1535]
+  ├── _mm_min_epu16
+  │   ├── abs_saturated	[vim vectori128.h +2441]
+  │   ├── min	[vim vectori128.h +2765]
+  │   └── compress_saturated	[vim vectori128.h +6065]
+  ├── _mm_min_epu32
+  │   ├── abs_saturated	[vim vectori128.h +3406]
+  │   ├── min	[vim vectori128.h +3699]
+  │   └── compress_saturated	[vim vectori128.h +6121]
+  ├── _mm_min_epu64
+  │   └── abs_saturated	[vim vectori128.h +4329]
+  ├── _mm_min_epu8
+  │   ├── abs_saturated	[vim vectori128.h +1558]
+  │   └── min	[vim vectori128.h +1826]
+  ├── _mm_min_pd
+  │   └── min	[vim vectorf128.h +2047]
+  ├── _mm_min_ph
+  │   └── min	[vim vectorfp16.h +521]
+  ├── _mm_min_ps
+  │   └── min	[vim vectorf128.h +1062]
+  ├── _mm_movehdup_ps
+  │   ├── permute4	[vim vectorf128.h +2498]
+  │   └── horizontal_add	[vim vectorfp16.h +495]
+  ├── _mm_movehl_ps
+  │   ├── extend_high	[vim vectorf128.h +2273]
+  │   └── horizontal_add	[vim vectorfp16.h +495]
+  ├── _mm_moveldup_ps
+  │   └── permute4	[vim vectorf128.h +2498]
+  ├── _mm_movemask_epi8
+  │   ├── horizontal_and	[vim vectori128.h +1208]
+  │   ├── horizontal_and	[vim vectori128.h +2117]
+  │   ├── horizontal_and	[vim vectori128.h +3038]
+  │   └── horizontal_and	[vim vectori128.h +3990]
+  ├── _mm_movemask_pd
+  │   ├── horizontal_and	[vim vectorf128.h +462]
+  │   └── horizontal_or	[vim vectorf128.h +468]
+  ├── _mm_movemask_ps
+  │   ├── horizontal_and	[vim vectorf128.h +272]
+  │   └── horizontal_or	[vim vectorf128.h +278]
+  ├── _mm_mul_epi32
+  │   └── operator / 	[vim vectori128.h +6483]
+  ├── _mm_mul_epu32
+  │   ├── operator / 	[vim vectori128.h +6520]
+  │   └── divide_by_ui	[vim vectori128.h +6673]
+  ├── _mm_mulhi_epu16
+  │   └── divide_by_ui	[vim vectori128.h +6800]
+  ├── _mm_mullo_epi16
+  │   └── operator * 	[vim vectori128.h +1280]
+  ├── _mm_or_pd
+  │   ├── insert	[vim vectorf128.h +342]
+  │   └── round	[vim vectorf128.h +2112]
+  ├── _mm_or_ps
+  │   ├── insert	[vim vectorf128.h +152]
+  │   └── operator | 	[vim vectorfp16.h +348]
+  ├── _mm_or_si128
+  │   ├── blend8	[vim vectori128.h +5295]
+  │   ├── blend16	[vim vectori128.h +5393]
+  │   └── compress_saturated	[vim vectori128.h +6173]
+  ├── _mm_packs_epi16
+  │   └── compress_saturated	[vim vectori128.h +6053]
+  ├── _mm_packs_epi32
+  │   └── compress_saturated	[vim vectori128.h +6109]
+  ├── _mm_packus_epi16
+  │   ├── compress	[vim vectori128.h +6044]
+  │   └── compress_saturated	[vim vectori128.h +6065]
+  ├── _mm_packus_epi32
+  │   ├── compress	[vim vectori128.h +6090]
+  │   └── compress_saturated	[vim vectori128.h +6121]
+  ├── _mm_perm_epi8
+  │   ├── lookup32	[vim vectori128.h +5528]
+  │   ├── lookup16	[vim vectori128.h +5581]
+  │   ├── lookup8	[vim vectori128.h +5634]
+  │   ├── lookup32	[vim vectori256.h +4654]
+  │   └── lookup32	[vim vectori256e.h +3265]
+  ├── _mm_permutevar_pd
+  │   ├── lookup2	[vim vectorf128.h +2824]
+  │   └── lookup4	[vim vectorf128.h +2835]
+  ├── _mm_permutevar_ps
+  │   └── lookup4	[vim vectorf128.h +2751]
+  ├── _mm_popcnt_u32
+  │   └── vml_popcnt	[vim instrset.h +248]
+  ├── _mm_popcnt_u64
+  │   └── vml_popcnt	[vim instrset.h +252]
+  ├── _mm_pow_pd
+  │   └── exp	[vim vectormath_lib.h +65]
+  ├── _mm_pow_ps
+  │   └── exp	[vim vectormath_lib.h +65]
+  ├── _mm_range_pd
+  │   └── abs	[vim vectorf128.h +2053]
+  ├── _mm_range_ps
+  │   └── abs	[vim vectorf128.h +1068]
+  ├── _mm_rcp_ph
+  │   └── approx_recipr	[vim vectorfp16.h +611]
+  ├── _mm_rol_epi32
+  │   └── permute8	[vim vectori128.h +4759]
+  ├── _mm_rolv_epi32
+  │   └── rotate_left	[vim vectori128.h +3418]
+  ├── _mm_rolv_epi64
+  │   └── rotate_left	[vim vectori128.h +4346]
+  ├── _mm_rot_epi16
+  │   └── rotate_left	[vim vectori128.h +2453]
+  ├── _mm_rot_epi8
+  │   └── rotate_left	[vim vectori128.h +1570]
+  ├── _mm_round_pd
+  │   ├── round	[vim vectorf128.h +2097]
+  │   ├── truncate	[vim vectorf128.h +2131]
+  │   ├── floor	[vim vectorf128.h +2144]
+  │   └── ceil	[vim vectorf128.h +2158]
+  ├── _mm_round_ps
+  │   ├── round	[vim vectorf128.h +1189]
+  │   ├── truncate	[vim vectorf128.h +1203]
+  │   ├── floor	[vim vectorf128.h +1217]
+  │   └── ceil	[vim vectorf128.h +1231]
+  ├── _mm_roundscale_ph
+  │   ├── round	[vim vectorfp16.h +568]
+  │   ├── truncate	[vim vectorfp16.h +573]
+  │   ├── floor	[vim vectorfp16.h +578]
+  │   └── ceil	[vim vectorfp16.h +583]
+  ├── _mm_rsqrt_ph
+  │   └── approx_rsqrt	[vim vectorfp16.h +616]
+  ├── _mm_sad_epu8
+  │   ├── horizontal_add	[vim vectori128.h +1474]
+  │   ├── horizontal_add	[vim vectori128.h +1793]
+  │   └── horizontal_add_x	[vim vectori128.h +1803]
+  ├── _mm_set1_epi16
+  │   ├── Vec8s	[vim vectori128.h +1843]
+  │   ├── rotate_left	[vim vectori128.h +2453]
+  │   ├── Vec8us	[vim vectori128.h +2476]
+  │   ├── Divisor_s	[vim vectori128.h +6390]
+  │   ├── Divisor_us	[vim vectori128.h +6438]
+  │   ├── divide_by_ui	[vim vectori128.h +6800]
+  │   ├── Vec16s	[vim vectori256e.h +963]
+  │   ├── Vec16us	[vim vectori256e.h +1471]
+  │   ├── Vec8h	[vim vectorfp16e.h +256]
+  │   ├── infinite8h	[vim vectorfp16e.h +920]
+  │   ├── nan_vec	[vim vectorfp16e.h +926]
+  │   ├── abs	[vim vectorfp16e.h +967]
+  │   └── infinite8h	[vim vectorfp16.h +462]
+  ├── _mm_set1_epi32
+  │   ├── Vec4fb	[vim vectorf128.h +111]
+  │   ├── operator ~ 	[vim vectorf128.h +233]
+  │   ├── Vec2db	[vim vectorf128.h +301]
+  │   ├── operator ~ 	[vim vectorf128.h +423]
+  │   ├── operator - 	[vim vectorf128.h +694]
+  │   ├── infinite4f	[vim vectorf128.h +1029]
+  │   ├── operator ~ 	[vim vectori128.h +828]
+  │   ├── horizontal_and	[vim vectori128.h +886]
+  │   ├── Vec4i	[vim vectori128.h +2789]
+  │   ├── rotate_left	[vim vectori128.h +3418]
+  │   ├── Vec4ui	[vim vectori128.h +3443]
+  │   ├── compress	[vim vectori128.h +6044]
+  │   ├── compress_saturated	[vim vectori128.h +6065]
+  │   ├── compress	[vim vectori128.h +6090]
+  │   ├── compress_saturated	[vim vectori128.h +6121]
+  │   ├── compress_saturated	[vim vectori128.h +6173]
+  │   ├── Divisor_i	[vim vectori128.h +6292]
+  │   ├── Divisor_ui	[vim vectori128.h +6340]
+  │   ├── Divisor_s	[vim vectori128.h +6390]
+  │   ├── Vec8i	[vim vectori256e.h +1700]
+  │   ├── Vec8ui	[vim vectori256e.h +2208]
+  │   ├── operator - 	[vim vectorfp16e.h +685]
+  │   └── operator - 	[vim vectorfp16.h +235]
+  ├── _mm_set1_epi64x
+  │   ├── Vec2q	[vim vectori128.h +3719]
+  │   └── rotate_left	[vim vectori128.h +4346]
+  ├── _mm_set1_epi8
+  │   ├── Vec16c	[vim vectori128.h +935]
+  │   ├── operator ++ 	[vim vectori128.h +1302]
+  │   ├── rotate_left	[vim vectori128.h +1570]
+  │   ├── Vec16uc	[vim vectori128.h +1598]
+  │   ├── operator ++ 	[vim vectori128.h +1648]
+  │   ├── operator >> 	[vim vectori128.h +1661]
+  │   ├── load_bits	[vim vectori128.h +2029]
+  │   ├── load_bits	[vim vectori128.h +2946]
+  │   ├── load_bits	[vim vectori128.h +3898]
+  │   ├── Vec32c	[vim vectori256e.h +215]
+  │   └── Vec32uc	[vim vectori256e.h +732]
+  ├── _mm_set1_pd
+  │   ├── Vec2d	[vim vectorf128.h +1483]
+  │   └── Vec4d	[vim vectorf256e.h +1090]
+  ├── _mm_set1_ph
+  │   ├── Vec8h	[vim vectorfp16.h +80]
+  │   └── insert	[vim vectorfp16.h +144]
+  ├── _mm_set1_ps
+  │   ├── Vec4f	[vim vectorf128.h +489]
+  │   └── Vec8f	[vim vectorf256e.h +497]
+  ├── _mm_set_epi32
+  │   └── compress_saturated	[vim vectori128.h +6155]
+  ├── _mm_set_epi64x
+  │   └── Vec2q	[vim vectori128.h +3723]
+  ├── _mm_set_sd
+  │   ├── insert	[vim vectorf128.h +1577]
+  │   ├── insert	[vim vectorf512.h +810]
+  │   └── insert	[vim vectorf256.h +1536]
+  ├── _mm_set_ss
+  │   ├── insert	[vim vectorf128.h +593]
+  │   ├── insert	[vim vectorf512.h +167]
+  │   └── insert	[vim vectorf256.h +678]
+  ├── _mm_setcsr
+  │   └── set_control_word	[vim vectorf128.h +1438]
+  ├── _mm_setr_epi16
+  │   ├── Vec8s	[vim vectori128.h +1847]
+  │   ├── Vec8us	[vim vectori128.h +2480]
+  │   ├── Vec16s	[vim vectori256e.h +967]
+  │   ├── Vec16us	[vim vectori256e.h +1475]
+  │   └── Vec8h	[vim vectorfp16e.h +260]
+  ├── _mm_setr_epi32
+  │   ├── Vec4fb	[vim vectorf128.h +98]
+  │   ├── Vec2db	[vim vectorf128.h +305]
+  │   ├── operator - 	[vim vectorf128.h +1670]
+  │   ├── constant4ui	[vim vectori128.h +52]
+  │   ├── Vec4i	[vim vectori128.h +2793]
+  │   ├── Vec4ui	[vim vectori128.h +3447]
+  │   ├── Divisor_ui	[vim vectori128.h +6340]
+  │   ├── Divisor_s	[vim vectori128.h +6390]
+  │   ├── Divisor_us	[vim vectori128.h +6438]
+  │   ├── Vec8i	[vim vectori256e.h +1704]
+  │   └── Vec8ui	[vim vectori256e.h +2212]
+  ├── _mm_setr_epi8
+  │   ├── Vec16c	[vim vectori128.h +939]
+  │   ├── Vec16uc	[vim vectori128.h +1602]
+  │   ├── Vec32c	[vim vectori256e.h +219]
+  │   └── Vec32uc	[vim vectori256e.h +736]
+  ├── _mm_setr_pd
+  │   ├── Vec2d	[vim vectorf128.h +1487]
+  │   └── Vec4d	[vim vectorf256e.h +1094]
+  ├── _mm_setr_ph
+  │   └── Vec8h	[vim vectorfp16.h +84]
+  ├── _mm_setr_ps
+  │   ├── Vec4f	[vim vectorf128.h +493]
+  │   └── Vec8f	[vim vectorf256e.h +501]
+  ├── _mm_setzero_pd
+  │   ├── permute2	[vim vectorf128.h +2446]
+  │   ├── blend2	[vim vectorf128.h +2573]
+  │   ├── load_partial	[vim vectorf256e.h +1146]
+  │   └── extend_z	[vim vectorf256e.h +1741]
+  ├── _mm_setzero_ps
+  │   ├── permute4	[vim vectorf128.h +2498]
+  │   ├── blend4	[vim vectorf128.h +2650]
+  │   ├── load_partial	[vim vectorf256e.h +549]
+  │   └── extend_z	[vim vectorf256e.h +1741]
+  ├── _mm_setzero_si128
+  │   ├── load_bits	[vim vectori128.h +1096]
+  │   ├── operator - 	[vim vectori128.h +1257]
+  │   ├── operator ! 	[vim vectori128.h +1429]
+  │   ├── horizontal_add	[vim vectori128.h +1474]
+  │   ├── horizontal_add	[vim vectori128.h +1793]
+  │   ├── horizontal_add_x	[vim vectori128.h +1803]
+  │   ├── load_bits	[vim vectori128.h +2029]
+  │   ├── operator - 	[vim vectori128.h +2165]
+  │   ├── load_bits	[vim vectori128.h +2946]
+  │   ├── operator - 	[vim vectori128.h +3086]
+  │   ├── operator ! 	[vim vectori128.h +3246]
+  │   ├── load_bits	[vim vectori128.h +3898]
+  │   ├── operator - 	[vim vectori128.h +4040]
+  │   ├── operator ! 	[vim vectori128.h +4252]
+  │   ├── permute2	[vim vectori128.h +4626]
+  │   ├── permute4	[vim vectori128.h +4686]
+  │   ├── permute8	[vim vectori128.h +4759]
+  │   ├── permute16	[vim vectori128.h +4913]
+  │   ├── blend2	[vim vectori128.h +5107]
+  │   ├── blend4	[vim vectori128.h +5200]
+  │   ├── blend8	[vim vectori128.h +5295]
+  │   ├── blend16	[vim vectori128.h +5393]
+  │   ├── shift_bytes_up	[vim vectori128.h +5754]
+  │   ├── shift_bytes_down	[vim vectori128.h +5775]
+  │   ├── extend_low	[vim vectori128.h +5971]
+  │   ├── extend_high	[vim vectori128.h +5977]
+  │   ├── extend_low	[vim vectori128.h +5983]
+  │   ├── extend_high	[vim vectori128.h +5988]
+  │   ├── extend_low	[vim vectori128.h +6007]
+  │   ├── extend_high	[vim vectori128.h +6012]
+  │   ├── extend_low	[vim vectori128.h +6031]
+  │   ├── extend_high	[vim vectori128.h +6036]
+  │   ├── compress_saturated	[vim vectori128.h +6173]
+  │   ├── divide_by_i	[vim vectori128.h +6619]
+  │   ├── divide_by_i	[vim vectori128.h +6743]
+  │   ├── divide_by_ui	[vim vectori128.h +6800]
+  │   ├── extend_z	[vim vectori256e.h +3725]
+  │   └── extend_z	[vim vectori256e.h +3750]
+  ├── _mm_shuffle_epi32
+  │   ├── horizontal_add_x	[vim vectori128.h +1484]
+  │   ├── horizontal_add	[vim vectori128.h +2356]
+  │   ├── horizontal_add_x	[vim vectori128.h +2384]
+  │   ├── horizontal_add	[vim vectori128.h +2679]
+  │   ├── horizontal_add_x	[vim vectori128.h +2707]
+  │   ├── horizontal_add	[vim vectori128.h +3296]
+  │   ├── permute2	[vim vectori128.h +4626]
+  │   ├── permute4	[vim vectori128.h +4686]
+  │   ├── compress	[vim vectori128.h +6146]
+  │   ├── horizontal_add	[vim vectori256.h +1821]
+  │   ├── horizontal_add_x	[vim vectori256.h +1832]
+  │   ├── horizontal_add_x	[vim vectori256.h +2112]
+  │   └── horizontal_add	[vim vectori256.h +2665]
+  ├── _mm_shuffle_epi8
+  │   ├── permute4	[vim vectorf128.h +2498]
+  │   ├── load_bits	[vim vectori128.h +1096]
+  │   ├── permute4	[vim vectori128.h +4686]
+  │   ├── permute8	[vim vectori128.h +4759]
+  │   ├── permute16	[vim vectori128.h +4913]
+  │   ├── lookup16	[vim vectori128.h +5516]
+  │   ├── lookup8	[vim vectori128.h +5570]
+  │   ├── lookup4	[vim vectori128.h +5626]
+  │   └── lookup2	[vim vectori128.h +5712]
+  ├── _mm_shuffle_pd
+  │   ├── permute2	[vim vectorf128.h +2446]
+  │   ├── blend2	[vim vectorf128.h +2573]
+  │   └── blend2	[vim vectori128.h +5107]
+  ├── _mm_shuffle_ps
+  │   ├── compress	[vim vectorf128.h +2261]
+  │   ├── permute4	[vim vectorf128.h +2498]
+  │   ├── blend4	[vim vectorf128.h +2650]
+  │   └── blend4	[vim vectori128.h +5200]
+  ├── _mm_shufflehi_epi16
+  │   └── permute8	[vim vectori128.h +4759]
+  ├── _mm_shufflelo_epi16
+  │   ├── permute8	[vim vectori128.h +4759]
+  │   ├── horizontal_add	[vim vectori256.h +1821]
+  │   └── horizontal_add	[vim vectorfp16.h +495]
+  ├── _mm_sin_pd
+  │   └── sin	[vim vectormath_lib.h +134]
+  ├── _mm_sin_ps
+  │   └── sin	[vim vectormath_lib.h +134]
+  ├── _mm_sincos_pd
+  │   └── sin	[vim vectormath_lib.h +134]
+  ├── _mm_sincos_ps
+  │   └── sin	[vim vectormath_lib.h +134]
+  ├── _mm_sinh_pd
+  │   └── sinh	[vim vectormath_lib.h +215]
+  ├── _mm_sinh_ps
+  │   └── sinh	[vim vectormath_lib.h +215]
+  ├── _mm_sinpi_pd
+  │   └── sinpi	[vim vectormath_lib.h +166]
+  ├── _mm_sinpi_ps
+  │   └── sinpi	[vim vectormath_lib.h +166]
+  ├── _mm_sll_epi16
+  │   ├── operator ++ 	[vim vectori128.h +1302]
+  │   └── operator ++ 	[vim vectori128.h +1648]
+  ├── _mm_slli_epi16
+  │   └── operator * 	[vim vectori128.h +1280]
+  ├── _mm_slli_epi64
+  │   └── lookup4	[vim vectorf128.h +2835]
+  ├── _mm_sqrt_pd
+  │   └── sqrt	[vim vectorf128.h +2063]
+  ├── _mm_sqrt_ph
+  │   └── sqrt	[vim vectorfp16.h +532]
+  ├── _mm_sqrt_ps
+  │   └── sqrt	[vim vectorf128.h +1078]
+  ├── _mm_sra_epi16
+  │   ├── operator >> 	[vim vectori128.h +1315]
+  │   └── operator / 	[vim vectori128.h +6539]
+  ├── _mm_sra_epi32
+  │   └── operator / 	[vim vectori128.h +6483]
+  ├── _mm_srai_epi16
+  │   ├── extend_low	[vim vectori128.h +5995]
+  │   ├── extend_high	[vim vectori128.h +6001]
+  │   ├── operator / 	[vim vectori128.h +6539]
+  │   └── divide_by_i	[vim vectori128.h +6743]
+  ├── _mm_srai_epi32
+  │   ├── add_saturated	[vim vectori128.h +3348]
+  │   ├── sub_saturated	[vim vectori128.h +3362]
+  │   ├── extend_low	[vim vectori128.h +6019]
+  │   ├── extend_high	[vim vectori128.h +6025]
+  │   ├── operator / 	[vim vectori128.h +6483]
+  │   └── divide_by_i	[vim vectori128.h +6619]
+  ├── _mm_srl_epi16
+  │   ├── operator >> 	[vim vectori128.h +1661]
+  │   └── operator / 	[vim vectori128.h +6550]
+  ├── _mm_srl_epi32
+  │   └── operator / 	[vim vectori128.h +6520]
+  ├── _mm_srli_epi16
+  │   ├── operator * 	[vim vectori128.h +1280]
+  │   ├── divide_by_i	[vim vectori128.h +6743]
+  │   └── divide_by_ui	[vim vectori128.h +6800]
+  ├── _mm_srli_epi32
+  │   ├── horizontal_add_x	[vim vectori128.h +2707]
+  │   ├── add_saturated	[vim vectori128.h +3348]
+  │   ├── sub_saturated	[vim vectori128.h +3362]
+  │   ├── lookup	[vim vectori128.h +5597]
+  │   ├── divide_by_i	[vim vectori128.h +6619]
+  │   └── divide_by_ui	[vim vectori128.h +6673]
+  ├── _mm_srli_epi64
+  │   ├── compress_saturated	[vim vectori128.h +6173]
+  │   ├── operator / 	[vim vectori128.h +6483]
+  │   ├── operator / 	[vim vectori128.h +6520]
+  │   └── divide_by_ui	[vim vectori128.h +6673]
+  ├── _mm_srli_si128
+  │   └── to_double_high	[vim vectorf128.h +2256]
+  ├── _mm_store_pd
+  │   ├── store_a	[vim vectorf128.h +1526]
+  │   └── store_a	[vim vectorf256e.h +1135]
+  ├── _mm_store_ph
+  │   └── store_a	[vim vectorfp16.h +119]
+  ├── _mm_store_ps
+  │   ├── store_a	[vim vectorf128.h +532]
+  │   └── store_a	[vim vectorf256e.h +538]
+  ├── _mm_store_si128
+  │   ├── store_a	[vim vectori128.h +785]
+  │   ├── store_a	[vim vectori256e.h +99]
+  │   └── store_a	[vim vectorfp16e.h +295]
+  ├── _mm_storeu_pd
+  │   ├── store	[vim vectorf128.h +1518]
+  │   └── store	[vim vectorf256e.h +1128]
+  ├── _mm_storeu_ph
+  │   └── store	[vim vectorfp16.h +113]
+  ├── _mm_storeu_ps
+  │   ├── store	[vim vectorf128.h +524]
+  │   └── store	[vim vectorf256e.h +532]
+  ├── _mm_storeu_si128
+  │   ├── store	[vim vectori128.h +777]
+  │   ├── store	[vim vectori256e.h +92]
+  │   └── store	[vim vectorfp16e.h +289]
+  ├── _mm_stream_pd
+  │   ├── store_nt	[vim vectorf128.h +1533]
+  │   └── store_nt	[vim vectorf256e.h +1141]
+  ├── _mm_stream_ps
+  │   ├── store_nt	[vim vectorf128.h +539]
+  │   ├── store_nt	[vim vectorf256e.h +544]
+  │   └── store_nt	[vim vectorfp16.h +126]
+  ├── _mm_stream_si128
+  │   ├── store_nt	[vim vectori128.h +792]
+  │   ├── store_nt	[vim vectori256e.h +107]
+  │   └── store_nt	[vim vectorfp16e.h +302]
+  ├── _mm_sub_epi16
+  │   ├── operator / 	[vim vectori128.h +6539]
+  │   ├── operator / 	[vim vectori128.h +6550]
+  │   └── divide_by_i	[vim vectori128.h +6743]
+  ├── _mm_sub_epi32
+  │   ├── sub_saturated	[vim vectori128.h +3362]
+  │   ├── operator / 	[vim vectori128.h +6483]
+  │   ├── operator / 	[vim vectori128.h +6520]
+  │   └── divide_by_i	[vim vectori128.h +6619]
+  ├── _mm_subs_epi16
+  │   └── sub_saturated	[vim vectori128.h +2416]
+  ├── _mm_subs_epi8
+  │   └── sub_saturated	[vim vectori128.h +1517]
+  ├── _mm_subs_epu16
+  │   └── sub_saturated	[vim vectori128.h +2747]
+  ├── _mm_subs_epu8
+  │   └── sub_saturated	[vim vectori128.h +1816]
+  ├── _mm_tan_pd
+  │   └── sin	[vim vectormath_lib.h +134]
+  ├── _mm_tan_ps
+  │   └── sin	[vim vectormath_lib.h +134]
+  ├── _mm_tanh_pd
+  │   └── sinh	[vim vectormath_lib.h +215]
+  ├── _mm_tanh_ps
+  │   └── sinh	[vim vectormath_lib.h +215]
+  ├── _mm_tanpi_pd
+  │   └── sinpi	[vim vectormath_lib.h +166]
+  ├── _mm_tanpi_ps
+  │   └── sinpi	[vim vectormath_lib.h +166]
+  ├── _mm_testc_si128
+  │   └── horizontal_and	[vim vectori128.h +886]
+  ├── _mm_testz_si128
+  │   ├── horizontal_or	[vim vectori128.h +905]
+  │   ├── horizontal_or	[vim vectori128.h +1213]
+  │   ├── horizontal_or	[vim vectori128.h +2122]
+  │   ├── horizontal_or	[vim vectori128.h +3043]
+  │   └── horizontal_or	[vim vectori128.h +3995]
+  ├── _mm_unpackhi_epi16
+  │   ├── permute8	[vim vectori128.h +4759]
+  │   ├── blend8	[vim vectori128.h +5295]
+  │   ├── extend_high	[vim vectori128.h +6001]
+  │   └── extend_high	[vim vectori128.h +6012]
+  ├── _mm_unpackhi_epi32
+  │   ├── permute4	[vim vectori128.h +4686]
+  │   ├── blend4	[vim vectori128.h +5200]
+  │   ├── extend_high	[vim vectori128.h +6025]
+  │   └── extend_high	[vim vectori128.h +6036]
+  ├── _mm_unpackhi_epi64
+  │   ├── horizontal_add	[vim vectori128.h +1474]
+  │   ├── horizontal_add	[vim vectori128.h +1793]
+  │   ├── horizontal_add_x	[vim vectori128.h +1803]
+  │   ├── horizontal_add_x	[vim vectori128.h +2707]
+  │   ├── horizontal_add_x	[vim vectori128.h +3333]
+  │   ├── horizontal_add_x	[vim vectori128.h +3650]
+  │   ├── insert	[vim vectori128.h +3794]
+  │   ├── horizontal_add	[vim vectori128.h +4296]
+  │   ├── permute2	[vim vectori128.h +4626]
+  │   ├── blend2	[vim vectori128.h +5107]
+  │   ├── horizontal_add	[vim vectori256.h +1821]
+  │   ├── horizontal_add_x	[vim vectori256.h +1832]
+  │   ├── horizontal_add_x	[vim vectori256.h +2112]
+  │   └── horizontal_add	[vim vectori256.h +2665]
+  ├── _mm_unpackhi_epi8
+  │   ├── permute16	[vim vectori128.h +4913]
+  │   ├── blend16	[vim vectori128.h +5393]
+  │   ├── extend_high	[vim vectori128.h +5977]
+  │   └── extend_high	[vim vectori128.h +5988]
+  ├── _mm_unpackhi_pd
+  │   ├── permute2	[vim vectorf128.h +2446]
+  │   └── blend2	[vim vectorf128.h +2573]
+  ├── _mm_unpackhi_ps
+  │   ├── permute4	[vim vectorf128.h +2498]
+  │   └── blend4	[vim vectorf128.h +2650]
+  ├── _mm_unpacklo_epi16
+  │   ├── permute8	[vim vectori128.h +4759]
+  │   ├── blend8	[vim vectori128.h +5295]
+  │   ├── extend_low	[vim vectori128.h +5995]
+  │   └── extend_low	[vim vectori128.h +6007]
+  ├── _mm_unpacklo_epi32
+  │   ├── permute4	[vim vectori128.h +4686]
+  │   ├── blend4	[vim vectori128.h +5200]
+  │   ├── extend_low	[vim vectori128.h +6019]
+  │   └── extend_low	[vim vectori128.h +6031]
+  ├── _mm_unpacklo_epi64
+  │   ├── truncate_to_int32	[vim vectorf128.h +2172]
+  │   ├── round_to_int32	[vim vectorf128.h +2202]
+  │   ├── insert	[vim vectori128.h +3794]
+  │   ├── permute2	[vim vectori128.h +4626]
+  │   ├── blend2	[vim vectori128.h +5107]
+  │   └── compress	[vim vectori128.h +6146]
+  ├── _mm_unpacklo_epi8
+  │   ├── permute16	[vim vectori128.h +4913]
+  │   ├── blend16	[vim vectori128.h +5393]
+  │   ├── extend_low	[vim vectori128.h +5971]
+  │   └── extend_low	[vim vectori128.h +5983]
+  ├── _mm_unpacklo_pd
+  │   ├── permute2	[vim vectorf128.h +2446]
+  │   └── blend2	[vim vectorf128.h +2573]
+  ├── _mm_unpacklo_ps
+  │   ├── permute4	[vim vectorf128.h +2498]
+  │   └── blend4	[vim vectorf128.h +2650]
+  ├── _mm_xor_pd
+  │   └── change_sign	[vim vectorf128.h +1897]
+  ├── _mm_xor_ps
+  │   ├── change_sign	[vim vectorf128.h +1463]
+  │   ├── operator - 	[vim vectorfp16.h +235]
+  │   ├── operator ^ 	[vim vectorfp16.h +359]
+  │   └── change_sign	[vim vectorfp16.h +676]
+  └── _mm_xor_si128
+      ├── add_saturated	[vim vectori128.h +3348]
+      ├── sub_saturated	[vim vectori128.h +3362]
+      ├── compress_saturated	[vim vectori128.h +6173]
+      ├── operator / 	[vim vectori128.h +6483]
+      ├── operator / 	[vim vectori128.h +6539]
+      └── change_sign	[vim vectorfp16e.h +1118]
