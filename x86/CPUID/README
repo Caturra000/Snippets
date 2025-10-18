@@ -1,0 +1,4 @@
+一个简单的用于测试历代 x86 CPU flag 的程序
+需要基于 InstLatx64 提供的文件
+
+test_flag.cpp 文件默认测试 ERMS（bit=9），你可以修改 bit 用于测试其他特性
