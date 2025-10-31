@@ -1,0 +1,10 @@
+统计哪些 SIMD intrinsic 是 sequence 级别的
+
+统计来源：
+https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html
+使用离线版 data.js，直接 grep 搜索
+
+附上 Intel 对 sequence 的解释：
+This intrinsic generates a sequence of instructions,
+which may perform worse than a native instruction.
+Consider the performance impact of this intrinsic.
