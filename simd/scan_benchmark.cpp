@@ -11,10 +11,13 @@
 
 template <auto First, auto Last>
 constexpr auto constexpr_for = [](auto &&f) {
-    [&]<auto I>(this auto &&self) {
+    static_assert(Last - First >= 0);
+    return [&]<auto I>(this auto &&self) {
         if constexpr (I < Last) {
             f.template operator()<I>();
-            self.template operator()<I + 1>();
+            return self.template operator()<I + 1>();
+        } else {
+            return Last - First;
         }
     }.template operator()<First>();
 };
@@ -56,20 +59,6 @@ int scan_ilp(std::ranges::range auto &&rng) {
         auto v3 = _mm256_add_epi32(v2, s2);
 
         // X8:
-        // Split:
-        // lo = [a+b+c+d,a+b+c,a+b,a]
-        // hi = [e+f+g+h,e+f+g,e+f,e]
-        auto lo = _mm256_castsi256_si128(v3);
-        auto hi = _mm256_extracti128_si256(v3, 1);
-        // Use MM128.
-        // lo_fixed = [a+b+c+d,a+b+c+d,a+b+c+d,a+b+c+d]
-        auto lo_fixed = _mm_shuffle_epi32(lo, _MM_SHUFFLE(3,3,3,3));
-        auto hi_fixed = _mm_add_epi32(hi, lo_fixed);
-        return _mm256_set_m128i(hi_fixed, lo);
-
-#if 0 // Full MM256 but slower.
-
-        // X8:
         // Cross lane:
         // a+b+c+d,a+b+c,a+b+c+d,a+b+c | a+b+c+d,a+b+c,a+b+c+d,a+b+c
         auto p3 = _mm256_permute4x64_epi64(v3, _MM_SHUFFLE(1, 1, 1, 1));
@@ -78,9 +67,9 @@ int scan_ilp(std::ranges::range auto &&rng) {
         auto s3 = _mm256_shuffle_epi32(p3, _MM_SHUFFLE(3, 3, 3, 3));
         // a+b+c+d+e+f+g+h,a+b+c+d+e+f+g,a+b+c+d+e+f,a+b+c+d+e | XXXX
         auto a3 = _mm256_add_epi32(v3, s3);
+
         // What we need.
         return _mm256_blend_epi32(v3, a3, 0b11110000);
-#endif
     };
     auto get_carry = [](const __m256i &result) {
         auto buffer = _mm256_permute4x64_epi64(result, _MM_SHUFFLE(3, 3, 3, 3));
@@ -88,37 +77,35 @@ int scan_ilp(std::ranges::range auto &&rng) {
     };
     auto sum = _mm256_setzero_si256();
 
-    auto bulk_simd_view = rng | simdify<lane> | simdify<ILP>;
-    __m256i results[ILP] {};
-    __m256i carries[ILP] {};
-    for(auto &&simd_v : bulk_simd_view) {
-        auto static_for = constexpr_for<0, ILP>;
-        static_for([&, addr = &simd_v]<auto Index> {
-            auto loadu = _mm256_loadu_si256((__m256i*)(addr + Index * lane));
-            results[Index] = inner_scan(loadu);
-        });
-        static_for([&]<auto Index> {
-            carries[Index] = get_carry(results[Index]);
-        });
-        static_for([&, addr = &simd_v]<auto Index> {
-            auto result = _mm256_add_epi32(results[Index], sum);
-            _mm256_storeu_si256((__m256i*)(addr + Index * lane), result);
-            sum = _mm256_add_epi32(sum, carries[Index]);
-        });
-    }
+    auto process_simd = [&](auto static_for, auto simd_view) {
+        constexpr auto size = static_for([]<auto>{});
+        __m256i results[size] {};
+        __m256i carries[size] {};
+        for(auto &&simd_v : simd_view) {
+            static_for([&, addr = &simd_v]<auto Index> {
+                auto loadu = _mm256_loadu_si256((__m256i*)(addr + Index * lane));
+                results[Index] = inner_scan(loadu);
+            });
+            static_for([&]<auto Index> {
+                carries[Index] = get_carry(results[Index]);
+            });
+            static_for([&, addr = &simd_v]<auto Index> {
+                auto result = _mm256_add_epi32(results[Index], sum);
+                _mm256_storeu_si256((__m256i*)(addr + Index * lane), result);
+                sum = _mm256_add_epi32(sum, carries[Index]);
+            });
+        }
+    };
+
+    auto bulk_simd_view = rng
+                        | simdify<lane>
+                        | simdify<ILP>;
+    process_simd(constexpr_for<0, ILP>, bulk_simd_view);
 
     auto single_simd_view = rng
-                          | std::views::drop(bulk * std::ranges::size(bulk_simd_view))
-                          | simdify<lane>;
-    for(auto &&simd_v : single_simd_view) {
-        auto data = (__m256i*)&simd_v;
-        auto block_v = _mm256_loadu_si256(data);
-        auto result = inner_scan(block_v);
-        auto carry = get_carry(result);
-        result = _mm256_add_epi32(result, sum);
-        _mm256_storeu_si256(data, result);
-        sum = _mm256_add_epi32(sum, carry);
-    }
+                            | std::views::drop(bulk * std::ranges::size(bulk_simd_view))
+                            | simdify<lane>;
+    process_simd(constexpr_for<0, 1>, single_simd_view);
 
     auto scalar_view = rng
                      | std::views::drop(bulk * std::ranges::size(bulk_simd_view))
@@ -178,6 +165,86 @@ int tusenpo(std::ranges::range auto &&rng) {
     }
     return 0;
 }
+
+#if 0
+
+template <size_t ILP = 4>
+int scan_avx512(std::ranges::range auto &&rng) {
+    constexpr auto lane = sizeof(__m512i) / sizeof(int);
+    constexpr auto bulk = ILP * lane;
+
+    auto inner_scan = [](const __m512i &v0) {
+        const auto zero = _mm512_setzero_si512();
+
+        auto s1 = _mm512_alignr_epi32(v0, zero, 16 - 1);
+        auto v1 = _mm512_add_epi32(v0, s1);
+
+        auto s2 = _mm512_alignr_epi32(v1, zero, 16 - 2);
+        auto v2 = _mm512_add_epi32(v1, s2);
+
+        auto s3 = _mm512_alignr_epi32(v2, zero, 16 - 4);
+        auto v3 = _mm512_add_epi32(v2, s3);
+
+        auto s4 = _mm512_alignr_epi32(v3, zero, 16 - 8);
+        auto v4 = _mm512_add_epi32(v3, s4);
+
+        return v4;
+    };
+
+    auto get_carry = [](const __m512i &result) {
+        return _mm512_permutexvar_epi32(_mm512_set1_epi32(15), result);
+    };
+
+    auto sum = _mm512_setzero_si512();
+
+    auto process_simd = [&](auto static_for, auto simd_view) {
+        constexpr auto size = static_for([]<auto>{});
+        __m512i results[size] {};
+        __m512i carries[size] {};
+        
+        for(auto &&simd_v : simd_view) {
+            static_for([&, addr = &simd_v]<auto Index> {
+                auto loadu = _mm512_loadu_si512((const void*)(addr + Index * lane));
+                results[Index] = inner_scan(loadu);
+            });
+
+            static_for([&]<auto Index> {
+                carries[Index] = get_carry(results[Index]);
+            });
+
+            static_for([&, addr = &simd_v]<auto Index> {
+                auto result = _mm512_add_epi32(results[Index], sum);
+                _mm512_storeu_si512((void*)(addr + Index * lane), result);
+                sum = _mm512_add_epi32(sum, carries[Index]);
+            });
+        }
+    };
+
+    auto bulk_simd_view = rng
+                        | simdify<lane>
+                        | simdify<ILP>;
+    process_simd(constexpr_for<0, ILP>, bulk_simd_view);
+
+    auto single_simd_view = rng
+                          | std::views::drop(bulk * std::ranges::size(bulk_simd_view))
+                          | simdify<lane>;
+    process_simd(constexpr_for<0, 1>, single_simd_view);
+
+    auto scalar_view = rng
+                     | std::views::drop(bulk * std::ranges::size(bulk_simd_view))
+                     | std::views::drop(lane * std::ranges::size(single_simd_view));
+    
+    int current_sum = _mm_cvtsi128_si32(_mm512_castsi512_si128(sum));
+    
+    std::inclusive_scan(std::ranges::begin(scalar_view),
+                        std::ranges::end(scalar_view),
+                        std::ranges::begin(scalar_view),
+                        std::plus(),
+                        current_sum);
+    return 0;
+}
+
+#endif
 
 // ----------------------------------------------------------------------------
 // Google Benchmark
@@ -250,6 +317,23 @@ int main(int argc, char** argv) {
 
     register_test("BM_scan_ilp<8>",
         [](auto &r) { return scan_ilp<8>(r); });
+
+#if 0
+    register_test("BM_scan_avx512<1>",
+        [](auto &r) { return scan_avx512<1>(r); });
+
+    register_test("BM_scan_avx512<2>",
+        [](auto &r) { return scan_avx512<2>(r); });
+
+    register_test("BM_scan_avx512<4>",
+        [](auto &r) { return scan_avx512<4>(r); });
+
+    register_test("BM_scan_avx512<6>",
+        [](auto &r) { return scan_avx512<6>(r); });
+
+    register_test("BM_scan_avx512<8>",
+        [](auto &r) { return scan_avx512<8>(r); });
+#endif
 
     register_test("BM_tusenpo",
         [](auto &r) { return tusenpo(r); });
