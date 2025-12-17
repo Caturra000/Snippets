@@ -59,6 +59,19 @@ int scan_ilp(std::ranges::range auto &&rng) {
         auto v3 = _mm256_add_epi32(v2, s2);
 
         // X8:
+        // Split:
+        // lo = [a+b+c+d,a+b+c,a+b,a]
+        // hi = [e+f+g+h,e+f+g,e+f,e]
+        auto lo = _mm256_castsi256_si128(v3);
+        auto hi = _mm256_extracti128_si256(v3, 1);
+        // Use MM128.
+        // lo_fixed = [a+b+c+d,a+b+c+d,a+b+c+d,a+b+c+d]
+        auto lo_fixed = _mm_shuffle_epi32(lo, _MM_SHUFFLE(3,3,3,3));
+        auto hi_fixed = _mm_add_epi32(hi, lo_fixed);
+        return _mm256_set_m128i(hi_fixed, lo);
+
+#if 0 // Full MM256 but slower.
+        // X8:
         // Cross lane:
         // a+b+c+d,a+b+c,a+b+c+d,a+b+c | a+b+c+d,a+b+c,a+b+c+d,a+b+c
         auto p3 = _mm256_permute4x64_epi64(v3, _MM_SHUFFLE(1, 1, 1, 1));
@@ -70,6 +83,7 @@ int scan_ilp(std::ranges::range auto &&rng) {
 
         // What we need.
         return _mm256_blend_epi32(v3, a3, 0b11110000);
+#endif
     };
     auto get_carry = [](const __m256i &result) {
         auto buffer = _mm256_permute4x64_epi64(result, _MM_SHUFFLE(3, 3, 3, 3));
