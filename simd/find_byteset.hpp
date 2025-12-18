@@ -78,10 +78,10 @@ ssize_t find_byteset_avx2(std::ranges::range auto &&rng, const auto &byteset) {
         auto selector = _mm256_slli_epi16(chars, 4);
         auto selected = _mm256_blendv_epi8(byteset_even, byteset_odd, selector);
         auto movemask = _mm256_movemask_epi8(
-            _mm256_cmpeq_epi8(_mm256_and_si256(selected, bitmask), _mm256_setzero_si256()));
+            _mm256_cmpeq_epi8(_mm256_andnot_si256(selected, bitmask), _mm256_setzero_si256()));
 
-        if(unsigned has = ~movemask) {
-            return index * lane + std::countr_zero(has);
+        if(movemask) {
+            return index * lane + std::countr_zero(unsigned(movemask));
         }
     }
     auto offset = lane * std::ranges::size(simd_view);
