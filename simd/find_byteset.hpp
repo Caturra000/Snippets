@@ -33,7 +33,7 @@ ssize_t find_byteset_avx2(std::ranges::range auto &&rng, const auto &byteset) {
     // TODO: check u64[4]...
     static_assert(std::ranges::size(byteset) == ((1 << CHAR_BIT) / CHAR_BIT));
     constexpr auto lane = sizeof(__m256i) / sizeof(char);
-    
+
     const auto filter_lo = _mm_loadu_si128((__m128i *)(&byteset));
     const auto filter_hi = _mm_loadu_si128((__m128i *)(&byteset) + 1);
     const auto filter_mask = _mm_set1_epi16(0x00ff);
@@ -51,8 +51,8 @@ ssize_t find_byteset_avx2(std::ranges::range auto &&rng, const auto &byteset) {
     // o4 o3 o2 o1 | o4 o3 o2 o1
     const auto filter_odd = _mm256_set_m128i(filter_odd_128, filter_odd_128);
 
-    // LUT for: 1 << (n % 8). Locate the bit index in value field as a bitmask.
-    // We have two table, so we need module to replace the 1 << n operations.
+    // LUT for: 1 << (n % 8). Equivalent to 1 << b0b1b2.
+    // Locate the bit index in value field as a bitmask.
     const auto shift_mod = _mm256_setr_epi8(
         1, 2, 4, 8, 16, 32, 64, -128, // 1<<7 == -128
         1, 2, 4, 8, 16, 32, 64, -128,
@@ -80,6 +80,54 @@ ssize_t find_byteset_avx2(std::ranges::range auto &&rng, const auto &byteset) {
         auto movemask = _mm256_movemask_epi8(
             _mm256_cmpeq_epi8(_mm256_andnot_si256(selected, bitmask), _mm256_setzero_si256()));
 
+        if(movemask) {
+            return index * lane + std::countr_zero(unsigned(movemask));
+        }
+    }
+    auto offset = lane * std::ranges::size(simd_view);
+    auto scalar_view = rng | std::views::drop(offset);
+    for(auto &&[index, _v] : std::views::enumerate(scalar_view)) {
+        auto v = static_cast<unsigned char>(_v);
+        auto v_row = v / 8;
+        auto v_col = v % 8;
+        if(byteset[v_row] & (1 << v_col)) return offset + index;
+    }
+    return -1;
+}
+
+// byteset: u8[16] as a bitmap of char field.
+//
+// Core algorithm:
+// u8[16] -> 16 x 8 matrix
+//        -> 16 x 8
+//           ^^table
+// b3-b6 (w4): byte index (row).
+// b0-b2 (w3): bit index (col).
+ssize_t find_byteset_avx2_ascii128(std::ranges::range auto &&rng, const auto &byteset) {
+    static_assert(std::ranges::size(byteset) == ((1 << CHAR_BIT) / CHAR_BIT / 2));
+    constexpr auto lane = sizeof(__m256i) / sizeof(char);
+    auto filter128 = _mm_loadu_si128((__m128i *) &byteset);
+    auto filter256 = _mm256_set_m128i(filter128, filter128);
+
+    // LUT for 1 << (n % 8)
+    const auto shift_mod = _mm256_setr_epi8(
+        1, 2, 4, 8, 16, 32, 64, -128,
+        1, 2, 4, 8, 16, 32, 64, -128,
+        1, 2, 4, 8, 16, 32, 64, -128,
+        1, 2, 4, 8, 16, 32, 64, -128
+    );
+
+    auto simd_view = rng | simdify<lane>;
+    for(auto &&[index, simd_v] : std::views::enumerate(simd_view)) {
+        auto addr = (__m256i *) &simd_v;
+        auto chars = _mm256_loadu_si256(addr);
+        auto col = _mm256_and_si256(chars, _mm256_set1_epi8(0b0000111));
+        auto row = _mm256_and_si256(chars, _mm256_set1_epi8(0b1111000));
+             row = _mm256_srli_epi16(row, 3);
+        auto bitmask = _mm256_shuffle_epi8(shift_mod, col);
+        auto bitindex = _mm256_shuffle_epi8(filter256, row);
+        auto movemask = _mm256_movemask_epi8(_mm256_cmpeq_epi8(
+            _mm256_andnot_si256(bitindex, bitmask), _mm256_setzero_si256()));
         if(movemask) {
             return index * lane + std::countr_zero(unsigned(movemask));
         }
