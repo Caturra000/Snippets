@@ -161,6 +161,17 @@ int main() {
     
     // 告诉 Fuzz 生成器仅生成 0-127 的字符
     run_random_fuzz(avx2_ascii128_wrapper, 100000, 0, 127);
+    std::cout << "\n";
 
+
+    // 3
+    auto avx2_ascii128_transposed_wrapper = [](const std::vector<char>& data, const std::array<uint8_t, 32>& set32) {
+        std::array<uint8_t, 16> set16;
+        std::copy_n(set32.begin(), 16, set16.begin());
+        return find_byteset_avx2_ascii128_transposed(data, set16);
+    };
+    std::cout << "=== Testing AVX2 ASCII Transposed (0-127) ===" << std::endl;
+    run_edge_cases(avx2_ascii128_transposed_wrapper, 127);
+    run_random_fuzz(avx2_ascii128_transposed_wrapper, 100000, 0, 127);
     return 0;
 }
