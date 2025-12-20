@@ -95,6 +95,10 @@ ssize_t find_byteset_avx2(std::ranges::range auto &&rng, const auto &byteset) {
     return -1;
 }
 
+struct avx2_ascii128_config {
+    bool overflow;
+};
+
 // byteset: u8[16] as a bitmap of char field.
 //
 // Core algorithm:
@@ -103,7 +107,7 @@ ssize_t find_byteset_avx2(std::ranges::range auto &&rng, const auto &byteset) {
 //           ^^table
 // b3-b6 (w4): byte index (row).
 // b0-b2 (w3): bit index (col).
-template <bool Overflow = false>
+template <avx2_ascii128_config Config>
 ssize_t find_byteset_avx2_ascii128(std::ranges::range auto &&rng, const auto &byteset) {
     static_assert(std::ranges::size(byteset) == ((1 << CHAR_BIT) / CHAR_BIT / 2));
     constexpr auto lane = sizeof(__m256i) / sizeof(char);
@@ -126,8 +130,7 @@ ssize_t find_byteset_avx2_ascii128(std::ranges::range auto &&rng, const auto &by
         auto row = _mm256_and_si256(chars, _mm256_set1_epi8(0b1111000));
              row = _mm256_srli_epi16(row, 3);
 
-        // For overflow check.
-        if constexpr (Overflow) {
+        if constexpr (Config.overflow) {
             auto sign_bits = _mm256_and_si256(chars, _mm256_set1_epi8(0x80));
             row = _mm256_or_si256(row, sign_bits);
         }
@@ -152,6 +155,10 @@ ssize_t find_byteset_avx2_ascii128(std::ranges::range auto &&rng, const auto &by
     return -1;
 }
 
+struct avx2_ascii128_transposed_config {
+    bool transposed;
+};
+
 // byteset: u8[16] as a bitmap of char field.
 //
 // Core algorithm:
@@ -160,20 +167,19 @@ ssize_t find_byteset_avx2_ascii128(std::ranges::range auto &&rng, const auto &by
 //           ^^table
 // b0-b3 (w4): byte index (row).
 // b4-b6 (w3): bit index (col).
+template <avx2_ascii128_transposed_config Config>
 ssize_t find_byteset_avx2_ascii128_transposed(std::ranges::range auto &&rng, const auto &_byteset) {
-#ifndef WIP_TRANSPOSED_API
-    char byteset[16] {};
-    auto transpose = [&] {
+    char byteset[16];
+    if constexpr (!Config.transposed) {
+        std::ranges::fill(byteset, 0);
         for(int c = 0; c < 128; c++) {
             if(_byteset[c / 8] >> (c % 8) & 1) {
                 byteset[c % 16] |= 1 << (c / 16);
             }
         }
-    };
-    transpose();
-#else
-    const auto &byteset = _byteset;
-#endif // WIP_TRANSPOSED_API
+    } else {
+        for(int i = 0; i < 16; ++i) byteset[i] = _byteset[i];
+    }
 
     static_assert(std::ranges::size(byteset) == ((1 << CHAR_BIT) / CHAR_BIT / 2));
     constexpr auto lane = sizeof(__m256i) / sizeof(char);

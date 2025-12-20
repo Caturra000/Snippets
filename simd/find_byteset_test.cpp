@@ -152,7 +152,8 @@ int main() {
         // 适配：截断 bitmap 为 16 字节传给底层
         std::array<uint8_t, 16> set16;
         std::copy_n(set32.begin(), 16, set16.begin());
-        return find_byteset_avx2_ascii128(data, set16);
+        constexpr avx2_ascii128_config config {.overflow = false};
+        return find_byteset_avx2_ascii128<config>(data, set16);
     };
 
     tester.run({
@@ -171,7 +172,8 @@ int main() {
     TestFunc wrapper_transposed = [](const auto& data, const auto& set32) {
         std::array<uint8_t, 16> set16;
         std::copy_n(set32.begin(), 16, set16.begin());
-        return find_byteset_avx2_ascii128_transposed(data, set16);
+        constexpr avx2_ascii128_transposed_config config {.transposed = false};
+        return find_byteset_avx2_ascii128_transposed<config>(data, set16);
     };
 
     tester.run({
@@ -191,7 +193,8 @@ int main() {
     TestFunc wrapper_avx2_ascii_overflow = [](const auto& data, const auto& set32) {
         std::array<uint8_t, 16> set16;
         std::copy_n(set32.begin(), 16, set16.begin());
-        return find_byteset_avx2_ascii128<true>(data, set16);
+        constexpr avx2_ascii128_config config {.overflow = true};
+        return find_byteset_avx2_ascii128<config>(data, set16);
     };
 
     tester.run({
