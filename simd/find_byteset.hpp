@@ -103,18 +103,19 @@ ssize_t find_byteset_avx2(std::ranges::range auto &&rng, const auto &byteset) {
 //           ^^table
 // b3-b6 (w4): byte index (row).
 // b0-b2 (w3): bit index (col).
+template <bool Overflow = false>
 ssize_t find_byteset_avx2_ascii128(std::ranges::range auto &&rng, const auto &byteset) {
     static_assert(std::ranges::size(byteset) == ((1 << CHAR_BIT) / CHAR_BIT / 2));
     constexpr auto lane = sizeof(__m256i) / sizeof(char);
     auto filter128 = _mm_loadu_si128((__m128i *) &byteset);
     auto filter256 = _mm256_set_m128i(filter128, filter128);
 
-    // LUT for 1 << (n % 8)
+    // LUT for: 1 << b0b1b2.
     const auto shift_mod = _mm256_setr_epi8(
         1, 2, 4, 8, 16, 32, 64, -128,
+        0, 0, 0, 0,  0,  0,  0,    0,
         1, 2, 4, 8, 16, 32, 64, -128,
-        1, 2, 4, 8, 16, 32, 64, -128,
-        1, 2, 4, 8, 16, 32, 64, -128
+        0, 0, 0, 0,  0,  0,  0,    0
     );
 
     auto simd_view = rng | simdify<lane>;
@@ -124,18 +125,26 @@ ssize_t find_byteset_avx2_ascii128(std::ranges::range auto &&rng, const auto &by
         auto col = _mm256_and_si256(chars, _mm256_set1_epi8(0b0000111));
         auto row = _mm256_and_si256(chars, _mm256_set1_epi8(0b1111000));
              row = _mm256_srli_epi16(row, 3);
+
+        // For overflow check.
+        if constexpr (Overflow) {
+            auto sign_bits = _mm256_and_si256(chars, _mm256_set1_epi8(0x80));
+            row = _mm256_or_si256(row, sign_bits);
+        }
+
         auto bitmask = _mm256_shuffle_epi8(shift_mod, col);
         auto bitindex = _mm256_shuffle_epi8(filter256, row);
         auto movemask = _mm256_movemask_epi8(_mm256_cmpeq_epi8(
-            _mm256_andnot_si256(bitindex, bitmask), _mm256_setzero_si256()));
-        if(movemask) {
-            return index * lane + std::countr_zero(unsigned(movemask));
+            _mm256_and_si256(bitindex, bitmask), _mm256_setzero_si256()));
+        if(unsigned counter = ~movemask) {
+            return index * lane + std::countr_zero(counter);
         }
     }
     auto offset = lane * std::ranges::size(simd_view);
     auto scalar_view = rng | std::views::drop(offset);
     for(auto &&[index, _v] : std::views::enumerate(scalar_view)) {
         auto v = static_cast<unsigned char>(_v);
+        if(v >= 128) continue;
         auto v_row = v / 8;
         auto v_col = v % 8;
         if(byteset[v_row] & (1 << v_col)) return offset + index;
@@ -188,15 +197,16 @@ ssize_t find_byteset_avx2_ascii128_transposed(std::ranges::range auto &&rng, con
         auto byte_index = _mm256_shuffle_epi8(filter256, row);
         auto _1ll_bit_index = _mm256_shuffle_epi8(shift_mod, col);
         auto movemask = _mm256_movemask_epi8(_mm256_cmpeq_epi8(
-            _mm256_andnot_si256(byte_index, _1ll_bit_index), _mm256_setzero_si256()));
-        if(movemask) {
-            return index * lane + std::countr_zero(unsigned(movemask));
+            _mm256_and_si256(byte_index, _1ll_bit_index), _mm256_setzero_si256()));
+        if(unsigned counter = ~movemask) {
+            return index * lane + std::countr_zero(counter);
         }
     }
     auto offset = lane * std::ranges::size(simd_view);
     auto scalar_view = rng | std::views::drop(offset);
     for(auto &&[index, _v] : std::views::enumerate(scalar_view)) {
         auto v = static_cast<unsigned char>(_v);
+        if(v >= 128) continue;
         auto v_row = v % 16;
         auto v_col = v / 16;
         if(byteset[v_row] & (1 << v_col)) return offset + index;
