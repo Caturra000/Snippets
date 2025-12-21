@@ -430,6 +430,76 @@ const auto& generate_data_ranged() {
 }
 
 // ============================================================================
+// Data Generator - ASCII-128 专用
+// ============================================================================
+// AsciiOnlyData=true:  数据限制在 0-127 (用于 overflow=false)
+// AsciiOnlyData=false: 数据可以是 0-255 (用于 overflow=true)
+// byteset 始终只在 0-127 范围有效
+
+template <size_t Size, Mode M, bool AsciiOnlyData>
+const auto& generate_data_ascii128() {
+    using DataPair = std::pair<std::array<char, Size>, std::array<uint8_t, 32>>;
+    
+    static const DataPair pair = [&] {
+        DataPair result;
+        auto &[data, byteset] = result;
+
+        std::mt19937 gen{42};
+        
+        // 数据范围取决于 AsciiOnlyData
+        std::uniform_int_distribution<int> data_dist(0, AsciiOnlyData ? 127 : 255);
+        // byteset 只在 0-127 范围设置
+        std::uniform_int_distribution<int> ascii_dist(0, 127);
+
+        byteset.fill(0);
+        // 在 0-127 范围随机设置约一半的位 (约64个字符)
+        for(int i = 0; i < 64; ++i) {
+            set_bit(byteset, static_cast<unsigned char>(ascii_dist(gen)));
+        }
+
+        // 检查字符是否在 ASCII byteset 中
+        // 关键：128-255 的字符永远返回 false
+        auto in_ascii_set = [&](unsigned char c) -> bool {
+            if(c > 127) return false;
+            return test_bit(byteset, c);
+        };
+
+        if constexpr (M == Mode::Random) {
+            for(auto &c : data) c = static_cast<char>(data_dist(gen));
+        } else {
+            // 生成不匹配的字符
+            for(auto &c : data) {
+                unsigned char temp;
+                int tries = 0;
+                do {
+                    temp = static_cast<unsigned char>(data_dist(gen));
+                } while(in_ascii_set(temp) && ++tries < 1000);
+                c = static_cast<char>(temp);
+            }
+
+            // 插入匹配字符 (★ 关键修复：必须从 0-127 中选取 ★)
+            auto insert_match = [&](size_t idx) {
+                if(idx >= Size) return;
+                // 遍历 0-127 找到第一个在 byteset 中的字符
+                for(int c = 0; c < 128; ++c) {
+                    if(in_ascii_set(static_cast<unsigned char>(c))) { 
+                        data[idx] = static_cast<char>(c); 
+                        return; 
+                    }
+                }
+            };
+
+            if constexpr (M == Mode::MatchLast) insert_match(Size - 1);
+            else if constexpr (M == Mode::MatchMiddle) insert_match(Size / 2);
+            else if constexpr (M == Mode::MatchFirst1P) insert_match(Size / 100);
+        }
+
+        return result;
+    }();
+    return pair;
+}
+
+// ============================================================================
 // Data Generator - 带预设字符集
 // ============================================================================
 
@@ -474,6 +544,84 @@ const auto& generate_data_preset() {
                 } else {
                     for(int c = 0; c < 256; ++c) {
                         if(in_set(c)) { data[idx] = static_cast<char>(c); return; }
+                    }
+                }
+            };
+
+            if constexpr (M == Mode::MatchLast) insert_match(Size - 1);
+            else if constexpr (M == Mode::MatchMiddle) insert_match(Size / 2);
+            else if constexpr (M == Mode::MatchFirst1P) insert_match(Size / 100);
+        }
+
+        return result;
+    }();
+    return pair;
+}
+
+// ============================================================================
+// Data Generator - ASCII-128 预设字符集专用
+// ============================================================================
+// 用于测试 JSON/HTML 等 ASCII 预设与 ASCII-128 算法的配合
+// AsciiOnlyData=true:  数据限制在 0-127
+// AsciiOnlyData=false: 数据可以是 0-255
+
+template <size_t Size, Mode M, Preset P, bool AsciiOnlyData>
+const auto& generate_data_ascii128_preset() {
+    using DataPair = std::pair<std::array<char, Size>, std::array<uint8_t, 32>>;
+    
+    static const DataPair pair = [&] {
+        DataPair result;
+        auto &[data, byteset] = result;
+
+        std::mt19937 gen{42};
+        std::uniform_int_distribution<int> data_dist(0, AsciiOnlyData ? 127 : 255);
+        
+        if constexpr (P == Preset::Random) {
+            // 随机但只在 0-127 范围设置
+            byteset.fill(0);
+            std::uniform_int_distribution<int> ascii_dist(0, 127);
+            for(int i = 0; i < 64; ++i) {
+                set_bit(byteset, static_cast<unsigned char>(ascii_dist(gen)));
+            }
+        } else {
+            byteset = preset_to_byteset(P);
+        }
+
+        // 检查是否在 ASCII byteset 中 (128-255 永远返回 false)
+        auto in_ascii_set = [&](unsigned char c) -> bool {
+            if(c > 127) return false;
+            return test_bit(byteset, c);
+        };
+
+        auto preset_chars = get_preset_chars(P);
+
+        if constexpr (M == Mode::Random) {
+            for(auto &c : data) c = static_cast<char>(data_dist(gen));
+        } else {
+            for(auto &c : data) {
+                unsigned char temp;
+                int tries = 0;
+                do { 
+                    temp = static_cast<unsigned char>(data_dist(gen)); 
+                } while(in_ascii_set(temp) && ++tries < 1000);
+                c = static_cast<char>(temp);
+            }
+
+            // 插入匹配字符 (从预设字符或 0-127 范围选取)
+            auto insert_match = [&](size_t idx) {
+                if(idx >= Size) return;
+                if constexpr (P != Preset::Random) {
+                    if(!preset_chars.empty()) {
+                        std::uniform_int_distribution<size_t> idx_dist(0, preset_chars.size()-1);
+                        data[idx] = static_cast<char>(preset_chars[idx_dist(gen)]);
+                        return;
+                    }
+                }
+                // Fallback: 遍历 0-127
+                for(int c = 0; c < 128; ++c) {
+                    if(in_ascii_set(static_cast<unsigned char>(c))) { 
+                        data[idx] = static_cast<char>(c); 
+                        return; 
                     }
                 }
             };
@@ -773,7 +921,8 @@ void BM_run_loop_rt(benchmark::State &state) {
 // ASCII-128 版本 (overflow=false: 数据限制在ASCII 0-127范围)
 template <size_t Size, Mode M>
 void BM_run_ascii128_no_overflow(benchmark::State &state, auto &&func) {
-    const auto& [data, byteset32] = generate_data_ranged<Size, M, CharRange::Ascii>();
+    // 使用专用生成器，AsciiOnlyData=true
+    const auto& [data, byteset32] = generate_data_ascii128<Size, M, true>();
     auto byteset16 = byteset32_to_16(byteset32);
 
     for(auto _ : state) {
@@ -788,7 +937,9 @@ void BM_run_ascii128_no_overflow(benchmark::State &state, auto &&func) {
 // ASCII-128 版本 (overflow=true: 数据可以是全范围-128~127)
 template <size_t Size, Mode M>
 void BM_run_ascii128_overflow(benchmark::State &state, auto &&func) {
-    const auto& [data, byteset32] = generate_data<Size, M>();
+    // 使用专用生成器，AsciiOnlyData=false
+    // byteset 仍只在 0-127 设置，匹配字符也从 0-127 选取
+    const auto& [data, byteset32] = generate_data_ascii128<Size, M, false>();
     auto byteset16 = byteset32_to_16(byteset32);
 
     for(auto _ : state) {
@@ -803,7 +954,8 @@ void BM_run_ascii128_overflow(benchmark::State &state, auto &&func) {
 // ASCII-128 Transposed 版本 (transposed=false: 传入标准布局，内部转换)
 template <size_t Size, Mode M>
 void BM_run_ascii128_transposed_convert(benchmark::State &state, auto &&func) {
-    const auto& [data, byteset32] = generate_data<Size, M>();
+    // 使用专用生成器
+    const auto& [data, byteset32] = generate_data_ascii128<Size, M, false>();
     auto byteset16 = byteset32_to_16(byteset32);
 
     for(auto _ : state) {
@@ -818,7 +970,8 @@ void BM_run_ascii128_transposed_convert(benchmark::State &state, auto &&func) {
 // ASCII-128 Transposed 版本 (transposed=true: 传入预转换的SIMD布局)
 template <size_t Size, Mode M>
 void BM_run_ascii128_transposed_pre(benchmark::State &state, auto &&func) {
-    const auto& [data, byteset32] = generate_data<Size, M>();
+    // 使用专用生成器
+    const auto& [data, byteset32] = generate_data_ascii128<Size, M, false>();
     auto byteset16 = byteset32_to_16(byteset32);
     auto byteset16_transposed = transpose_byteset16(byteset16);
 
@@ -831,14 +984,31 @@ void BM_run_ascii128_transposed_pre(benchmark::State &state, auto &&func) {
     state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(Size));
 }
 
-// ASCII-128 预设字符集版本 (用于对比JSON/HTML等场景)
-template <size_t Size, Mode M, Preset P, bool Overflow>
+// ASCII-128 预设字符集版本 - 标准布局 (用于 avx2_a128, avx2_a128_of, avx2_a128T_cvt)
+template <size_t Size, Mode M, Preset P, bool AsciiOnlyData>
 void BM_run_ascii128_preset(benchmark::State &state, auto &&func) {
-    const auto& [data, byteset32] = generate_data_preset<Size, M, P>();
+    // 使用 ASCII-128 专用预设生成器
+    const auto& [data, byteset32] = generate_data_ascii128_preset<Size, M, P, AsciiOnlyData>();
     auto byteset16 = byteset32_to_16(byteset32);
 
     for(auto _ : state) {
         auto res = func(data, byteset16);
+        benchmark::DoNotOptimize(res);
+        benchmark::DoNotOptimize(data.data());
+    }
+
+    state.SetBytesProcessed(int64_t(state.iterations()) * int64_t(Size));
+}
+
+// ASCII-128 预设字符集版本 - Transposed 布局 (用于 avx2_a128T_pre)
+template <size_t Size, Mode M, Preset P, bool AsciiOnlyData>
+void BM_run_ascii128_preset_transposed(benchmark::State &state, auto &&func) {
+    const auto& [data, byteset32] = generate_data_ascii128_preset<Size, M, P, AsciiOnlyData>();
+    auto byteset16 = byteset32_to_16(byteset32);
+    auto byteset16_transposed = transpose_byteset16(byteset16);  // ★ 预转换为 SIMD 布局
+
+    for(auto _ : state) {
+        auto res = func(data, byteset16_transposed);
         benchmark::DoNotOptimize(res);
         benchmark::DoNotOptimize(data.data());
     }
@@ -1004,15 +1174,28 @@ void register_ascii128_transposed_pre_tests(std::integer_sequence<size_t, Is...>
     ), ...);
 }
 
-// ASCII-128 预设字符集注册
-template <Mode M, Preset P, bool Overflow, size_t ...Is>
+// ASCII-128 预设字符集注册 - 标准布局
+template <Mode M, Preset P, bool AsciiOnlyData, size_t ...Is>
 void register_ascii128_preset_tests(std::integer_sequence<size_t, Is...>,
                                      std::string alg_name, auto func) {
     (benchmark::RegisterBenchmark(
         (alg_name + "/preset/" + preset_name(P) + "/" + mode_name(M) + "/" + 
          std::to_string(Is)).c_str(),
         [func](benchmark::State& state) {
-            BM_run_ascii128_preset<Is, M, P, Overflow>(state, func);
+            BM_run_ascii128_preset<Is, M, P, AsciiOnlyData>(state, func);
+        }
+    ), ...);
+}
+
+// ASCII-128 预设字符集注册 - Transposed 布局
+template <Mode M, Preset P, bool AsciiOnlyData, size_t ...Is>
+void register_ascii128_preset_transposed_tests(std::integer_sequence<size_t, Is...>,
+                                                std::string alg_name, auto func) {
+    (benchmark::RegisterBenchmark(
+        (alg_name + "/preset/" + preset_name(P) + "/" + mode_name(M) + "/" + 
+         std::to_string(Is)).c_str(),
+        [func](benchmark::State& state) {
+            BM_run_ascii128_preset_transposed<Is, M, P, AsciiOnlyData>(state, func);
         }
     ), ...);
 }
@@ -1190,7 +1373,7 @@ int main(int argc, char **argv) {
     // 3. 概率测试 - Group: prob
     // ========================================
     if (should_run("prob")) {
-        // 概率模式本身是一种特殊的“Match”模式，不直接对应 Mode 枚举。
+        // 概率模式本身是一种特殊的"Match"模式，不直接对应 Mode 枚举。
         // 但通常做 NoMatch 吞吐量测试时不关心概率。
         // 所以我们约定：如果只跑 NoMatch，就跳过 Prob 组，除非明确指定了 --groups=prob
         // 或者简单地，Prob 组不受 --modes 限制，只受 --groups 限制。
@@ -1360,8 +1543,22 @@ int main(int argc, char **argv) {
         register_a128T_pre_modes("avx2_a128T_pre", avx2_a128T_pre_fn);
 
         // ---- ASCII-128 预设字符集对比测试 ----
+        // 标准布局版本 (avx2_a128, avx2_a128_of)
         auto register_a128_presets = [&](std::string name, auto func) {
-            // NoMatch 模式 - 测吞吐量
+            if (should_run_mode(Mode::NoMatch)) {
+                register_ascii128_preset_tests<Mode::NoMatch, Preset::Json, true>(seq, name, func);
+                register_ascii128_preset_tests<Mode::NoMatch, Preset::Html, true>(seq, name, func);
+                register_ascii128_preset_tests<Mode::NoMatch, Preset::Whitespace, true>(seq, name, func);
+                register_ascii128_preset_tests<Mode::NoMatch, Preset::LineBreak, true>(seq, name, func);
+            }
+            
+            if (should_run_mode(Mode::MatchMiddle)) {
+                register_ascii128_preset_tests<Mode::MatchMiddle, Preset::Json, true>(seq, name, func);
+                register_ascii128_preset_tests<Mode::MatchMiddle, Preset::Html, true>(seq, name, func);
+                register_ascii128_preset_tests<Mode::MatchMiddle, Preset::Whitespace, true>(seq, name, func);
+            }
+        };
+        auto register_a128_presets_of = [&](std::string name, auto func) {
             if (should_run_mode(Mode::NoMatch)) {
                 register_ascii128_preset_tests<Mode::NoMatch, Preset::Json, false>(seq, name, func);
                 register_ascii128_preset_tests<Mode::NoMatch, Preset::Html, false>(seq, name, func);
@@ -1369,7 +1566,6 @@ int main(int argc, char **argv) {
                 register_ascii128_preset_tests<Mode::NoMatch, Preset::LineBreak, false>(seq, name, func);
             }
             
-            // MatchMiddle 模式 - 测典型场景
             if (should_run_mode(Mode::MatchMiddle)) {
                 register_ascii128_preset_tests<Mode::MatchMiddle, Preset::Json, false>(seq, name, func);
                 register_ascii128_preset_tests<Mode::MatchMiddle, Preset::Html, false>(seq, name, func);
@@ -1377,9 +1573,26 @@ int main(int argc, char **argv) {
             }
         };
         
+
+        // Transposed 布局版本 (avx2_a128T_pre) - 使用专门的 transposed 注册函数
+        auto register_a128_presets_transposed = [&](std::string name, auto func) {
+            if (should_run_mode(Mode::NoMatch)) {
+                register_ascii128_preset_transposed_tests<Mode::NoMatch, Preset::Json, false>(seq, name, func);
+                register_ascii128_preset_transposed_tests<Mode::NoMatch, Preset::Html, false>(seq, name, func);
+                register_ascii128_preset_transposed_tests<Mode::NoMatch, Preset::Whitespace, false>(seq, name, func);
+                register_ascii128_preset_transposed_tests<Mode::NoMatch, Preset::LineBreak, false>(seq, name, func);
+            }
+            
+            if (should_run_mode(Mode::MatchMiddle)) {
+                register_ascii128_preset_transposed_tests<Mode::MatchMiddle, Preset::Json, false>(seq, name, func);
+                register_ascii128_preset_transposed_tests<Mode::MatchMiddle, Preset::Html, false>(seq, name, func);
+                register_ascii128_preset_transposed_tests<Mode::MatchMiddle, Preset::Whitespace, false>(seq, name, func);
+            }
+        };
+        
         register_a128_presets("avx2_a128", avx2_a128_no_of_fn);
-        register_a128_presets("avx2_a128_of", avx2_a128_of_fn);
-        register_a128_presets("avx2_a128T_pre", avx2_a128T_pre_fn);
+        register_a128_presets_of("avx2_a128_of", avx2_a128_of_fn);
+        register_a128_presets_transposed("avx2_a128T_pre", avx2_a128T_pre_fn);
     }
 
     benchmark::Initialize(&new_argc, new_argv);
