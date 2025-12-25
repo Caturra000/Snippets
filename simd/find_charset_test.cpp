@@ -1,4 +1,4 @@
-#include "find_byteset.hpp"
+#include "find_charset.hpp"
 
 #include <iostream>
 #include <vector>
@@ -61,7 +61,7 @@ void report_error(const std::vector<char>& data, const std::array<uint8_t, 32>& 
 // =========================================================
 
 // 绝对正确的参考实现
-ssize_t find_byteset_scalar_ref(const std::vector<char>& data, const std::array<uint8_t, 32>& bitmap) {
+ssize_t find_charset_scalar_ref(const std::vector<char>& data, const std::array<uint8_t, 32>& bitmap) {
     for (size_t i = 0; i < data.size(); ++i) {
         uint8_t u_char = static_cast<uint8_t>(data[i]);
         if (bitmap[u_char / 8] & (1 << (u_char % 8))) {
@@ -109,7 +109,7 @@ public:
 
             // 3. 执行对比
             // 标量版使用经过 mask 处理的 bitmap，确保逻辑一致
-            ssize_t expected = find_byteset_scalar_ref(data, bitmap);
+            ssize_t expected = find_charset_scalar_ref(data, bitmap);
             ssize_t actual = target_impl(data, bitmap);
 
             if (expected != actual) {
@@ -133,7 +133,7 @@ int main() {
     // 特性：输入全范围 (-128~127)，Bitmap 全范围 (0~255)
     // ----------------------------------------------------------------------------------
     TestFunc wrapper_avx2 = [](const auto& data, const auto& set32) {
-        return find_byteset_avx2(data, set32);
+        return find_charset_avx2(data, set32);
     };
 
     tester.run({
@@ -153,7 +153,7 @@ int main() {
         std::array<uint8_t, 16> set16;
         std::copy_n(set32.begin(), 16, set16.begin());
         constexpr avx2_ascii128_config config {.overflow = false};
-        return find_byteset_avx2_ascii128<config>(data, set16);
+        return find_charset_avx2_ascii128<config>(data, set16);
     };
 
     tester.run({
@@ -173,7 +173,7 @@ int main() {
         std::array<uint8_t, 16> set16;
         std::copy_n(set32.begin(), 16, set16.begin());
         constexpr avx2_ascii128_transposed_config config {.transposed = false};
-        return find_byteset_avx2_ascii128_transposed<config>(data, set16);
+        return find_charset_avx2_ascii128_transposed<config>(data, set16);
     };
 
     tester.run({
@@ -194,7 +194,7 @@ int main() {
         std::array<uint8_t, 16> set16;
         std::copy_n(set32.begin(), 16, set16.begin());
         constexpr avx2_ascii128_config config {.overflow = true};
-        return find_byteset_avx2_ascii128<config>(data, set16);
+        return find_charset_avx2_ascii128<config>(data, set16);
     };
 
     tester.run({

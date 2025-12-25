@@ -1,4 +1,4 @@
-#include "find_byteset.hpp"
+#include "find_charset.hpp"
 
 #include <benchmark/benchmark.h>
 
@@ -53,7 +53,7 @@ enum class Preset {
     ControlChars,// 控制字符: 0-31
 };
 
-// 字符集大小 (控制 byteset 中有效字符数目)
+// 字符集大小 (控制 charset 中有效字符数目)
 enum class SetSize {
     N1  = 1,
     N2  = 2,
@@ -150,7 +150,7 @@ constexpr double prob_value(Prob p) {
 }
 
 // ============================================================================
-// Byteset 辅助函数 (32字节)
+// charset 辅助函数 (32字节)
 // ============================================================================
 
 inline void set_bit(std::array<uint8_t, 32>& bs, unsigned char c) {
@@ -196,18 +196,18 @@ inline std::vector<unsigned char> get_preset_chars(Preset p) {
     }
 }
 
-inline std::array<uint8_t, 32> preset_to_byteset(Preset p) {
+inline std::array<uint8_t, 32> preset_to_charset(Preset p) {
     std::array<uint8_t, 32> bs{};
     for(auto c : get_preset_chars(p)) set_bit(bs, c);
     return bs;
 }
 
 // ============================================================================
-// 16-byte Byteset 辅助函数 (用于ASCII-128算法)
+// 16-byte charset 辅助函数 (用于ASCII-128算法)
 // ============================================================================
 
-// 从32字节byteset提取前16字节(仅0-127范围的bitmap)
-inline std::array<uint8_t, 16> byteset32_to_16(const std::array<uint8_t, 32>& bs32) {
+// 从32字节charset提取前16字节(仅0-127范围的bitmap)
+inline std::array<uint8_t, 16> charset32_to_16(const std::array<uint8_t, 32>& bs32) {
     std::array<uint8_t, 16> bs16;
     for(int i = 0; i < 16; ++i) {
         bs16[i] = bs32[i];
@@ -215,10 +215,10 @@ inline std::array<uint8_t, 16> byteset32_to_16(const std::array<uint8_t, 32>& bs
     return bs16;
 }
 
-// 将标准16字节byteset转换为transposed SIMD友好布局
-// 原始布局: bit c 在 byteset[c/8] 的第 (c%8) 位
-// 转换布局: bit c 在 byteset[c%16] 的第 (c/16) 位
-inline std::array<uint8_t, 16> transpose_byteset16(const std::array<uint8_t, 16>& bs) {
+// 将标准16字节charset转换为transposed SIMD友好布局
+// 原始布局: bit c 在 charset[c/8] 的第 (c%8) 位
+// 转换布局: bit c 在 charset[c%16] 的第 (c/16) 位
+inline std::array<uint8_t, 16> transpose_charset16(const std::array<uint8_t, 16>& bs) {
     std::array<uint8_t, 16> transposed{};
     for(int c = 0; c < 128; c++) {
         if((bs[c / 8] >> (c % 8)) & 1) {
@@ -242,8 +242,8 @@ struct StaticCharset {
         return ((c == Chars) || ...);
     }
     
-    // 转换为 byteset (用于对比测试)
-    static constexpr std::array<uint8_t, 32> to_byteset() {
+    // 转换为 charset (用于对比测试)
+    static constexpr std::array<uint8_t, 32> to_charset() {
         std::array<uint8_t, 32> bs{};
         ((bs[static_cast<unsigned char>(Chars) / 8] |= 
             (1u << (static_cast<unsigned char>(Chars) % 8))), ...);
@@ -303,11 +303,11 @@ ssize_t find_chars_stdfind_rt(std::ranges::range auto&& rng,
 // 版本4: 编译时字符集生成 bitmap，运行时用 bitmap 查找
 template<typename Charset>
 ssize_t find_chars_bitmap_ct(std::ranges::range auto&& rng) {
-    static constexpr auto byteset = Charset::to_byteset();
+    static constexpr auto charset = Charset::to_charset();
     ssize_t i = 0;
     for(auto c : rng) {
         auto uc = static_cast<unsigned char>(c);
-        if((byteset[uc / 8] >> (uc % 8)) & 1) return i;
+        if((charset[uc / 8] >> (uc % 8)) & 1) return i;
         ++i;
     }
     return -1;
@@ -323,21 +323,21 @@ const auto& generate_data() {
     
     static const DataPair pair = [&] {
         DataPair result;
-        auto &[data, byteset] = result;
+        auto &[data, charset] = result;
 
         std::mt19937 gen{42};
         std::uniform_int_distribution<int> char_dist(0, 255);
         std::uniform_int_distribution<int> bool_dist(0, 1);
 
         auto in_set = [&](unsigned char c) {
-            return (byteset[c / 8] >> (c % 8)) & 1;
+            return (charset[c / 8] >> (c % 8)) & 1;
         };
 
-        byteset.fill(0);
+        charset.fill(0);
         if constexpr (M == Mode::Random) {
-             for(auto &b : byteset) b = char_dist(gen);
+             for(auto &b : charset) b = char_dist(gen);
         } else {
-             for(int i = 0; i < 32; ++i) byteset[i] = char_dist(gen);
+             for(int i = 0; i < 32; ++i) charset[i] = char_dist(gen);
         }
 
         if constexpr (M == Mode::Random) {
@@ -385,20 +385,20 @@ const auto& generate_data_ranged() {
     
     static const DataPair pair = [&] {
         DataPair result;
-        auto &[data, byteset] = result;
+        auto &[data, charset] = result;
 
         std::mt19937 gen{42};
         auto [rmin, rmax] = get_char_range(Range);
         std::uniform_int_distribution<int> char_dist(rmin, rmax);
 
-        byteset.fill(0);
+        charset.fill(0);
         // 在指定范围内随机设置约一半的位
         int range_size = rmax - rmin + 1;
         for(int i = 0; i < range_size / 2; ++i) {
-            set_bit(byteset, static_cast<unsigned char>(char_dist(gen)));
+            set_bit(charset, static_cast<unsigned char>(char_dist(gen)));
         }
 
-        auto in_set = [&](unsigned char c) { return test_bit(byteset, c); };
+        auto in_set = [&](unsigned char c) { return test_bit(charset, c); };
 
         if constexpr (M == Mode::Random) {
             for(auto &c : data) c = static_cast<char>(char_dist(gen));
@@ -434,7 +434,7 @@ const auto& generate_data_ranged() {
 // ============================================================================
 // AsciiOnlyData=true:  数据限制在 0-127 (用于 overflow=false)
 // AsciiOnlyData=false: 数据可以是 0-255 (用于 overflow=true)
-// byteset 始终只在 0-127 范围有效
+// charset 始终只在 0-127 范围有效
 
 template <size_t Size, Mode M, bool AsciiOnlyData>
 const auto& generate_data_ascii128() {
@@ -442,26 +442,26 @@ const auto& generate_data_ascii128() {
     
     static const DataPair pair = [&] {
         DataPair result;
-        auto &[data, byteset] = result;
+        auto &[data, charset] = result;
 
         std::mt19937 gen{42};
         
         // 数据范围取决于 AsciiOnlyData
         std::uniform_int_distribution<int> data_dist(0, AsciiOnlyData ? 127 : 255);
-        // byteset 只在 0-127 范围设置
+        // charset 只在 0-127 范围设置
         std::uniform_int_distribution<int> ascii_dist(0, 127);
 
-        byteset.fill(0);
+        charset.fill(0);
         // 在 0-127 范围随机设置约一半的位 (约64个字符)
         for(int i = 0; i < 64; ++i) {
-            set_bit(byteset, static_cast<unsigned char>(ascii_dist(gen)));
+            set_bit(charset, static_cast<unsigned char>(ascii_dist(gen)));
         }
 
-        // 检查字符是否在 ASCII byteset 中
+        // 检查字符是否在 ASCII charset 中
         // 关键：128-255 的字符永远返回 false
         auto in_ascii_set = [&](unsigned char c) -> bool {
             if(c > 127) return false;
-            return test_bit(byteset, c);
+            return test_bit(charset, c);
         };
 
         if constexpr (M == Mode::Random) {
@@ -480,7 +480,7 @@ const auto& generate_data_ascii128() {
             // 插入匹配字符 (★ 关键修复：必须从 0-127 中选取 ★)
             auto insert_match = [&](size_t idx) {
                 if(idx >= Size) return;
-                // 遍历 0-127 找到第一个在 byteset 中的字符
+                // 遍历 0-127 找到第一个在 charset 中的字符
                 for(int c = 0; c < 128; ++c) {
                     if(in_ascii_set(static_cast<unsigned char>(c))) { 
                         data[idx] = static_cast<char>(c); 
@@ -509,19 +509,19 @@ const auto& generate_data_preset() {
     
     static const DataPair pair = [&] {
         DataPair result;
-        auto &[data, byteset] = result;
+        auto &[data, charset] = result;
 
         std::mt19937 gen{42};
         std::uniform_int_distribution<int> char_dist(0, 255);
         
         if constexpr (P == Preset::Random) {
-            byteset.fill(0);
-            for(int i = 0; i < 32; ++i) byteset[i] = char_dist(gen);
+            charset.fill(0);
+            for(int i = 0; i < 32; ++i) charset[i] = char_dist(gen);
         } else {
-            byteset = preset_to_byteset(P);
+            charset = preset_to_charset(P);
         }
 
-        auto in_set = [&](unsigned char c) { return test_bit(byteset, c); };
+        auto in_set = [&](unsigned char c) { return test_bit(charset, c); };
         auto preset_chars = get_preset_chars(P);
 
         if constexpr (M == Mode::Random) {
@@ -571,26 +571,26 @@ const auto& generate_data_ascii128_preset() {
     
     static const DataPair pair = [&] {
         DataPair result;
-        auto &[data, byteset] = result;
+        auto &[data, charset] = result;
 
         std::mt19937 gen{42};
         std::uniform_int_distribution<int> data_dist(0, AsciiOnlyData ? 127 : 255);
         
         if constexpr (P == Preset::Random) {
             // 随机但只在 0-127 范围设置
-            byteset.fill(0);
+            charset.fill(0);
             std::uniform_int_distribution<int> ascii_dist(0, 127);
             for(int i = 0; i < 64; ++i) {
-                set_bit(byteset, static_cast<unsigned char>(ascii_dist(gen)));
+                set_bit(charset, static_cast<unsigned char>(ascii_dist(gen)));
             }
         } else {
-            byteset = preset_to_byteset(P);
+            charset = preset_to_charset(P);
         }
 
-        // 检查是否在 ASCII byteset 中 (128-255 永远返回 false)
+        // 检查是否在 ASCII charset 中 (128-255 永远返回 false)
         auto in_ascii_set = [&](unsigned char c) -> bool {
             if(c > 127) return false;
-            return test_bit(byteset, c);
+            return test_bit(charset, c);
         };
 
         auto preset_chars = get_preset_chars(P);
@@ -646,16 +646,16 @@ const auto& generate_data_prob() {
     
     static const DataPair pair = [&] {
         DataPair result;
-        auto &[data, byteset] = result;
+        auto &[data, charset] = result;
 
         std::mt19937 gen{42};
         std::uniform_int_distribution<int> char_dist(0, 255);
         std::uniform_real_distribution<double> prob_dist(0.0, 1.0);
 
-        byteset.fill(0);
-        for(int i = 0; i < 32; ++i) byteset[i] = char_dist(gen);
+        charset.fill(0);
+        for(int i = 0; i < 32; ++i) charset[i] = char_dist(gen);
 
-        auto in_set = [&](unsigned char c) { return test_bit(byteset, c); };
+        auto in_set = [&](unsigned char c) { return test_bit(charset, c); };
 
         // 收集匹配/不匹配字符
         std::vector<unsigned char> match_chars, nomatch_chars;
@@ -665,7 +665,7 @@ const auto& generate_data_prob() {
         }
 
         // 确保两个集合非空
-        if(match_chars.empty()) { match_chars.push_back(0); set_bit(byteset, 0); }
+        if(match_chars.empty()) { match_chars.push_back(0); set_bit(charset, 0); }
         if(nomatch_chars.empty()) nomatch_chars.push_back(255);
 
         double match_prob = prob_value(P);
@@ -695,28 +695,28 @@ const auto& generate_data_sized() {
     
     static const DataPair pair = [&] {
         DataPair result;
-        auto &[data, byteset] = result;
+        auto &[data, charset] = result;
 
         std::mt19937 gen{42};
         auto [rmin, rmax] = get_char_range(Range);
         std::uniform_int_distribution<int> char_dist(rmin, rmax);
 
-        byteset.fill(0);
+        charset.fill(0);
         
         if constexpr (S == SetSize::Full) {
-            for(int i = 0; i < 32; ++i) byteset[i] = char_dist(gen) & 0xFF;
+            for(int i = 0; i < 32; ++i) charset[i] = char_dist(gen) & 0xFF;
         } else {
             constexpr int num_chars = static_cast<int>(S);
             for(int i = 0; i < num_chars; ) {
                 unsigned char c = static_cast<unsigned char>(char_dist(gen));
-                if(!test_bit(byteset, c)) {
-                    set_bit(byteset, c);
+                if(!test_bit(charset, c)) {
+                    set_bit(charset, c);
                     ++i;
                 }
             }
         }
 
-        auto in_set = [&](unsigned char c) { return test_bit(byteset, c); };
+        auto in_set = [&](unsigned char c) { return test_bit(charset, c); };
 
         if constexpr (M == Mode::Random) {
             for(auto &c : data) c = static_cast<char>(char_dist(gen));
@@ -757,14 +757,14 @@ const auto& generate_data_for_static_charset() {
     
     static const DataPair pair = [&] {
         DataPair result;
-        auto &[data, byteset] = result;
+        auto &[data, charset] = result;
 
-        byteset = Charset::to_byteset();
+        charset = Charset::to_charset();
 
         std::mt19937 gen{42};
         std::uniform_int_distribution<int> char_dist(0, 255);
 
-        auto in_set = [&](unsigned char c) { return test_bit(byteset, c); };
+        auto in_set = [&](unsigned char c) { return test_bit(charset, c); };
 
         if constexpr (M == Mode::Random) {
             for(auto &c : data) c = static_cast<char>(char_dist(gen));
@@ -801,10 +801,10 @@ const auto& generate_data_for_static_charset() {
 // 原有版本
 template <size_t Size, Mode M>
 void BM_run(benchmark::State &state, auto &&func) {
-    const auto& [data, byteset] = generate_data<Size, M>();
+    const auto& [data, charset] = generate_data<Size, M>();
 
     for(auto _ : state) {
-        auto res = func(data, byteset);
+        auto res = func(data, charset);
         benchmark::DoNotOptimize(res);
         benchmark::DoNotOptimize(data.data());
     }
@@ -815,10 +815,10 @@ void BM_run(benchmark::State &state, auto &&func) {
 // 预设字符集版本
 template <size_t Size, Mode M, Preset P>
 void BM_run_preset(benchmark::State &state, auto &&func) {
-    const auto& [data, byteset] = generate_data_preset<Size, M, P>();
+    const auto& [data, charset] = generate_data_preset<Size, M, P>();
 
     for(auto _ : state) {
-        auto res = func(data, byteset);
+        auto res = func(data, charset);
         benchmark::DoNotOptimize(res);
         benchmark::DoNotOptimize(data.data());
     }
@@ -829,10 +829,10 @@ void BM_run_preset(benchmark::State &state, auto &&func) {
 // 概率版本
 template <size_t Size, Prob P>
 void BM_run_prob(benchmark::State &state, auto &&func) {
-    const auto& [data, byteset] = generate_data_prob<Size, P>();
+    const auto& [data, charset] = generate_data_prob<Size, P>();
 
     for(auto _ : state) {
-        auto res = func(data, byteset);
+        auto res = func(data, charset);
         benchmark::DoNotOptimize(res);
         benchmark::DoNotOptimize(data.data());
     }
@@ -843,10 +843,10 @@ void BM_run_prob(benchmark::State &state, auto &&func) {
 // 字符范围版本
 template <size_t Size, Mode M, CharRange R>
 void BM_run_ranged(benchmark::State &state, auto &&func) {
-    const auto& [data, byteset] = generate_data_ranged<Size, M, R>();
+    const auto& [data, charset] = generate_data_ranged<Size, M, R>();
 
     for(auto _ : state) {
-        auto res = func(data, byteset);
+        auto res = func(data, charset);
         benchmark::DoNotOptimize(res);
         benchmark::DoNotOptimize(data.data());
     }
@@ -857,10 +857,10 @@ void BM_run_ranged(benchmark::State &state, auto &&func) {
 // 字符集大小版本
 template <size_t Size, Mode M, SetSize S>
 void BM_run_sized(benchmark::State &state, auto &&func) {
-    const auto& [data, byteset] = generate_data_sized<Size, M, S>();
+    const auto& [data, charset] = generate_data_sized<Size, M, S>();
 
     for(auto _ : state) {
-        auto res = func(data, byteset);
+        auto res = func(data, charset);
         benchmark::DoNotOptimize(res);
         benchmark::DoNotOptimize(data.data());
     }
@@ -871,7 +871,7 @@ void BM_run_sized(benchmark::State &state, auto &&func) {
 // 编译时字符集版本 (测试 if chain)
 template <size_t Size, Mode M, typename Charset>
 void BM_run_static_ct(benchmark::State &state) {
-    const auto& [data, byteset] = generate_data_for_static_charset<Size, M, Charset>();
+    const auto& [data, charset] = generate_data_for_static_charset<Size, M, Charset>();
 
     for(auto _ : state) {
         auto res = find_chars_static_ct<Charset>(data);
@@ -885,7 +885,7 @@ void BM_run_static_ct(benchmark::State &state) {
 // 编译时字符集生成 bitmap 版本
 template <size_t Size, Mode M, typename Charset>
 void BM_run_bitmap_ct(benchmark::State &state) {
-    const auto& [data, byteset] = generate_data_for_static_charset<Size, M, Charset>();
+    const auto& [data, charset] = generate_data_for_static_charset<Size, M, Charset>();
 
     for(auto _ : state) {
         auto res = find_chars_bitmap_ct<Charset>(data);
@@ -899,7 +899,7 @@ void BM_run_bitmap_ct(benchmark::State &state) {
 // 运行时小字符集循环版本
 template <size_t Size, Mode M, typename Charset>
 void BM_run_loop_rt(benchmark::State &state) {
-    const auto& [data, byteset] = generate_data_for_static_charset<Size, M, Charset>();
+    const auto& [data, charset] = generate_data_for_static_charset<Size, M, Charset>();
     
     // 运行时复制字符数组 (防止编译器过度优化)
     auto chars_copy = Charset::chars;
@@ -922,11 +922,11 @@ void BM_run_loop_rt(benchmark::State &state) {
 template <size_t Size, Mode M>
 void BM_run_ascii128_no_overflow(benchmark::State &state, auto &&func) {
     // 使用专用生成器，AsciiOnlyData=true
-    const auto& [data, byteset32] = generate_data_ascii128<Size, M, true>();
-    auto byteset16 = byteset32_to_16(byteset32);
+    const auto& [data, charset32] = generate_data_ascii128<Size, M, true>();
+    auto charset16 = charset32_to_16(charset32);
 
     for(auto _ : state) {
-        auto res = func(data, byteset16);
+        auto res = func(data, charset16);
         benchmark::DoNotOptimize(res);
         benchmark::DoNotOptimize(data.data());
     }
@@ -938,12 +938,12 @@ void BM_run_ascii128_no_overflow(benchmark::State &state, auto &&func) {
 template <size_t Size, Mode M>
 void BM_run_ascii128_overflow(benchmark::State &state, auto &&func) {
     // 使用专用生成器，AsciiOnlyData=false
-    // byteset 仍只在 0-127 设置，匹配字符也从 0-127 选取
-    const auto& [data, byteset32] = generate_data_ascii128<Size, M, false>();
-    auto byteset16 = byteset32_to_16(byteset32);
+    // charset 仍只在 0-127 设置，匹配字符也从 0-127 选取
+    const auto& [data, charset32] = generate_data_ascii128<Size, M, false>();
+    auto charset16 = charset32_to_16(charset32);
 
     for(auto _ : state) {
-        auto res = func(data, byteset16);
+        auto res = func(data, charset16);
         benchmark::DoNotOptimize(res);
         benchmark::DoNotOptimize(data.data());
     }
@@ -955,11 +955,11 @@ void BM_run_ascii128_overflow(benchmark::State &state, auto &&func) {
 template <size_t Size, Mode M>
 void BM_run_ascii128_transposed_convert(benchmark::State &state, auto &&func) {
     // 使用专用生成器
-    const auto& [data, byteset32] = generate_data_ascii128<Size, M, false>();
-    auto byteset16 = byteset32_to_16(byteset32);
+    const auto& [data, charset32] = generate_data_ascii128<Size, M, false>();
+    auto charset16 = charset32_to_16(charset32);
 
     for(auto _ : state) {
-        auto res = func(data, byteset16);
+        auto res = func(data, charset16);
         benchmark::DoNotOptimize(res);
         benchmark::DoNotOptimize(data.data());
     }
@@ -971,12 +971,12 @@ void BM_run_ascii128_transposed_convert(benchmark::State &state, auto &&func) {
 template <size_t Size, Mode M>
 void BM_run_ascii128_transposed_pre(benchmark::State &state, auto &&func) {
     // 使用专用生成器
-    const auto& [data, byteset32] = generate_data_ascii128<Size, M, false>();
-    auto byteset16 = byteset32_to_16(byteset32);
-    auto byteset16_transposed = transpose_byteset16(byteset16);
+    const auto& [data, charset32] = generate_data_ascii128<Size, M, false>();
+    auto charset16 = charset32_to_16(charset32);
+    auto charset16_transposed = transpose_charset16(charset16);
 
     for(auto _ : state) {
-        auto res = func(data, byteset16_transposed);
+        auto res = func(data, charset16_transposed);
         benchmark::DoNotOptimize(res);
         benchmark::DoNotOptimize(data.data());
     }
@@ -988,11 +988,11 @@ void BM_run_ascii128_transposed_pre(benchmark::State &state, auto &&func) {
 template <size_t Size, Mode M, Preset P, bool AsciiOnlyData>
 void BM_run_ascii128_preset(benchmark::State &state, auto &&func) {
     // 使用 ASCII-128 专用预设生成器
-    const auto& [data, byteset32] = generate_data_ascii128_preset<Size, M, P, AsciiOnlyData>();
-    auto byteset16 = byteset32_to_16(byteset32);
+    const auto& [data, charset32] = generate_data_ascii128_preset<Size, M, P, AsciiOnlyData>();
+    auto charset16 = charset32_to_16(charset32);
 
     for(auto _ : state) {
-        auto res = func(data, byteset16);
+        auto res = func(data, charset16);
         benchmark::DoNotOptimize(res);
         benchmark::DoNotOptimize(data.data());
     }
@@ -1003,12 +1003,12 @@ void BM_run_ascii128_preset(benchmark::State &state, auto &&func) {
 // ASCII-128 预设字符集版本 - Transposed 布局 (用于 avx2_a128T_pre)
 template <size_t Size, Mode M, Preset P, bool AsciiOnlyData>
 void BM_run_ascii128_preset_transposed(benchmark::State &state, auto &&func) {
-    const auto& [data, byteset32] = generate_data_ascii128_preset<Size, M, P, AsciiOnlyData>();
-    auto byteset16 = byteset32_to_16(byteset32);
-    auto byteset16_transposed = transpose_byteset16(byteset16);  // ★ 预转换为 SIMD 布局
+    const auto& [data, charset32] = generate_data_ascii128_preset<Size, M, P, AsciiOnlyData>();
+    auto charset16 = charset32_to_16(charset32);
+    auto charset16_transposed = transpose_charset16(charset16);  // ★ 预转换为 SIMD 布局
 
     for(auto _ : state) {
-        auto res = func(data, byteset16_transposed);
+        auto res = func(data, charset16_transposed);
         benchmark::DoNotOptimize(res);
         benchmark::DoNotOptimize(data.data());
     }
@@ -1310,11 +1310,11 @@ int main(int argc, char **argv) {
     // 基本算法 lambda
     // ========================================
     auto avx2_fn = [&](auto &&rng, const auto &set) { 
-        return find_byteset_avx2(rng, set); 
+        return find_charset_avx2(rng, set); 
     };
 
     auto scalar_fn = [&](auto &&rng, const auto &set) { 
-        return find_byteset_scalar(rng, set); 
+        return find_charset_scalar(rng, set); 
     };
 
     auto std_fn = [&](auto &&rng, const auto &set) {
@@ -1486,20 +1486,20 @@ int main(int argc, char **argv) {
 
         // Lambda 包装器 - ASCII-128
         auto avx2_a128_no_of_fn = [&](auto &&rng, const auto &set16) {
-            return find_byteset_avx2_ascii128<cfg_ascii128_no_overflow>(rng, set16);
+            return find_charset_avx2_ascii128<cfg_ascii128_no_overflow>(rng, set16);
         };
 
         auto avx2_a128_of_fn = [&](auto &&rng, const auto &set16) {
-            return find_byteset_avx2_ascii128<cfg_ascii128_overflow>(rng, set16);
+            return find_charset_avx2_ascii128<cfg_ascii128_overflow>(rng, set16);
         };
 
         // Lambda 包装器 - ASCII-128 Transposed
         auto avx2_a128T_cvt_fn = [&](auto &&rng, const auto &set16) {
-            return find_byteset_avx2_ascii128_transposed<cfg_transposed_convert>(rng, set16);
+            return find_charset_avx2_ascii128_transposed<cfg_transposed_convert>(rng, set16);
         };
 
         auto avx2_a128T_pre_fn = [&](auto &&rng, const auto &set16) {
-            return find_byteset_avx2_ascii128_transposed<cfg_transposed_pre>(rng, set16);
+            return find_charset_avx2_ascii128_transposed<cfg_transposed_pre>(rng, set16);
         };
 
         // ---- ASCII-128 (overflow=false): 数据限制在0-127 ----
