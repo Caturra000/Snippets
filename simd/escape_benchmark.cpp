@@ -25,6 +25,47 @@ size_t escape_scalar(std::string_view src, std::span<char> dst) {
     return len;
 }
 
+#ifdef BENCHMARK_OPT
+
+// ═══════════════════════════════════════════════════════════════════
+// Lemire 的实现
+// ═══════════════════════════════════════════════════════════════════
+
+size_t escape_lemire_avx512(std::ranges::range auto &&src, std::ranges::range auto &&dst) {
+  const auto len = stdr::size(src);
+  auto in = stdr::data(src);
+  auto out = stdr::data(dst);
+  const char *const finalin = in + len;
+  const char *const initout = out;
+  __m512i solidus = _mm512_set1_epi8('\\');
+  __m512i solidus16 = _mm512_set1_epi16('\\');
+  __m512i quote = _mm512_set1_epi8('"');
+  for (; in + 32 <= finalin; in += 32) {
+    __m256i input = _mm256_loadu_si256(reinterpret_cast<const __m256i *>(in));
+    __m512i input1 = _mm512_cvtepu8_epi16(input);
+    __m512i shifted_input1 = _mm512_bslli_epi128(input1, 1);
+
+    __mmask64 is_solidus = _mm512_cmpeq_epi8_mask(input1, solidus);
+    __mmask64 is_quote = _mm512_cmpeq_epi8_mask(input1, quote);
+    __mmask64 is_quote_or_solidus = _kor_mask64(is_solidus, is_quote);
+    __mmask64 to_keep = _kor_mask64(is_quote_or_solidus, 0xaaaaaaaaaaaaaaaa);
+    __m512i escaped = _mm512_or_si512(shifted_input1, solidus16);
+    _mm512_mask_compressstoreu_epi8(out, to_keep, escaped);
+    out += _mm_popcnt_u64(_cvtmask64_u64(to_keep));
+  }
+  for (; in < finalin; in++) {
+    if ((*in == '\\') || (*in == '"')) {
+      *out = '\\';
+      out++;
+    }
+    *out = *in;
+    out++;
+  }
+  return out - initout;
+}
+
+#endif
+
 // ═══════════════════════════════════════════════════════════════════
 // 测试数据生成
 // ═══════════════════════════════════════════════════════════════════
@@ -116,6 +157,12 @@ void ensure_test_data(size_t size) {
         ->Range(64, 1 << 16)                                                \
         ->Unit(benchmark::kNanosecond)
 
+#ifdef BENCHMARK_OPT
+#define OPT_DEFINE_BENCHMARK(...) DEFINE_BENCHMARK(__VA_ARGS__)
+#else
+#define OPT_DEFINE_BENCHMARK(...)
+#endif
+
 // ═══════════════════════════════════════════════════════════════════
 // 定义所有 Benchmark
 // ═══════════════════════════════════════════════════════════════════
@@ -123,22 +170,27 @@ void ensure_test_data(size_t size) {
 // 0% 转义 (快速路径)
 DEFINE_BENCHMARK(escape_scalar,            no_escape, 0pct);
 DEFINE_BENCHMARK(escape_avx2,              no_escape, 0pct);
+OPT_DEFINE_BENCHMARK(escape_lemire_avx512, no_escape, 0pct);
 
 // 5% 转义 (典型 JSON)
 DEFINE_BENCHMARK(escape_scalar,            low_escape, 5pct);
 DEFINE_BENCHMARK(escape_avx2,              low_escape, 5pct);
+OPT_DEFINE_BENCHMARK(escape_lemire_avx512, low_escape, 5pct);
 
 // 25% 转义
 DEFINE_BENCHMARK(escape_scalar,            mid_escape, 25pct);
 DEFINE_BENCHMARK(escape_avx2,              mid_escape, 25pct);
+OPT_DEFINE_BENCHMARK(escape_lemire_avx512, mid_escape, 25pct);
 
 // 50% 转义
 DEFINE_BENCHMARK(escape_scalar,            high_escape, 50pct);
 DEFINE_BENCHMARK(escape_avx2,              high_escape, 50pct);
+OPT_DEFINE_BENCHMARK(escape_lemire_avx512, high_escape, 50pct);
 
 // 100% 转义 (最坏情况)
 DEFINE_BENCHMARK(escape_scalar,            all_escape, 100pct);
 DEFINE_BENCHMARK(escape_avx2,              all_escape, 100pct);
+OPT_DEFINE_BENCHMARK(escape_lemire_avx512, all_escape, 100pct);
 
 // ═══════════════════════════════════════════════════════════════════
 // 主函数
