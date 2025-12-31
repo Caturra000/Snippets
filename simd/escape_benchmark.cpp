@@ -122,23 +122,23 @@ void ensure_test_data(size_t size) {
 
 // 0% 转义 (快速路径)
 DEFINE_BENCHMARK(escape_scalar,            no_escape, 0pct);
-DEFINE_BENCHMARK(escape,                   no_escape, 0pct);
+DEFINE_BENCHMARK(escape_avx2,              no_escape, 0pct);
 
 // 5% 转义 (典型 JSON)
 DEFINE_BENCHMARK(escape_scalar,            low_escape, 5pct);
-DEFINE_BENCHMARK(escape,                   low_escape, 5pct);
+DEFINE_BENCHMARK(escape_avx2,              low_escape, 5pct);
 
 // 25% 转义
 DEFINE_BENCHMARK(escape_scalar,            mid_escape, 25pct);
-DEFINE_BENCHMARK(escape,                   mid_escape, 25pct);
+DEFINE_BENCHMARK(escape_avx2,              mid_escape, 25pct);
 
 // 50% 转义
 DEFINE_BENCHMARK(escape_scalar,            high_escape, 50pct);
-DEFINE_BENCHMARK(escape,                   high_escape, 50pct);
+DEFINE_BENCHMARK(escape_avx2,              high_escape, 50pct);
 
 // 100% 转义 (最坏情况)
 DEFINE_BENCHMARK(escape_scalar,            all_escape, 100pct);
-DEFINE_BENCHMARK(escape,                   all_escape, 100pct);
+DEFINE_BENCHMARK(escape_avx2,              all_escape, 100pct);
 
 // ═══════════════════════════════════════════════════════════════════
 // 主函数

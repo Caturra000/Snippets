@@ -62,7 +62,7 @@ inline constexpr struct escape_mask_predefined {
 //
 // dst should be larger than src, at least 2x.
 // Return the final length of dst, this might be useful for null-based string.
-size_t escape(std::ranges::range auto &&src, std::ranges::range auto &&dst) {
+size_t escape_avx2(std::ranges::range auto &&src, std::ranges::range auto &&dst) {
     const auto quote = _mm256_set1_epi8('"');
     const auto backslash = _mm256_set1_epi8('\\');
     const auto backslash128 = _mm_set1_epi8('\\');
@@ -76,19 +76,11 @@ size_t escape(std::ranges::range auto &&src, std::ranges::range auto &&dst) {
         auto expanded = _mm_shuffle_epi8(chunk128, shuffle);
         auto result = _mm_blendv_epi8(expanded, backslash128, blend);
         _mm_storeu_si128((__m128i*)(stdr::data(dst) + length), result);
-        length += escape_lut.lengths[mask];
-    };
-    auto escape_32x = [&](auto &&chunk256, uint32_t mask) {
-        auto lo = _mm256_castsi256_si128(chunk256);
-        auto hi = _mm256_extracti128_si256(chunk256, 1);
-        escape_8x(lo,                    mask);
-        escape_8x(_mm_srli_si128(lo, 8), mask >> 8);
-        escape_8x(hi,                    mask >> 16);
-        escape_8x(_mm_srli_si128(hi, 8), mask >> 24);
+        return escape_lut.lengths[mask];
     };
 
     auto simd_view = src | simdify<lane>;
-    for(auto &&[index, simd_v] : stdv::enumerate(simd_view)) {
+    for(auto &&simd_v : simd_view) {
         auto addr = (__m256i *) &simd_v;
         auto chunk = _mm256_loadu_si256(addr);
         auto mask = _mm256_movemask_epi8(_mm256_or_si256(
@@ -99,7 +91,12 @@ size_t escape(std::ranges::range auto &&src, std::ranges::range auto &&dst) {
             _mm256_storeu_si256((__m256i *)(stdr::data(dst) + length), chunk);
             length += lane;
         } else {
-            escape_32x(chunk, mask);
+            auto lo = _mm256_castsi256_si128(chunk);
+            auto hi = _mm256_extracti128_si256(chunk, 1);
+            length += escape_8x(lo,                    mask);
+            length += escape_8x(_mm_srli_si128(lo, 8), mask >> 8);
+            length += escape_8x(hi,                    mask >> 16);
+            length += escape_8x(_mm_srli_si128(hi, 8), mask >> 24);
         }
     }
     auto scalar_view = src

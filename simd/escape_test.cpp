@@ -33,7 +33,7 @@ bool run_test(const TestCase& tc) {
     std::vector<char> dst_scalar(tc.input.size() * 2 + 64);
     
     // 调用两个实现
-    size_t len_simd = escape(tc.input, std::span{dst_simd});
+    size_t len_simd = escape_avx2(tc.input, std::span{dst_simd});
     size_t len_scalar = escape_scalar(tc.input, std::span{dst_scalar});
     
     // 比较长度
