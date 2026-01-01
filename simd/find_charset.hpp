@@ -150,7 +150,7 @@ ssize_t find_charset_avx2_ascii128(std::ranges::range auto &&rng, const auto &ch
     auto scalar_view = rng | std::views::drop(offset);
     for(auto &&[index, _v] : std::views::enumerate(scalar_view)) {
         auto v = static_cast<unsigned char>(_v);
-        if(v >= 128) continue;
+        if constexpr (Config.overflow) if(v >= 128) continue;
         auto v_row = charset[v / 8];
         auto v_col = 1 << (v % 8);
         if(v_row & v_col) return offset + index;
@@ -172,7 +172,7 @@ struct avx2_ascii128_transposed_config {
 // b4-b6 (w3): bit index (col).
 template <avx2_ascii128_transposed_config Config>
 ssize_t find_charset_avx2_ascii128_transposed(std::ranges::range auto &&rng, const auto &_charset) {
-    char charset[16];
+    unsigned char charset[16];
     if constexpr (!Config.transposed) {
         std::ranges::fill(charset, 0);
         for(int c = 0; c < 128; c++) {
@@ -218,7 +218,6 @@ ssize_t find_charset_avx2_ascii128_transposed(std::ranges::range auto &&rng, con
     auto scalar_view = rng | std::views::drop(offset);
     for(auto &&[index, _v] : std::views::enumerate(scalar_view)) {
         auto v = static_cast<unsigned char>(_v);
-        if(v >= 128) continue;
         auto v_row = charset[v % 16];
         auto v_col = 1 << (v / 16);
         if(v_row & v_col) return offset + index;
