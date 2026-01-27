@@ -1,0 +1,537 @@
+glib 版本号：
+$ /lib/x86_64-linux-gnu/libc.so.6
+GNU C Library (Ubuntu GLIBC 2.39-0ubuntu8.6) stable release version 2.39.
+Copyright (C) 2024 Free Software Foundation, Inc.
+
+
+000000000009fff0 <__pthread_mutex_lock@GLIBC_2.2.5>:
+   9fff0:	f3 0f 1e fa          	endbr64
+   9fff4:	8b 47 10             	mov    0x10(%rdi),%eax
+   9fff7:	89 c2                	mov    %eax,%edx
+   9fff9:	81 e2 7f 01 00 00    	and    $0x17f,%edx
+   9ffff:	90                   	nop
+   a0000:	83 e0 7c             	and    $0x7c,%eax
+   a0003:	0f 85 a7 00 00 00    	jne    a00b0 <__pthread_mutex_lock@GLIBC_2.2.5+0xc0>
+   a0009:	55                   	push   %rbp
+   a000a:	48 89 e5             	mov    %rsp,%rbp
+   a000d:	53                   	push   %rbx
+   a000e:	48 83 ec 18          	sub    $0x18,%rsp
+   a0012:	85 d2                	test   %edx,%edx
+   a0014:	0f 85 9e 00 00 00    	jne    a00b8 <__pthread_mutex_lock@GLIBC_2.2.5+0xc8>
+   a001a:	44 8b 0d 0f 57 16 00 	mov    0x16570f(%rip),%r9d        # 205730 <__abort_msg@@GLIBC_PRIVATE+0xbf0>
+   a0021:	45 85 c9             	test   %r9d,%r9d
+   a0024:	75 5a                	jne    a0080 <__pthread_mutex_lock@GLIBC_2.2.5+0x90>
+   a0026:	8b 77 10             	mov    0x10(%rdi),%esi
+   a0029:	81 e6 80 00 00 00    	and    $0x80,%esi
+   a002f:	75 09                	jne    a003a <__pthread_mutex_lock@GLIBC_2.2.5+0x4a>
+   a0031:	80 3d 08 b0 16 00 00 	cmpb   $0x0,0x16b008(%rip)        # 20b040 <__libc_single_threaded@@GLIBC_2.32>
+   a0038:	75 36                	jne    a0070 <__pthread_mutex_lock@GLIBC_2.2.5+0x80>
+   a003a:	31 c0                	xor    %eax,%eax
+   a003c:	ba 01 00 00 00       	mov    $0x1,%edx
+   a0041:	f0 0f b1 17          	lock cmpxchg %edx,(%rdi)
+   a0045:	0f 85 ad 00 00 00    	jne    a00f8 <__pthread_mutex_lock@GLIBC_2.2.5+0x108>
+   a004b:	8b 4f 08             	mov    0x8(%rdi),%ecx
+   a004e:	85 c9                	test   %ecx,%ecx
+   a0050:	0f 85 54 01 00 00    	jne    a01aa <__pthread_mutex_lock@GLIBC_2.2.5+0x1ba>
+   a0056:	64 8b 04 25 d0 02 00 	mov    %fs:0x2d0,%eax
+   a005d:	00 
+   a005e:	89 47 08             	mov    %eax,0x8(%rdi)
+   a0061:	83 47 0c 01          	addl   $0x1,0xc(%rdi)
+   a0065:	90                   	nop
+   a0066:	31 c0                	xor    %eax,%eax
+   a0068:	48 8b 5d f8          	mov    -0x8(%rbp),%rbx
+   a006c:	c9                   	leave
+   a006d:	c3                   	ret
+   a006e:	66 90                	xchg   %ax,%ax
+   a0070:	44 8b 07             	mov    (%rdi),%r8d
+   a0073:	45 85 c0             	test   %r8d,%r8d
+   a0076:	75 c2                	jne    a003a <__pthread_mutex_lock@GLIBC_2.2.5+0x4a>
+   a0078:	c7 07 01 00 00 00    	movl   $0x1,(%rdi)
+   a007e:	eb cb                	jmp    a004b <__pthread_mutex_lock@GLIBC_2.2.5+0x5b>
+   a0080:	8b 47 10             	mov    0x10(%rdi),%eax
+   a0083:	f6 c4 03             	test   $0x3,%ah
+   a0086:	74 08                	je     a0090 <__pthread_mutex_lock@GLIBC_2.2.5+0xa0>
+   a0088:	f6 c4 01             	test   $0x1,%ah
+   a008b:	74 99                	je     a0026 <__pthread_mutex_lock@GLIBC_2.2.5+0x36>
+   a008d:	eb 07                	jmp    a0096 <__pthread_mutex_lock@GLIBC_2.2.5+0xa6>
+   a008f:	90                   	nop
+   a0090:	80 cc 01             	or     $0x1,%ah
+   a0093:	89 47 10             	mov    %eax,0x10(%rdi)
+   a0096:	8b 57 10             	mov    0x10(%rdi),%edx
+   a0099:	48 8b 5d f8          	mov    -0x8(%rbp),%rbx
+   a009d:	48 8d 77 16          	lea    0x16(%rdi),%rsi
+   a00a1:	c9                   	leave
+   a00a2:	81 e2 80 00 00 00    	and    $0x80,%edx
+   a00a8:	e9 a3 88 ff ff       	jmp    98950 <__pthread_cleanup_routine@GLIBC_2.3.3+0x160>
+   a00ad:	0f 1f 00             	nopl   (%rax)
+   a00b0:	e9 5b f8 ff ff       	jmp    9f910 <__pthread_mutex_init@GLIBC_2.2.5+0x200>
+   a00b5:	0f 1f 00             	nopl   (%rax)
+   a00b8:	81 fa 00 01 00 00    	cmp    $0x100,%edx
+   a00be:	74 d6                	je     a0096 <__pthread_mutex_lock@GLIBC_2.2.5+0xa6>
+   a00c0:	8b 57 10             	mov    0x10(%rdi),%edx
+   a00c3:	83 e2 7f             	and    $0x7f,%edx
+   a00c6:	83 fa 01             	cmp    $0x1,%edx
+   a00c9:	0f 85 8e 00 00 00    	jne    a015d <__pthread_mutex_lock@GLIBC_2.2.5+0x16d>
+   a00cf:	64 8b 04 25 d0 02 00 	mov    %fs:0x2d0,%eax
+   a00d6:	00 
+   a00d7:	39 47 08             	cmp    %eax,0x8(%rdi)
+   a00da:	75 2e                	jne    a010a <__pthread_mutex_lock@GLIBC_2.2.5+0x11a>
+   a00dc:	8b 47 04             	mov    0x4(%rdi),%eax
+   a00df:	83 f8 ff             	cmp    $0xffffffff,%eax
+   a00e2:	0f 84 b8 00 00 00    	je     a01a0 <__pthread_mutex_lock@GLIBC_2.2.5+0x1b0>
+   a00e8:	83 c0 01             	add    $0x1,%eax
+   a00eb:	89 47 04             	mov    %eax,0x4(%rdi)
+   a00ee:	e9 73 ff ff ff       	jmp    a0066 <__pthread_mutex_lock@GLIBC_2.2.5+0x76>
+   a00f3:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+   a00f8:	48 89 7d e8          	mov    %rdi,-0x18(%rbp)
+   a00fc:	e8 3f 8e ff ff       	call   98f40 <__lll_lock_wait_private@@GLIBC_PRIVATE+0x60>
+   a0101:	48 8b 7d e8          	mov    -0x18(%rbp),%rdi
+   a0105:	e9 41 ff ff ff       	jmp    a004b <__pthread_mutex_lock@GLIBC_2.2.5+0x5b>
+   a010a:	8b 77 10             	mov    0x10(%rdi),%esi
+   a010d:	81 e6 80 00 00 00    	and    $0x80,%esi
+   a0113:	75 2c                	jne    a0141 <__pthread_mutex_lock@GLIBC_2.2.5+0x151>
+   a0115:	80 3d 24 af 16 00 00 	cmpb   $0x0,0x16af24(%rip)        # 20b040 <__libc_single_threaded@@GLIBC_2.32>
+   a011c:	74 23                	je     a0141 <__pthread_mutex_lock@GLIBC_2.2.5+0x151>
+   a011e:	8b 17                	mov    (%rdi),%edx
+   a0120:	85 d2                	test   %edx,%edx
+   a0122:	75 1d                	jne    a0141 <__pthread_mutex_lock@GLIBC_2.2.5+0x151>
+   a0124:	c7 07 01 00 00 00    	movl   $0x1,(%rdi)
+   a012a:	8b 47 08             	mov    0x8(%rdi),%eax
+   a012d:	85 c0                	test   %eax,%eax
+   a012f:	0f 85 71 01 00 00    	jne    a02a6 <__pthread_mutex_lock@GLIBC_2.2.5+0x2b6>
+   a0135:	c7 47 04 01 00 00 00 	movl   $0x1,0x4(%rdi)
+   a013c:	e9 15 ff ff ff       	jmp    a0056 <__pthread_mutex_lock@GLIBC_2.2.5+0x66>
+   a0141:	31 c0                	xor    %eax,%eax
+   a0143:	ba 01 00 00 00       	mov    $0x1,%edx
+   a0148:	f0 0f b1 17          	lock cmpxchg %edx,(%rdi)
+   a014c:	74 dc                	je     a012a <__pthread_mutex_lock@GLIBC_2.2.5+0x13a>
+   a014e:	48 89 7d e8          	mov    %rdi,-0x18(%rbp)
+   a0152:	e8 e9 8d ff ff       	call   98f40 <__lll_lock_wait_private@@GLIBC_PRIVATE+0x60>
+   a0157:	48 8b 7d e8          	mov    -0x18(%rbp),%rdi
+   a015b:	eb cd                	jmp    a012a <__pthread_mutex_lock@GLIBC_2.2.5+0x13a>
+   a015d:	8b 57 10             	mov    0x10(%rdi),%edx
+   a0160:	83 e2 7f             	and    $0x7f,%edx
+   a0163:	83 fa 03             	cmp    $0x3,%edx
+   a0166:	0f 85 ef 00 00 00    	jne    a025b <__pthread_mutex_lock@GLIBC_2.2.5+0x26b>
+   a016c:	ba 01 00 00 00       	mov    $0x1,%edx
+   a0171:	f0 0f b1 17          	lock cmpxchg %edx,(%rdi)
+   a0175:	75 52                	jne    a01c9 <__pthread_mutex_lock@GLIBC_2.2.5+0x1d9>
+   a0177:	83 7f 08 00          	cmpl   $0x0,0x8(%rdi)
+   a017b:	0f 84 d5 fe ff ff    	je     a0056 <__pthread_mutex_lock@GLIBC_2.2.5+0x66>
+   a0181:	48 8d 0d 18 4c 13 00 	lea    0x134c18(%rip),%rcx        # 1d4da0 <_nl_default_dirname@@GLIBC_2.2.5+0x490>
+   a0188:	ba a7 00 00 00       	mov    $0xa7,%edx
+   a018d:	48 8d 35 d1 c2 12 00 	lea    0x12c2d1(%rip),%rsi        # 1cc465 <_libc_intl_domainname@@GLIBC_2.2.5+0x1211>
+   a0194:	48 8d 3d f5 c2 12 00 	lea    0x12c2f5(%rip),%rdi        # 1cc490 <_libc_intl_domainname@@GLIBC_2.2.5+0x123c>
+   a019b:	e8 50 b1 f9 ff       	call   3b2f0 <__assert@@GLIBC_2.2.5+0x10>
+   a01a0:	b8 0b 00 00 00       	mov    $0xb,%eax
+   a01a5:	e9 be fe ff ff       	jmp    a0068 <__pthread_mutex_lock@GLIBC_2.2.5+0x78>
+   a01aa:	48 8d 0d ef 4b 13 00 	lea    0x134bef(%rip),%rcx        # 1d4da0 <_nl_default_dirname@@GLIBC_2.2.5+0x490>
+   a01b1:	ba 5e 00 00 00       	mov    $0x5e,%edx
+   a01b6:	48 8d 35 a8 c2 12 00 	lea    0x12c2a8(%rip),%rsi        # 1cc465 <_libc_intl_domainname@@GLIBC_2.2.5+0x1211>
+   a01bd:	48 8d 3d cc c2 12 00 	lea    0x12c2cc(%rip),%rdi        # 1cc490 <_libc_intl_domainname@@GLIBC_2.2.5+0x123c>
+   a01c4:	e8 27 b1 f9 ff       	call   3b2f0 <__assert@@GLIBC_2.2.5+0x10>
+   a01c9:	0f bf 47 14          	movswl 0x14(%rdi),%eax
+   a01cd:	8d 54 00 0a          	lea    0xa(%rax,%rax,1),%edx
+   a01d1:	0f bf 05 fc 2e 16 00 	movswl 0x162efc(%rip),%eax        # 2030d4 <__nptl_nthreads@@GLIBC_PRIVATE+0x4>
+   a01d8:	39 c2                	cmp    %eax,%edx
+   a01da:	0f 4e c2             	cmovle %edx,%eax
+   a01dd:	89 c6                	mov    %eax,%esi
+   a01df:	0f 31                	rdtsc
+   a01e1:	ba 01 00 00 00       	mov    $0x1,%edx
+   a01e6:	31 db                	xor    %ebx,%ebx
+   a01e8:	89 c1                	mov    %eax,%ecx
+   a01ea:	8d 42 ff             	lea    -0x1(%rdx),%eax
+   a01ed:	21 c8                	and    %ecx,%eax
+   a01ef:	01 d0                	add    %edx,%eax
+   a01f1:	01 c3                	add    %eax,%ebx
+   a01f3:	39 de                	cmp    %ebx,%esi
+   a01f5:	0f 8e 86 00 00 00    	jle    a0281 <__pthread_mutex_lock@GLIBC_2.2.5+0x291>
+   a01fb:	83 e8 01             	sub    $0x1,%eax
+   a01fe:	41 89 c0             	mov    %eax,%r8d
+   a0201:	41 83 e0 01          	and    $0x1,%r8d
+   a0205:	f3 90                	pause
+   a0207:	85 c0                	test   %eax,%eax
+   a0209:	7e 19                	jle    a0224 <__pthread_mutex_lock@GLIBC_2.2.5+0x234>
+   a020b:	45 85 c0             	test   %r8d,%r8d
+   a020e:	74 09                	je     a0219 <__pthread_mutex_lock@GLIBC_2.2.5+0x229>
+   a0210:	f3 90                	pause
+   a0212:	83 e8 01             	sub    $0x1,%eax
+   a0215:	85 c0                	test   %eax,%eax
+   a0217:	7e 0b                	jle    a0224 <__pthread_mutex_lock@GLIBC_2.2.5+0x234>
+   a0219:	f3 90                	pause
+   a021b:	f3 90                	pause
+   a021d:	83 e8 02             	sub    $0x2,%eax
+   a0220:	85 c0                	test   %eax,%eax
+   a0222:	7f f5                	jg     a0219 <__pthread_mutex_lock@GLIBC_2.2.5+0x229>
+   a0224:	83 fa 0f             	cmp    $0xf,%edx
+   a0227:	7f 02                	jg     a022b <__pthread_mutex_lock@GLIBC_2.2.5+0x23b>
+   a0229:	01 d2                	add    %edx,%edx
+   a022b:	8b 07                	mov    (%rdi),%eax
+   a022d:	85 c0                	test   %eax,%eax
+   a022f:	75 b9                	jne    a01ea <__pthread_mutex_lock@GLIBC_2.2.5+0x1fa>
+   a0231:	41 b8 01 00 00 00    	mov    $0x1,%r8d
+   a0237:	f0 44 0f b1 07       	lock cmpxchg %r8d,(%rdi)
+   a023c:	75 ac                	jne    a01ea <__pthread_mutex_lock@GLIBC_2.2.5+0x1fa>
+   a023e:	0f bf 57 14          	movswl 0x14(%rdi),%edx
+   a0242:	89 d8                	mov    %ebx,%eax
+   a0244:	be 08 00 00 00       	mov    $0x8,%esi
+   a0249:	29 d0                	sub    %edx,%eax
+   a024b:	89 d1                	mov    %edx,%ecx
+   a024d:	99                   	cltd
+   a024e:	f7 fe                	idiv   %esi
+   a0250:	01 c1                	add    %eax,%ecx
+   a0252:	66 89 4f 14          	mov    %cx,0x14(%rdi)
+   a0256:	e9 1c ff ff ff       	jmp    a0177 <__pthread_mutex_lock@GLIBC_2.2.5+0x187>
+   a025b:	64 8b 14 25 d0 02 00 	mov    %fs:0x2d0,%edx
+   a0262:	00 
+   a0263:	8b 47 10             	mov    0x10(%rdi),%eax
+   a0266:	83 e0 7f             	and    $0x7f,%eax
+   a0269:	83 f8 02             	cmp    $0x2,%eax
+   a026c:	75 57                	jne    a02c5 <__pthread_mutex_lock@GLIBC_2.2.5+0x2d5>
+   a026e:	39 57 08             	cmp    %edx,0x8(%rdi)
+   a0271:	0f 85 af fd ff ff    	jne    a0026 <__pthread_mutex_lock@GLIBC_2.2.5+0x36>
+   a0277:	b8 23 00 00 00       	mov    $0x23,%eax
+   a027c:	e9 e7 fd ff ff       	jmp    a0068 <__pthread_mutex_lock@GLIBC_2.2.5+0x78>
+   a0281:	31 c0                	xor    %eax,%eax
+   a0283:	ba 01 00 00 00       	mov    $0x1,%edx
+   a0288:	f0 0f b1 17          	lock cmpxchg %edx,(%rdi)
+   a028c:	74 b0                	je     a023e <__pthread_mutex_lock@GLIBC_2.2.5+0x24e>
+   a028e:	8b 77 10             	mov    0x10(%rdi),%esi
+   a0291:	48 89 7d e8          	mov    %rdi,-0x18(%rbp)
+   a0295:	81 e6 80 00 00 00    	and    $0x80,%esi
+   a029b:	e8 a0 8c ff ff       	call   98f40 <__lll_lock_wait_private@@GLIBC_PRIVATE+0x60>
+   a02a0:	48 8b 7d e8          	mov    -0x18(%rbp),%rdi
+   a02a4:	eb 98                	jmp    a023e <__pthread_mutex_lock@GLIBC_2.2.5+0x24e>
+   a02a6:	48 8d 0d f3 4a 13 00 	lea    0x134af3(%rip),%rcx        # 1d4da0 <_nl_default_dirname@@GLIBC_2.2.5+0x490>
+   a02ad:	ba 82 00 00 00       	mov    $0x82,%edx
+   a02b2:	48 8d 35 ac c1 12 00 	lea    0x12c1ac(%rip),%rsi        # 1cc465 <_libc_intl_domainname@@GLIBC_2.2.5+0x1211>
+   a02b9:	48 8d 3d d0 c1 12 00 	lea    0x12c1d0(%rip),%rdi        # 1cc490 <_libc_intl_domainname@@GLIBC_2.2.5+0x123c>
+   a02c0:	e8 2b b0 f9 ff       	call   3b2f0 <__assert@@GLIBC_2.2.5+0x10>
+   a02c5:	48 8d 0d d4 4a 13 00 	lea    0x134ad4(%rip),%rcx        # 1d4da0 <_nl_default_dirname@@GLIBC_2.2.5+0x490>
+   a02cc:	ba ac 00 00 00       	mov    $0xac,%edx
+   a02d1:	48 8d 35 8d c1 12 00 	lea    0x12c18d(%rip),%rsi        # 1cc465 <_libc_intl_domainname@@GLIBC_2.2.5+0x1211>
+   a02d8:	48 8d 3d d1 0e 13 00 	lea    0x130ed1(%rip),%rdi        # 1d11b0 <_itoa_lower_digits@@GLIBC_PRIVATE+0x15d0>
+   a02df:	e8 0c b0 f9 ff       	call   3b2f0 <__assert@@GLIBC_2.2.5+0x10>
+   a02e4:	66 2e 0f 1f 84 00 00 	cs nopw 0x0(%rax,%rax,1)
+   a02eb:	00 00 00 
+   a02ee:	66 90                	xchg   %ax,%ax
+
+
+0000000000098ee0 <__lll_lock_wait_private@@GLIBC_PRIVATE>:
+   98ee0:	f3 0f 1e fa          	endbr64
+   98ee4:	8b 07                	mov    (%rdi),%eax
+   98ee6:	83 f8 02             	cmp    $0x2,%eax
+   98ee9:	74 0b                	je     98ef6 <__lll_lock_wait_private@@GLIBC_PRIVATE+0x16>
+   98eeb:	b8 02 00 00 00       	mov    $0x2,%eax
+   98ef0:	87 07                	xchg   %eax,(%rdi)
+   98ef2:	85 c0                	test   %eax,%eax
+   98ef4:	74 3a                	je     98f30 <__lll_lock_wait_private@@GLIBC_PRIVATE+0x50>
+   98ef6:	90                   	nop
+   98ef7:	45 31 d2             	xor    %r10d,%r10d
+   98efa:	ba 02 00 00 00       	mov    $0x2,%edx
+   98eff:	be 80 00 00 00       	mov    $0x80,%esi
+   98f04:	b8 ca 00 00 00       	mov    $0xca,%eax
+   98f09:	0f 05                	syscall
+   98f0b:	48 3d 00 f0 ff ff    	cmp    $0xfffffffffffff000,%rax
+   98f11:	76 d8                	jbe    98eeb <__lll_lock_wait_private@@GLIBC_PRIVATE+0xb>
+   98f13:	83 f8 f5             	cmp    $0xfffffff5,%eax
+   98f16:	74 d3                	je     98eeb <__lll_lock_wait_private@@GLIBC_PRIVATE+0xb>
+   98f18:	83 f8 fc             	cmp    $0xfffffffc,%eax
+   98f1b:	74 ce                	je     98eeb <__lll_lock_wait_private@@GLIBC_PRIVATE+0xb>
+   98f1d:	55                   	push   %rbp
+   98f1e:	48 8d 3d d3 80 13 00 	lea    0x1380d3(%rip),%rdi        # 1d0ff8 <_itoa_lower_digits@@GLIBC_PRIVATE+0x1418>
+   98f25:	48 89 e5             	mov    %rsp,%rbp
+   98f28:	e8 13 7b ff ff       	call   90a40 <__libc_fatal@@GLIBC_PRIVATE>
+   98f2d:	0f 1f 00             	nopl   (%rax)
+   98f30:	c3                   	ret
+   98f31:	66 66 2e 0f 1f 84 00 	data16 cs nopw 0x0(%rax,%rax,1)
+   98f38:	00 00 00 00 
+   98f3c:	0f 1f 40 00          	nopl   0x0(%rax)
+   98f40:	f3 0f 1e fa          	endbr64
+   98f44:	8b 07                	mov    (%rdi),%eax
+   98f46:	41 89 f0             	mov    %esi,%r8d
+   98f49:	83 f8 02             	cmp    $0x2,%eax
+   98f4c:	74 0b                	je     98f59 <__lll_lock_wait_private@@GLIBC_PRIVATE+0x79>
+   98f4e:	b8 02 00 00 00       	mov    $0x2,%eax
+   98f53:	87 07                	xchg   %eax,(%rdi)
+   98f55:	85 c0                	test   %eax,%eax
+   98f57:	74 3f                	je     98f98 <__lll_lock_wait_private@@GLIBC_PRIVATE+0xb8>
+   98f59:	90                   	nop
+   98f5a:	44 89 c6             	mov    %r8d,%esi
+   98f5d:	45 31 d2             	xor    %r10d,%r10d
+   98f60:	ba 02 00 00 00       	mov    $0x2,%edx
+   98f65:	b8 ca 00 00 00       	mov    $0xca,%eax
+   98f6a:	40 80 f6 80          	xor    $0x80,%sil
+   98f6e:	0f 05                	syscall
+   98f70:	48 3d 00 f0 ff ff    	cmp    $0xfffffffffffff000,%rax
+   98f76:	76 d6                	jbe    98f4e <__lll_lock_wait_private@@GLIBC_PRIVATE+0x6e>
+   98f78:	83 f8 f5             	cmp    $0xfffffff5,%eax
+   98f7b:	74 d1                	je     98f4e <__lll_lock_wait_private@@GLIBC_PRIVATE+0x6e>
+   98f7d:	83 f8 fc             	cmp    $0xfffffffc,%eax
+   98f80:	74 cc                	je     98f4e <__lll_lock_wait_private@@GLIBC_PRIVATE+0x6e>
+   98f82:	55                   	push   %rbp
+   98f83:	48 8d 3d 6e 80 13 00 	lea    0x13806e(%rip),%rdi        # 1d0ff8 <_itoa_lower_digits@@GLIBC_PRIVATE+0x1418>
+   98f8a:	48 89 e5             	mov    %rsp,%rbp
+   98f8d:	e8 ae 7a ff ff       	call   90a40 <__libc_fatal@@GLIBC_PRIVATE>
+   98f92:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+   98f98:	c3                   	ret
+   98f99:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+
+
+
+
+
+00000000000a1a70 <__pthread_mutex_unlock@GLIBC_2.2.5>:
+   a1a70:	f3 0f 1e fa          	endbr64
+   a1a74:	8b 47 10             	mov    0x10(%rdi),%eax
+   a1a77:	89 c2                	mov    %eax,%edx
+   a1a79:	81 e2 7f 01 00 00    	and    $0x17f,%edx
+   a1a7f:	a8 7c                	test   $0x7c,%al
+   a1a81:	75 5d                	jne    a1ae0 <__pthread_mutex_unlock@GLIBC_2.2.5+0x70>
+   a1a83:	55                   	push   %rbp
+   a1a84:	48 89 e5             	mov    %rsp,%rbp
+   a1a87:	48 83 ec 10          	sub    $0x10,%rsp
+   a1a8b:	85 d2                	test   %edx,%edx
+   a1a8d:	75 61                	jne    a1af0 <__pthread_mutex_unlock@GLIBC_2.2.5+0x80>
+   a1a8f:	83 6f 0c 01          	subl   $0x1,0xc(%rdi)
+   a1a93:	c7 47 08 00 00 00 00 	movl   $0x0,0x8(%rdi)
+   a1a9a:	8b 77 10             	mov    0x10(%rdi),%esi
+   a1a9d:	81 e6 80 00 00 00    	and    $0x80,%esi
+   a1aa3:	75 1b                	jne    a1ac0 <__pthread_mutex_unlock@GLIBC_2.2.5+0x50>
+   a1aa5:	80 3d 94 95 16 00 00 	cmpb   $0x0,0x169594(%rip)        # 20b040 <__libc_single_threaded@@GLIBC_2.32>
+   a1aac:	74 12                	je     a1ac0 <__pthread_mutex_unlock@GLIBC_2.2.5+0x50>
+   a1aae:	c7 07 00 00 00 00    	movl   $0x0,(%rdi)
+   a1ab4:	90                   	nop
+   a1ab5:	31 c0                	xor    %eax,%eax
+   a1ab7:	c9                   	leave
+   a1ab8:	c3                   	ret
+   a1ab9:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+   a1ac0:	31 c0                	xor    %eax,%eax
+   a1ac2:	87 07                	xchg   %eax,(%rdi)
+   a1ac4:	83 f8 01             	cmp    $0x1,%eax
+   a1ac7:	7e eb                	jle    a1ab4 <__pthread_mutex_unlock@GLIBC_2.2.5+0x44>
+   a1ac9:	48 89 7d f8          	mov    %rdi,-0x8(%rbp)
+   a1acd:	e8 ee 74 ff ff       	call   98fc0 <__lll_lock_wake_private@@GLIBC_PRIVATE+0x20>
+   a1ad2:	48 8b 7d f8          	mov    -0x8(%rbp),%rdi
+   a1ad6:	eb dc                	jmp    a1ab4 <__pthread_mutex_unlock@GLIBC_2.2.5+0x44>
+   a1ad8:	0f 1f 84 00 00 00 00 	nopl   0x0(%rax,%rax,1)
+   a1adf:	00 
+   a1ae0:	be 01 00 00 00       	mov    $0x1,%esi
+   a1ae5:	e9 06 fa ff ff       	jmp    a14f0 <__pthread_mutex_trylock@GLIBC_2.2.5+0x600>
+   a1aea:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+   a1af0:	81 fa 00 01 00 00    	cmp    $0x100,%edx
+   a1af6:	75 0f                	jne    a1b07 <__pthread_mutex_unlock@GLIBC_2.2.5+0x97>
+   a1af8:	8b 77 10             	mov    0x10(%rdi),%esi
+   a1afb:	c9                   	leave
+   a1afc:	81 e6 80 00 00 00    	and    $0x80,%esi
+   a1b02:	e9 a9 70 ff ff       	jmp    98bb0 <__pthread_cleanup_routine@GLIBC_2.3.3+0x3c0>
+   a1b07:	8b 47 10             	mov    0x10(%rdi),%eax
+   a1b0a:	83 e0 7f             	and    $0x7f,%eax
+   a1b0d:	83 f8 01             	cmp    $0x1,%eax
+   a1b10:	75 22                	jne    a1b34 <__pthread_mutex_unlock@GLIBC_2.2.5+0xc4>
+   a1b12:	64 8b 04 25 d0 02 00 	mov    %fs:0x2d0,%eax
+   a1b19:	00 
+   a1b1a:	39 47 08             	cmp    %eax,0x8(%rdi)
+   a1b1d:	74 07                	je     a1b26 <__pthread_mutex_unlock@GLIBC_2.2.5+0xb6>
+   a1b1f:	c9                   	leave
+   a1b20:	b8 01 00 00 00       	mov    $0x1,%eax
+   a1b25:	c3                   	ret
+   a1b26:	83 6f 04 01          	subl   $0x1,0x4(%rdi)
+   a1b2a:	0f 84 5f ff ff ff    	je     a1a8f <__pthread_mutex_unlock@GLIBC_2.2.5+0x1f>
+   a1b30:	31 c0                	xor    %eax,%eax
+   a1b32:	eb 83                	jmp    a1ab7 <__pthread_mutex_unlock@GLIBC_2.2.5+0x47>
+   a1b34:	8b 47 10             	mov    0x10(%rdi),%eax
+   a1b37:	83 e0 7f             	and    $0x7f,%eax
+   a1b3a:	83 f8 03             	cmp    $0x3,%eax
+   a1b3d:	0f 84 4c ff ff ff    	je     a1a8f <__pthread_mutex_unlock@GLIBC_2.2.5+0x1f>
+   a1b43:	83 fa 02             	cmp    $0x2,%edx
+   a1b46:	75 17                	jne    a1b5f <__pthread_mutex_unlock@GLIBC_2.2.5+0xef>
+   a1b48:	64 8b 04 25 d0 02 00 	mov    %fs:0x2d0,%eax
+   a1b4f:	00 
+   a1b50:	39 47 08             	cmp    %eax,0x8(%rdi)
+   a1b53:	75 ca                	jne    a1b1f <__pthread_mutex_unlock@GLIBC_2.2.5+0xaf>
+   a1b55:	83 3f 00             	cmpl   $0x0,(%rdi)
+   a1b58:	74 c5                	je     a1b1f <__pthread_mutex_unlock@GLIBC_2.2.5+0xaf>
+   a1b5a:	e9 30 ff ff ff       	jmp    a1a8f <__pthread_mutex_unlock@GLIBC_2.2.5+0x1f>
+   a1b5f:	48 8d 0d 7a 32 13 00 	lea    0x13327a(%rip),%rcx        # 1d4de0 <_nl_default_dirname@@GLIBC_2.2.5+0x4d0>
+   a1b66:	ba 62 00 00 00       	mov    $0x62,%edx
+   a1b6b:	48 8d 35 6b a9 12 00 	lea    0x12a96b(%rip),%rsi        # 1cc4dd <_libc_intl_domainname@@GLIBC_2.2.5+0x1289>
+   a1b72:	48 8d 3d 17 f7 12 00 	lea    0x12f717(%rip),%rdi        # 1d1290 <_itoa_lower_digits@@GLIBC_PRIVATE+0x16b0>
+   a1b79:	e8 72 97 f9 ff       	call   3b2f0 <__assert@@GLIBC_2.2.5+0x10>
+   a1b7e:	66 90                	xchg   %ax,%ax
+
+
+
+0000000000098fa0 <__lll_lock_wake_private@@GLIBC_PRIVATE>:
+   98fa0:	f3 0f 1e fa          	endbr64
+   98fa4:	45 31 d2             	xor    %r10d,%r10d
+   98fa7:	ba 01 00 00 00       	mov    $0x1,%edx
+   98fac:	be 81 00 00 00       	mov    $0x81,%esi
+   98fb1:	b8 ca 00 00 00       	mov    $0xca,%eax
+   98fb6:	0f 05                	syscall
+   98fb8:	c3                   	ret
+   98fb9:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+   98fc0:	f3 0f 1e fa          	endbr64
+   98fc4:	40 80 f6 81          	xor    $0x81,%sil
+   98fc8:	45 31 d2             	xor    %r10d,%r10d
+   98fcb:	ba 01 00 00 00       	mov    $0x1,%edx
+   98fd0:	b8 ca 00 00 00       	mov    $0xca,%eax
+   98fd5:	0f 05                	syscall
+   98fd7:	c3                   	ret
+   98fd8:	0f 1f 84 00 00 00 00 	nopl   0x0(%rax,%rax,1)
+   98fdf:	00 
+   98fe0:	f3 0f 1e fa          	endbr64
+   98fe4:	48 8b 05 9d 9f 16 00 	mov    0x169f9d(%rip),%rax        # 202f88 <_rtld_global@GLIBC_PRIVATE>
+   98feb:	48 89 b8 f0 10 00 00 	mov    %rdi,0x10f0(%rax)
+   98ff2:	48 8b 0f             	mov    (%rdi),%rcx
+   98ff5:	48 8b 57 08          	mov    0x8(%rdi),%rdx
+   98ff9:	48 89 51 08          	mov    %rdx,0x8(%rcx)
+   98ffd:	48 89 0a             	mov    %rcx,(%rdx)
+   99000:	48 c7 80 f0 10 00 00 	movq   $0x0,0x10f0(%rax)
+   99007:	00 00 00 00 
+   9900b:	c3                   	ret
+   9900c:	0f 1f 40 00          	nopl   0x0(%rax)
+   99010:	f3 0f 1e fa          	endbr64
+   99014:	48 8b 05 6d 9f 16 00 	mov    0x169f6d(%rip),%rax        # 202f88 <_rtld_global@GLIBC_PRIVATE>
+   9901b:	48 89 fa             	mov    %rdi,%rdx
+   9901e:	48 83 ca 01          	or     $0x1,%rdx
+   99022:	48 89 90 f0 10 00 00 	mov    %rdx,0x10f0(%rax)
+   99029:	48 8b 16             	mov    (%rsi),%rdx
+   9902c:	66 48 0f 6e ce       	movq   %rsi,%xmm1
+   99031:	66 48 0f 6e c2       	movq   %rdx,%xmm0
+   99036:	66 0f 6c c1          	punpcklqdq %xmm1,%xmm0
+   9903a:	0f 11 07             	movups %xmm0,(%rdi)
+   9903d:	48 89 7a 08          	mov    %rdi,0x8(%rdx)
+   99041:	48 89 3e             	mov    %rdi,(%rsi)
+   99044:	48 c7 80 f0 10 00 00 	movq   $0x0,0x10f0(%rax)
+   9904b:	00 00 00 00 
+   9904f:	c3                   	ret
+   99050:	f3 0f 1e fa          	endbr64
+   99054:	55                   	push   %rbp
+   99055:	48 89 e5             	mov    %rsp,%rbp
+   99058:	41 57                	push   %r15
+   9905a:	41 56                	push   %r14
+   9905c:	49 89 fe             	mov    %rdi,%r14
+   9905f:	41 55                	push   %r13
+   99061:	41 54                	push   %r12
+   99063:	53                   	push   %rbx
+   99064:	48 83 ec 08          	sub    $0x8,%rsp
+   99068:	4c 8b 2d 19 9f 16 00 	mov    0x169f19(%rip),%r13        # 202f88 <_rtld_global@GLIBC_PRIVATE>
+   9906f:	49 8b 9d e0 10 00 00 	mov    0x10e0(%r13),%rbx
+   99076:	4d 8d bd d8 10 00 00 	lea    0x10d8(%r13),%r15
+   9907d:	4c 8b 63 08          	mov    0x8(%rbx),%r12
+   99081:	4c 39 fb             	cmp    %r15,%rbx
+   99084:	75 1a                	jne    990a0 <__lll_lock_wake_private@@GLIBC_PRIVATE+0x100>
+   99086:	e9 83 00 00 00       	jmp    9910e <__lll_lock_wake_private@@GLIBC_PRIVATE+0x16e>
+   9908b:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+   99090:	49 8b 44 24 08       	mov    0x8(%r12),%rax
+   99095:	4c 89 e3             	mov    %r12,%rbx
+   99098:	4d 39 fc             	cmp    %r15,%r12
+   9909b:	74 71                	je     9910e <__lll_lock_wake_private@@GLIBC_PRIVATE+0x16e>
+   9909d:	49 89 c4             	mov    %rax,%r12
+   990a0:	8b 43 10             	mov    0x10(%rbx),%eax
+   990a3:	85 c0                	test   %eax,%eax
+   990a5:	7f e9                	jg     99090 <__lll_lock_wake_private@@GLIBC_PRIVATE+0xf0>
+   990a7:	49 89 9d f0 10 00 00 	mov    %rbx,0x10f0(%r13)
+   990ae:	48 8b 13             	mov    (%rbx),%rdx
+   990b1:	48 8b 43 08          	mov    0x8(%rbx),%rax
+   990b5:	48 89 42 08          	mov    %rax,0x8(%rdx)
+   990b9:	48 89 10             	mov    %rdx,(%rax)
+   990bc:	31 f6                	xor    %esi,%esi
+   990be:	49 8b 85 e8 10 00 00 	mov    0x10e8(%r13),%rax
+   990c5:	48 8d bb 40 fd ff ff 	lea    -0x2c0(%rbx),%rdi
+   990cc:	48 2b 83 d8 03 00 00 	sub    0x3d8(%rbx),%rax
+   990d3:	49 c7 85 f0 10 00 00 	movq   $0x0,0x10f0(%r13)
+   990da:	00 00 00 00 
+   990de:	49 89 85 e8 10 00 00 	mov    %rax,0x10e8(%r13)
+   990e5:	e8 66 f4 f8 ff       	call   28550 <_dl_deallocate_tls@plt>
+   990ea:	48 8b b3 d8 03 00 00 	mov    0x3d8(%rbx),%rsi
+   990f1:	48 8b bb d0 03 00 00 	mov    0x3d0(%rbx),%rdi
+   990f8:	e8 73 cc 08 00       	call   125d70 <__munmap@@GLIBC_PRIVATE>
+   990fd:	85 c0                	test   %eax,%eax
+   990ff:	0f 85 56 07 f9 ff    	jne    2985b <perror@@GLIBC_2.2.5+0xdc8>
+   99105:	4d 3b b5 e8 10 00 00 	cmp    0x10e8(%r13),%r14
+   9910c:	72 82                	jb     99090 <__lll_lock_wake_private@@GLIBC_PRIVATE+0xf0>
+   9910e:	48 83 c4 08          	add    $0x8,%rsp
+   99112:	5b                   	pop    %rbx
+   99113:	41 5c                	pop    %r12
+   99115:	41 5d                	pop    %r13
+   99117:	41 5e                	pop    %r14
+   99119:	41 5f                	pop    %r15
+   9911b:	5d                   	pop    %rbp
+   9911c:	c3                   	ret
+   9911d:	0f 1f 00             	nopl   (%rax)
+   99120:	f3 0f 1e fa          	endbr64
+   99124:	55                   	push   %rbp
+   99125:	31 c0                	xor    %eax,%eax
+   99127:	ba 01 00 00 00       	mov    $0x1,%edx
+   9912c:	48 89 e5             	mov    %rsp,%rbp
+   9912f:	41 54                	push   %r12
+   99131:	49 89 fc             	mov    %rdi,%r12
+   99134:	53                   	push   %rbx
+   99135:	48 8b 1d 4c 9e 16 00 	mov    0x169e4c(%rip),%rbx        # 202f88 <_rtld_global@GLIBC_PRIVATE>
+   9913c:	f0 0f b1 93 f8 10 00 	lock cmpxchg %edx,0x10f8(%rbx)
+   99143:	00 
+   99144:	0f 85 b6 00 00 00    	jne    99200 <__lll_lock_wake_private@@GLIBC_PRIVATE+0x260>
+   9914a:	49 8d 84 24 c0 02 00 	lea    0x2c0(%r12),%rax
+   99151:	00 
+   99152:	48 89 83 f0 10 00 00 	mov    %rax,0x10f0(%rbx)
+   99159:	49 8b 8c 24 c0 02 00 	mov    0x2c0(%r12),%rcx
+   99160:	00 
+   99161:	49 8b 94 24 c8 02 00 	mov    0x2c8(%r12),%rdx
+   99168:	00 
+   99169:	48 89 51 08          	mov    %rdx,0x8(%rcx)
+   9916d:	48 89 0a             	mov    %rcx,(%rdx)
+   99170:	41 80 bc 24 12 06 00 	cmpb   $0x0,0x612(%r12)
+   99177:	00 00 
+   99179:	48 c7 83 f0 10 00 00 	movq   $0x0,0x10f0(%rbx)
+   99180:	00 00 00 00 
+   99184:	0f 85 8e 00 00 00    	jne    99218 <__lll_lock_wake_private@@GLIBC_PRIVATE+0x278>
+   9918a:	48 89 c2             	mov    %rax,%rdx
+   9918d:	48 83 ca 01          	or     $0x1,%rdx
+   99191:	48 89 93 f0 10 00 00 	mov    %rdx,0x10f0(%rbx)
+   99198:	48 8b 93 d8 10 00 00 	mov    0x10d8(%rbx),%rdx
+   9919f:	48 8d 8b d8 10 00 00 	lea    0x10d8(%rbx),%rcx
+   991a6:	49 89 8c 24 c8 02 00 	mov    %rcx,0x2c8(%r12)
+   991ad:	00 
+   991ae:	49 89 94 24 c0 02 00 	mov    %rdx,0x2c0(%r12)
+   991b5:	00 
+   991b6:	48 89 42 08          	mov    %rax,0x8(%rdx)
+   991ba:	48 89 83 d8 10 00 00 	mov    %rax,0x10d8(%rbx)
+   991c1:	48 8b 3d 00 9f 16 00 	mov    0x169f00(%rip),%rdi        # 2030c8 <__fpu_control@@GLIBC_2.2.5+0xc8>
+   991c8:	49 8b 84 24 98 06 00 	mov    0x698(%r12),%rax
+   991cf:	00 
+   991d0:	48 c7 83 f0 10 00 00 	movq   $0x0,0x10f0(%rbx)
+   991d7:	00 00 00 00 
+   991db:	48 03 83 e8 10 00 00 	add    0x10e8(%rbx),%rax
+   991e2:	48 89 83 e8 10 00 00 	mov    %rax,0x10e8(%rbx)
+   991e9:	48 39 c7             	cmp    %rax,%rdi
+   991ec:	72 52                	jb     99240 <__lll_lock_wake_private@@GLIBC_PRIVATE+0x2a0>
+   991ee:	31 c0                	xor    %eax,%eax
+   991f0:	87 83 f8 10 00 00    	xchg   %eax,0x10f8(%rbx)
+   991f6:	83 f8 01             	cmp    $0x1,%eax
+   991f9:	7f 2d                	jg     99228 <__lll_lock_wake_private@@GLIBC_PRIVATE+0x288>
+   991fb:	5b                   	pop    %rbx
+   991fc:	41 5c                	pop    %r12
+   991fe:	5d                   	pop    %rbp
+   991ff:	c3                   	ret
+   99200:	48 8d bb f8 10 00 00 	lea    0x10f8(%rbx),%rdi
+   99207:	e8 d4 fc ff ff       	call   98ee0 <__lll_lock_wait_private@@GLIBC_PRIVATE>
+   9920c:	e9 39 ff ff ff       	jmp    9914a <__lll_lock_wake_private@@GLIBC_PRIVATE+0x1aa>
+   99211:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+   99218:	31 f6                	xor    %esi,%esi
+   9921a:	4c 89 e7             	mov    %r12,%rdi
+   9921d:	e8 2e f3 f8 ff       	call   28550 <_dl_deallocate_tls@plt>
+   99222:	eb ca                	jmp    991ee <__lll_lock_wake_private@@GLIBC_PRIVATE+0x24e>
+   99224:	0f 1f 40 00          	nopl   0x0(%rax)
+   99228:	48 8d bb f8 10 00 00 	lea    0x10f8(%rbx),%rdi
+   9922f:	5b                   	pop    %rbx
+   99230:	41 5c                	pop    %r12
+   99232:	5d                   	pop    %rbp
+   99233:	e9 68 fd ff ff       	jmp    98fa0 <__lll_lock_wake_private@@GLIBC_PRIVATE>
+   99238:	0f 1f 84 00 00 00 00 	nopl   0x0(%rax,%rax,1)
+   9923f:	00 
+   99240:	e8 0b fe ff ff       	call   99050 <__lll_lock_wake_private@@GLIBC_PRIVATE+0xb0>
+   99245:	eb a7                	jmp    991ee <__lll_lock_wake_private@@GLIBC_PRIVATE+0x24e>
+   99247:	66 0f 1f 84 00 00 00 	nopw   0x0(%rax,%rax,1)
+   9924e:	00 00 
