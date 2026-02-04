@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lock Performance Report</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #fff;
+            color: #1a1a1a;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        header {
+            border-bottom: 2px solid #1a1a1a;
+            padding-bottom: 20px;
+            margin-bottom: 40px;
+        }
+        
+        header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        header p {
+            color: #666;
+        }
+        
+        .section {
+            margin-bottom: 50px;
+        }
+        
+        .section h2 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        
+        .section p.desc {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+        
+        .chart-container {
+            height: 380px;
+            margin: 20px 0;
+        }
+        
+        .chart-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+        
+        @media (max-width: 800px) {
+            .chart-row { grid-template-columns: 1fr; }
+        }
+        
+        .chart-box h3 {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+        
+        th, td {
+            padding: 8px 6px;
+            text-align: center;
+            border: 1px solid #e5e5e5;
+        }
+        
+        th {
+            background: #f9f9f9;
+            font-weight: 600;
+        }
+        
+        .lock-name {
+            text-align: left;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        
+        .highlight { background: #fffde7; }
+        .good { color: #2e7d32; }
+        .bad { color: #c62828; }
+        
+        .summary-table {
+            max-width: 900px;
+        }
+        
+        .summary-table td:first-child {
+            font-weight: 600;
+            width: 160px;
+        }
+        
+        .note {
+            background: #f5f5f5;
+            border-left: 3px solid #666;
+            padding: 12px 15px;
+            margin: 20px 0;
+            font-size: 13px;
+        }
+        
+        .note strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+        
+        .rec-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        @media (max-width: 700px) {
+            .rec-grid { grid-template-columns: 1fr; }
+        }
+        
+        .rec-box {
+            border: 1px solid #e5e5e5;
+            padding: 15px;
+        }
+        
+        .rec-box h4 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .rec-box ul {
+            list-style: none;
+            font-size: 13px;
+        }
+        
+        .rec-box li {
+            padding: 4px 0;
+        }
+        
+        .rec-box.avoid {
+            border-color: #c62828;
+        }
+        
+        .rec-box.avoid h4 {
+            color: #c62828;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .tab:hover { color: #1a1a1a; }
+        
+        .tab.active {
+            color: #1a1a1a;
+            border-bottom-color: #1a1a1a;
+            font-weight: 500;
+        }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e5e5;
+            color: #999;
+            font-size: 12px;
+        }
+        
+        .table-scroll {
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Lock Performance Report</h1>
+            <p>Folly SmallLocksBenchmark · AMD EPYC™ 9754 · 32 vCPU 云主机 · 测试范围 2-128 线程</p>
+        </header>
+
+        <!-- 核心结论 -->
+        <section class="section">
+            <h2>核心结论</h2>
+            <table class="summary-table">
+                <tr>
+                    <td>综合最优</td>
+                    <td><strong>DistMutex+Combining</strong> — 高竞争吞吐领先 (32线程150%，64线程140%)，尾延迟可控，公平性最佳</td>
+                </tr>
+                <tr>
+                    <td>稳妥之选</td>
+                    <td><strong>std::mutex</strong> — 尾延迟最稳定 (&lt;3ms)，64线程仍保持稳定，无惊喜无意外</td>
+                </tr>
+                <tr>
+                    <td>低竞争专用</td>
+                    <td><strong>MicroSpinLock</strong> — ≤4线程吞吐最高，但 &gt;8线程尾延迟风险大 (64线程达380ms)</td>
+                </tr>
+                <tr class="highlight">
+                    <td>避免使用</td>
+                    <td><strong>std::shared_mutex</strong> — 64线程吞吐崩溃 (仅2.9M，std::mutex的17%)；<strong>RWSpinLock</strong> — 公平性最差</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- Fairness Test: 吞吐量 -->
+        <section class="section">
+            <h2>Fairness Test — 吞吐量</h2>
+            <p class="desc">固定运行4秒，统计总操作数 (Sum)。临界区 burn(100)，无临界区外工作。代表极端高竞争场景。</p>
+            <div class="chart-container">
+                <canvas id="throughputChart"></canvas>
+            </div>
+            <div class="note">
+                <strong>关键发现</strong>
+                • 分水岭在 8 线程：8线程以下自旋锁领先，8线程以上 DistributedMutex 系列反超<br>
+                • std::shared_mutex 在64线程严重崩溃，吞吐仅为 std::mutex 的 17%<br>
+                • DistMutex+Combining 在32-64线程保持领先
+            </div>
+        </section>
+
+        <!-- Fairness Test: 尾延迟 -->
+        <section class="section">
+            <h2>Fairness Test — 尾延迟 (Max Latency)</h2>
+            <p class="desc">单次获取锁+执行临界区的最大耗时。越低越好。</p>
+            <div class="chart-row">
+                <div class="chart-box">
+                    <h3>阻塞锁/混合锁 (稳定，Y轴 0-25ms)</h3>
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="latencyChart1"></canvas>
+                    </div>
+                </div>
+                <div class="chart-box">
+                    <h3>自旋锁 (注意 Y 轴刻度差异!)</h3>
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="latencyChart2"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="note">
+                <strong>⚠️ 自旋锁警告</strong>
+                MicroSpinLock 64线程尾延迟 382ms，PicoSpinLock 达 618ms。云环境 vCPU 抢占会放大此问题。
+            </div>
+        </section>
+
+        <!-- Fairness Test: 公平性 -->
+        <section class="section">
+            <h2>Fairness Test — 公平性 (CV%)</h2>
+            <p class="desc">CV = stddev / mean。各线程获取锁次数的离散程度，越低越公平。CV 高意味着线程饥饿风险。</p>
+            <div class="chart-container">
+                <canvas id="fairnessChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Contended Benchmark -->
+        <section class="section">
+            <h2>Contended Benchmark — 相对性能</h2>
+            <p class="desc">固定操作数测量耗时。Normal: burn(100) + burn(1000)。Simple: 更重的临界区。基准 = std::mutex = 100%。</p>
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('normal')">Normal</button>
+                <button class="tab" onclick="showTab('simple')">Simple</button>
+            </div>
+            <div id="normal" class="tab-content active">
+                <div class="chart-container">
+                    <canvas id="contendedChart"></canvas>
+                </div>
+            </div>
+            <div id="simple" class="tab-content">
+                <div class="chart-container">
+                    <canvas id="contendedSimpleChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- 无竞争性能 -->
+        <section class="section">
+            <h2>无竞争性能 (Uncontended)</h2>
+            <p class="desc">单线程 lock/unlock 开销。</p>
+            <table style="max-width: 500px;">
+                <thead>
+                    <tr><th>锁类型</th><th>耗时</th><th>吞吐量</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td class="lock-name">MicroSpinLock</td><td class="good">2.40 ns</td><td>416 M/s</td></tr>
+                    <tr><td class="lock-name">SharedMutex</td><td>5.80 ns</td><td>172 M/s</td></tr>
+                    <tr><td class="lock-name">std::mutex</td><td>6.94 ns</td><td>144 M/s</td></tr>
+                    <tr><td class="lock-name">std::shared_mutex</td><td>7.91 ns</td><td>126 M/s</td></tr>
+                    <tr><td class="lock-name">PicoSpinLock</td><td>9.06 ns</td><td>110 M/s</td></tr>
+                    <tr><td class="lock-name">MicroLock</td><td>10.17 ns</td><td>98 M/s</td></tr>
+                    <tr><td class="lock-name">DistributedMutex</td><td class="bad">20.16 ns</td><td>50 M/s</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- 详细数据 Fairness -->
+        <section class="section">
+            <h2>Fairness Test 详细数据 (2-64 线程)</h2>
+            <div class="table-scroll">
+                <table id="detailTable">
+                    <thead>
+                        <tr>
+                            <th rowspan="2">锁类型</th>
+                            <th colspan="3">2 线程</th>
+                            <th colspan="3">4 线程</th>
+                            <th colspan="3">8 线程</th>
+                            <th colspan="3">16 线程</th>
+                            <th colspan="3">32 线程</th>
+                            <th colspan="3">64 线程</th>
+                        </tr>
+                        <tr>
+                            <th>Sum(M)</th><th>CV%</th><th>Max(ms)</th>
+                            <th>Sum(M)</th><th>CV%</th><th>Max(ms)</th>
+                            <th>Sum(M)</th><th>CV%</th><th>Max(ms)</th>
+                            <th>Sum(M)</th><th>CV%</th><th>Max(ms)</th>
+                            <th>Sum(M)</th><th>CV%</th><th>Max(ms)</th>
+                            <th>Sum(M)</th><th>CV%</th><th>Max(ms)</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Contended 详细数据 -->
+        <section class="section">
+            <h2>Contended Benchmark 详细数据 (相对性能 %)</h2>
+            <div class="table-scroll">
+                <table id="contendedTable">
+                    <thead>
+                        <tr>
+                            <th>锁类型</th>
+                            <th>2 线程</th>
+                            <th>4 线程</th>
+                            <th>8 线程</th>
+                            <th>16 线程</th>
+                            <th>32 线程</th>
+                            <th>64 线程</th>
+                            <th>128 线程</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 选型建议 -->
+        <section class="section">
+            <h2>选型建议</h2>
+            <div class="rec-grid">
+                <div class="rec-box">
+                    <h4>高竞争场景 (16-64 线程)</h4>
+                    <ul>
+                        <li><strong>DistMutex+Combining</strong> — 32线程 150%，64线程 96%</li>
+                        <li><strong>FlatCombining</strong> — 32线程 135%</li>
+                        <li><strong>DistributedMutex</strong> — 64线程仍稳定</li>
+                    </ul>
+                </div>
+                <div class="rec-box">
+                    <h4>低竞争场景 (2-4 线程)</h4>
+                    <ul>
+                        <li><strong>MicroSpinLock</strong> — 吞吐最高 1125M</li>
+                        <li><strong>std::mutex</strong> — 延迟敏感时首选</li>
+                        <li><strong>SharedMutex</strong> — 读写场景</li>
+                    </ul>
+                </div>
+                <div class="rec-box">
+                    <h4>延迟敏感场景</h4>
+                    <ul>
+                        <li><strong>std::mutex</strong> — 尾延迟最稳定，64线程仅 2.6ms</li>
+                        <li><strong>SharedMutex</strong> — 读写锁中最优，64线程 5.5ms</li>
+                        <li><strong>DistMutex+Combining</strong> — 吞吐与延迟平衡</li>
+                    </ul>
+                </div>
+                <div class="rec-box avoid">
+                    <h4>避免使用</h4>
+                    <ul>
+                        <li><strong>std::shared_mutex</strong> — 64线程吞吐崩溃至 17%</li>
+                        <li><strong>RWSpinLock</strong> — 高竞争退化，CV &gt;100%</li>
+                        <li><strong>MicroSpinLock</strong> — &gt;8线程尾延迟灾难 (382ms)</li>
+                        <li><strong>PicoSpinLock</strong> — 64线程尾延迟 618ms</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            Folly SmallLocksBenchmark · 32 vCPU · 自旋锁在云环境 (vCPU) 下尾延迟可能被大幅放大
+        </footer>
+    </div>
+
+    <script>
+        // Fairness Test 数据 (2-64线程)
+        const fairnessThreads = ['2', '4', '8', '16', '32', '64'];
+        
+        const fairnessData = {
+            'std::mutex': { 
+                sum: [637.6, 204.2, 82.8, 43.1, 19.3, 17.5], 
+                cv: [38.4, 15.8, 12.7, 10.8, 1.3, 0.8], 
+                maxLatency: [4722, 1897, 2040, 803, 2975, 2564] 
+            },
+            'std::shared_mutex': { 
+                sum: [674.8, 176.8, 56.2, 33.8, 18.0, 2.9], 
+                cv: [40.8, 26.7, 16.2, 3.3, 1.1, 3.0], 
+                maxLatency: [4152, 3820, 3911, 3690, 4080, 22651] 
+            },
+            'MicroSpinLock': { 
+                sum: [1125.5, 249.3, 117.5, 33.3, 16.9, 12.5], 
+                cv: [24.8, 72.4, 47.5, 43.4, 48.0, 157.3], 
+                maxLatency: [7454, 24186, 233180, 110314, 139780, 381916] 
+            },
+            'PicoSpinLock': { 
+                sum: [1053.1, 164.9, 80.0, 36.7, 9.3, 7.2], 
+                cv: [27.7, 16.4, 87.1, 35.9, 58.1, 40.9], 
+                maxLatency: [9013, 9907, 109225, 126651, 304947, 618351] 
+            },
+            'MicroLock': { 
+                sum: [981.9, 162.4, 44.9, 20.5, 7.2, 8.6], 
+                cv: [31.9, 26.3, 46.0, 46.8, 27.4, 2.1], 
+                maxLatency: [3290, 7563, 4022, 4418, 5528, 11093] 
+            },
+            'SharedMutex': { 
+                sum: [968.6, 159.2, 67.2, 26.4, 10.3, 9.4], 
+                cv: [20.0, 28.8, 22.4, 9.9, 1.5, 1.0], 
+                maxLatency: [4632, 4314, 2148, 995, 1810, 5545] 
+            },
+            'DistributedMutex': { 
+                sum: [651.7, 165.8, 80.5, 70.5, 19.7, 19.5], 
+                cv: [61.0, 13.4, 14.1, 10.2, 15.9, 7.0], 
+                maxLatency: [3013, 7009, 7072, 9443, 11254, 15298] 
+            },
+            'DistMutex+Combining': { 
+                sum: [932.3, 190.5, 112.1, 65.3, 25.7, 24.8], 
+                cv: [18.6, 17.1, 10.3, 6.5, 1.4, 2.6], 
+                maxLatency: [3041, 4208, 4173, 4609, 4975, 11293] 
+            },
+            'RWSpinLock': { 
+                sum: [757.8, 209.9, 85.6, 16.8, 4.9, 4.7], 
+                cv: [37.4, 41.1, 113.5, 83.9, 68.1, 70.5], 
+                maxLatency: [4010, 7012, 4302, 6476, 6914, 39405] 
+            }
+        };
+
+        // Contended Benchmark 数据 (2-128线程)
+        const contendedThreads = ['2', '4', '8', '16', '32', '64', '128'];
+        
+        const contendedData = {
+            'std::mutex':         [100, 100, 100, 100, 100, 100, 100],
+            'std::shared_mutex':  [143.4, 98.0, 100.2, 63.9, 92.6, 106.0, 119.4],
+            'MicroSpinLock':      [68.9, 100.3, 99.7, 107.5, 102.3, 108.6, 97.2],
+            'PicoSpinLock':       [82.9, 100.6, 108.6, 120.2, 108.1, 99.5, 84.7],
+            'MicroLock':          [70.5, 99.8, 132.0, 101.4, 107.1, 106.8, 83.7],
+            'SharedMutex':        [67.5, 119.4, 112.7, 104.2, 115.1, 104.8, 104.1],
+            'DistributedMutex':   [74.5, 102.4, 99.2, 105.4, 100.9, 96.0, 105.0],
+            'DistMutex+Combining':[67.8, 99.3, 97.6, 100.5, 150.4, 96.0, 83.5],
+            'FlatComb-NoCache':   [73.7, 114.5, 123.0, 100.5, 135.5, 96.4, 78.5],
+            'FlatComb-Caching':   [94.2, 101.2, 105.3, 119.3, 117.1, 94.4, 99.8],
+            'RWSpinLock':         [75.4, 130.8, 152.0, 101.4, 101.3, 100.1, 86.0]
+        };
+
+        const contendedSimpleData = {
+            'std::mutex':         [100, 100, 100, 100, 100, 100, 100],
+            'std::shared_mutex':  [74.1, 98.2, 96.1, 77.2, 111.6, 114.3, 130.8],
+            'MicroSpinLock':      [81.7, 116.8, 122.8, 95.9, 94.5, 100.5, 91.9],
+            'PicoSpinLock':       [75.3, 89.6, 125.9, 86.6, 108.6, 95.2, 86.8],
+            'MicroLock':          [72.8, 87.9, 107.7, 79.7, 84.7, 91.4, 80.8],
+            'SharedMutex':        [81.0, 89.0, 96.3, 93.4, 83.2, 93.0, 86.6],
+            'DistributedMutex':   [74.9, 87.2, 96.0, 75.5, 87.4, 92.2, 101.7],
+            'DistMutex+Combining':[73.1, 87.4, 111.1, 109.5, 86.5, 87.2, 94.3],
+            'FlatComb-NoCache':   [89.0, 101.5, 96.8, 82.0, 90.6, 88.8, 68.2],
+            'FlatComb-Caching':   [81.2, 92.9, 108.7, 102.0, 117.5, 86.8, 86.5],
+            'RWSpinLock':         [78.2, 91.6, 108.4, 81.9, 107.7, 92.6, 91.8]
+        };
+
+        // 配色
+        const colors = {
+            'std::mutex': '#2563eb',
+            'std::shared_mutex': '#7c3aed',
+            'MicroSpinLock': '#dc2626',
+            'PicoSpinLock': '#ea580c',
+            'MicroLock': '#ca8a04',
+            'SharedMutex': '#16a34a',
+            'DistributedMutex': '#0891b2',
+            'DistMutex+Combining': '#0284c7',
+            'RWSpinLock': '#db2777',
+            'FlatComb-NoCache': '#06b6d4',
+            'FlatComb-Caching': '#65a30d'
+        };
+
+        Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, sans-serif';
+        Chart.defaults.font.size = 11;
+        Chart.defaults.color = '#666';
+
+        // 吞吐量图表
+        new Chart(document.getElementById('throughputChart'), {
+            type: 'bar',
+            data: {
+                labels: fairnessThreads.map(t => t + ' 线程'),
+                datasets: Object.entries(fairnessData).map(([name, data]) => ({
+                    label: name,
+                    data: data.sum,
+                    backgroundColor: colors[name],
+                    borderWidth: 0,
+                    borderRadius: 2
+                }))
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12 } }
+                },
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: 'Sum (M)' }, grid: { color: '#f0f0f0' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // 尾延迟图表1 (阻塞锁)
+        const stableLocks = ['std::mutex', 'std::shared_mutex', 'SharedMutex', 'DistMutex+Combining', 'DistributedMutex', 'MicroLock'];
+        new Chart(document.getElementById('latencyChart1'), {
+            type: 'line',
+            data: {
+                labels: fairnessThreads.map(t => t + ' 线程'),
+                datasets: stableLocks.map(name => ({
+                    label: name,
+                    data: fairnessData[name].maxLatency.map(v => v / 1000),
+                    borderColor: colors[name],
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    pointRadius: 3
+                }))
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 8 } } },
+                scales: {
+                    y: { beginAtZero: true, max: 25, title: { display: true, text: 'ms' }, grid: { color: '#f0f0f0' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // 尾延迟图表2 (自旋锁)
+        const spinLocks = ['MicroSpinLock', 'PicoSpinLock', 'RWSpinLock'];
+        new Chart(document.getElementById('latencyChart2'), {
+            type: 'line',
+            data: {
+                labels: fairnessThreads.map(t => t + ' 线程'),
+                datasets: spinLocks.map(name => ({
+                    label: name,
+                    data: fairnessData[name].maxLatency.map(v => v / 1000),
+                    borderColor: colors[name],
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    pointRadius: 3
+                }))
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 8 } } },
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: 'ms' }, grid: { color: '#f0f0f0' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // 公平性图表
+        new Chart(document.getElementById('fairnessChart'), {
+            type: 'line',
+            data: {
+                labels: fairnessThreads.map(t => t + ' 线程'),
+                datasets: Object.entries(fairnessData).map(([name, data]) => ({
+                    label: name,
+                    data: data.cv,
+                    borderColor: colors[name],
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    pointRadius: 3
+                }))
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12 } } },
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: 'CV%' }, grid: { color: '#f0f0f0' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // Contended 图表
+        new Chart(document.getElementById('contendedChart'), {
+            type: 'bar',
+            data: {
+                labels: contendedThreads.map(t => t + ' 线程'),
+                datasets: Object.entries(contendedData).map(([name, data]) => ({
+                    label: name,
+                    data: data,
+                    backgroundColor: colors[name],
+                    borderWidth: 0,
+                    borderRadius: 2
+                }))
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12 } } },
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: '% (std::mutex = 100%)' }, grid: { color: '#f0f0f0' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // Contended Simple 图表
+        new Chart(document.getElementById('contendedSimpleChart'), {
+            type: 'bar',
+            data: {
+                labels: contendedThreads.map(t => t + ' 线程'),
+                datasets: Object.entries(contendedSimpleData).map(([name, data]) => ({
+                    label: name,
+                    data: data,
+                    backgroundColor: colors[name],
+                    borderWidth: 0,
+                    borderRadius: 2
+                }))
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12 } } },
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: '% (std::mutex = 100%)' }, grid: { color: '#f0f0f0' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // 填充 Fairness 详细数据表
+        const fairnessBody = document.querySelector('#detailTable tbody');
+        Object.entries(fairnessData).forEach(([name, data]) => {
+            const row = document.createElement('tr');
+            let html = `<td class="lock-name">${name}</td>`;
+            for (let i = 0; i < 6; i++) {
+                const cvClass = data.cv[i] > 50 ? 'bad' : '';
+                const latClass = data.maxLatency[i] > 50000 ? 'bad' : '';
+                html += `<td>${data.sum[i].toFixed(1)}</td>`;
+                html += `<td class="${cvClass}">${data.cv[i].toFixed(1)}</td>`;
+                html += `<td class="${latClass}">${(data.maxLatency[i]/1000).toFixed(1)}</td>`;
+            }
+            row.innerHTML = html;
+            fairnessBody.appendChild(row);
+        });
+
+        // 填充 Contended 详细数据表
+        const contendedBody = document.querySelector('#contendedTable tbody');
+        Object.entries(contendedData).forEach(([name, data]) => {
+            const row = document.createElement('tr');
+            let html = `<td class="lock-name">${name}</td>`;
+            for (let i = 0; i < 7; i++) {
+                const val = data[i];
+                const cls = val >= 120 ? 'good' : (val < 80 ? 'bad' : '');
+                html += `<td class="${cls}">${val.toFixed(1)}</td>`;
+            }
+            row.innerHTML = html;
+            contendedBody.appendChild(row);
+        });
+
+        function showTab(tabId) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelector(`[onclick="showTab('${tabId}')"]`).classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+    </script>
+</body>
+</html>
