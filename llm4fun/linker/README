@@ -1,0 +1,33 @@
+<opus-4-6-thinking>
+
+为我实现一个最简单的linker，使用现代C++23实现。附上测试样例和命令
+
+-------
+
+# 编译 linker
+g++ -std=c++23 -O2 -o mini_elf_linker mini_elf_linker.cpp
+
+# basic 目录
+cd basic
+
+# 编译 .o（注意参数，避免 PIE 和不需要的段）
+gcc -c -O2 -fno-pie -fno-pic -fno-asynchronous-unwind-tables \
+    -fcf-protection=none compute.c -o compute.o
+gcc -c -O2 -fno-pie -fno-pic -fno-asynchronous-unwind-tables \
+    -fcf-protection=none entry.c   -o entry.o
+
+# 链接
+../mini_elf_linker my_program entry.o compute.o
+
+# 运行
+./my_program
+echo "Exit code: $?"
+cd ..
+
+# 预期输出：Exit code: 42
+
+-------
+
+# 加了一个按照功能测试的 tests 目录
+chmod +x ./run_tests.sh
+./run_tests.sh
