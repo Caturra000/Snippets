@@ -1,0 +1,379 @@
+<opus-4-5-thinking>
+
+
+basic.cpp+clang20+O3+znver4
+==============================
+Run on (16 X 3792.92 MHz CPU s)
+CPU Caches:
+  L1 Data 32 KiB (x8)
+  L1 Instruction 32 KiB (x8)
+  L2 Unified 1024 KiB (x8)
+  L3 Unified 16384 KiB (x1)
+Load Average: 0.17, 0.17, 0.08
+----------------------------------------------------------------------------------------
+Benchmark                              Time             CPU   Iterations UserCounters...
+----------------------------------------------------------------------------------------
+BM_Switch_Sequential/100             120 ns          120 ns      5846783 bytes_per_second=6.19073Gi/s items_per_second=830.905M/s
+BM_Switch_Sequential/1000           1157 ns         1145 ns       614847 bytes_per_second=6.50801Gi/s items_per_second=873.49M/s
+BM_Switch_Sequential/10000         11596 ns        11473 ns        61167 bytes_per_second=6.49395Gi/s items_per_second=871.604M/s
+BM_Switch_Sequential/100000       116049 ns       114807 ns         6117 bytes_per_second=6.48966Gi/s items_per_second=871.027M/s
+BM_Switch_Random/100                 146 ns          144 ns      4828582 bytes_per_second=5.16566Gi/s items_per_second=693.323M/s
+BM_Switch_Random/1000               2349 ns         2351 ns       270805 bytes_per_second=3.16953Gi/s items_per_second=425.408M/s
+BM_Switch_Random/10000             71789 ns        71837 ns         9761 bytes_per_second=1.03715Gi/s items_per_second=139.203M/s
+BM_Switch_Random/100000           734716 ns       735151 ns          959 bytes_per_second=1.01348Gi/s items_per_second=136.026M/s
+BM_Switch_Hotspot/100                145 ns          145 ns      4832566 bytes_per_second=5.12417Gi/s items_per_second=687.755M/s
+BM_Switch_Hotspot/1000              4852 ns         4854 ns       143529 bytes_per_second=1.53489Gi/s items_per_second=206.009M/s
+BM_Switch_Hotspot/10000            66358 ns        66100 ns        10639 bytes_per_second=1.12716Gi/s items_per_second=151.285M/s
+BM_Switch_Hotspot/100000          684884 ns       682195 ns         1028 bytes_per_second=1.09215Gi/s items_per_second=146.586M/s
+BM_Switch_Arithmetic/100             153 ns          152 ns      4495938 bytes_per_second=4.8994Gi/s items_per_second=657.587M/s
+BM_Switch_Arithmetic/1000           5023 ns         5003 ns       100000 bytes_per_second=1.48926Gi/s items_per_second=199.885M/s
+BM_Switch_Arithmetic/10000         70687 ns        70480 ns         9927 bytes_per_second=1.05712Gi/s items_per_second=141.884M/s
+BM_Switch_Arithmetic/100000       705975 ns       715131 ns          984 bytes_per_second=1.04185Gi/s items_per_second=139.835M/s
+BM_Switch_DataMovement/100           119 ns          120 ns      5739543 bytes_per_second=6.18913Gi/s items_per_second=830.691M/s
+BM_Switch_DataMovement/1000         3691 ns         3740 ns       187571 bytes_per_second=1.99199Gi/s items_per_second=267.361M/s
+BM_Switch_DataMovement/10000       51935 ns        52558 ns        13349 bytes_per_second=1.41759Gi/s items_per_second=190.265M/s
+BM_Switch_DataMovement/100000     530992 ns       536820 ns         1272 bytes_per_second=1.38791Gi/s items_per_second=186.282M/s
+BM_Switch_Loop/100                  80.7 ns         80.8 ns      8550198 bytes_per_second=9.22556Gi/s items_per_second=1.23823G/s
+BM_Switch_Loop/1000                  754 ns          753 ns       936154 bytes_per_second=9.89028Gi/s items_per_second=1.32745G/s
+BM_Switch_Loop/10000                7349 ns         7337 ns        95845 bytes_per_second=10.1546Gi/s items_per_second=1.36293G/s
+BM_Switch_Loop/100000              73438 ns        73267 ns         9415 bytes_per_second=10.1691Gi/s items_per_second=1.36488G/s
+BM_DTC_Sequential/100               74.5 ns         74.3 ns      9431799 bytes_per_second=10.0263Gi/s items_per_second=1.34571G/s
+BM_DTC_Sequential/1000               745 ns          749 ns       937200 bytes_per_second=9.94137Gi/s items_per_second=1.33431G/s
+BM_DTC_Sequential/10000             7483 ns         7521 ns        92862 bytes_per_second=9.90621Gi/s items_per_second=1.32959G/s
+BM_DTC_Sequential/100000           75528 ns        75880 ns         9299 bytes_per_second=9.8189Gi/s items_per_second=1.31787G/s
+BM_DTC_Random/100                    112 ns          113 ns      6130611 bytes_per_second=6.60839Gi/s items_per_second=886.963M/s
+BM_DTC_Random/1000                  1292 ns         1297 ns       538642 bytes_per_second=5.74429Gi/s items_per_second=770.986M/s
+BM_DTC_Random/10000                53371 ns        52824 ns        13051 bytes_per_second=1.41046Gi/s items_per_second=189.309M/s
+BM_DTC_Random/100000              542406 ns       535695 ns         1308 bytes_per_second=1.39083Gi/s items_per_second=186.673M/s
+BM_DTC_Hotspot/100                   146 ns          144 ns      4998152 bytes_per_second=5.17954Gi/s items_per_second=695.186M/s
+BM_DTC_Hotspot/1000                 2754 ns         2751 ns       257498 bytes_per_second=2.70835Gi/s items_per_second=363.508M/s
+BM_DTC_Hotspot/10000               46706 ns        46799 ns        15040 bytes_per_second=1.59202Gi/s items_per_second=213.678M/s
+BM_DTC_Hotspot/100000             480858 ns       481680 ns         1453 bytes_per_second=1.54679Gi/s items_per_second=207.607M/s
+BM_DTC_Arithmetic/100                118 ns          118 ns      5961623 bytes_per_second=6.32995Gi/s items_per_second=849.592M/s
+BM_DTC_Arithmetic/1000              1334 ns         1335 ns       521499 bytes_per_second=5.57946Gi/s items_per_second=748.863M/s
+BM_DTC_Arithmetic/10000            49827 ns        49223 ns        14135 bytes_per_second=1.51365Gi/s items_per_second=203.158M/s
+BM_DTC_Arithmetic/100000          505094 ns       498622 ns         1403 bytes_per_second=1.49423Gi/s items_per_second=200.553M/s
+BM_DTC_DataMovement/100              115 ns          114 ns      6121033 bytes_per_second=6.52543Gi/s items_per_second=875.829M/s
+BM_DTC_DataMovement/1000            1217 ns         1217 ns       573891 bytes_per_second=6.124Gi/s items_per_second=821.95M/s
+BM_DTC_DataMovement/10000          45667 ns        45656 ns        15412 bytes_per_second=1.6319Gi/s items_per_second=219.029M/s
+BM_DTC_DataMovement/100000        468669 ns       468495 ns         1495 bytes_per_second=1.59032Gi/s items_per_second=213.449M/s
+BM_DTC_Loop/100                     59.6 ns         59.6 ns     11815391 bytes_per_second=12.5105Gi/s items_per_second=1.67913G/s
+BM_DTC_Loop/1000                     569 ns          569 ns      1247149 bytes_per_second=13.0966Gi/s items_per_second=1.75779G/s
+BM_DTC_Loop/10000                   5629 ns         5609 ns       125212 bytes_per_second=13.2844Gi/s items_per_second=1.783G/s
+BM_DTC_Loop/100000                 56539 ns        56166 ns        12277 bytes_per_second=13.2653Gi/s items_per_second=1.78044G/s
+BM_STC_Sequential/100                284 ns          282 ns      2502565 bytes_per_second=2.64524Gi/s items_per_second=355.038M/s
+BM_STC_Sequential/1000              2999 ns         2979 ns       234798 bytes_per_second=2.50144Gi/s items_per_second=335.738M/s
+BM_STC_Sequential/10000            30400 ns        30195 ns        23170 bytes_per_second=2.46745Gi/s items_per_second=331.176M/s
+BM_STC_Sequential/100000          302700 ns       300651 ns         2304 bytes_per_second=2.47815Gi/s items_per_second=332.612M/s
+BM_STC_Random/100                    483 ns          480 ns      1466801 bytes_per_second=1.55155Gi/s items_per_second=208.246M/s
+BM_STC_Random/1000                  8058 ns         8022 ns        87884 bytes_per_second=951.033Mi/s items_per_second=124.654M/s
+BM_STC_Random/10000                85199 ns        84828 ns         8277 bytes_per_second=899.399Mi/s items_per_second=117.886M/s
+BM_STC_Random/100000              852811 ns       849588 ns          827 bytes_per_second=898.011Mi/s items_per_second=117.704M/s
+BM_STC_Hotspot/100                   646 ns          644 ns      1081025 bytes_per_second=1.157Gi/s items_per_second=155.29M/s
+BM_STC_Hotspot/1000                 7085 ns         7058 ns        99557 bytes_per_second=1.0556Gi/s items_per_second=141.68M/s
+BM_STC_Hotspot/10000               72103 ns        71828 ns         9748 bytes_per_second=1.03728Gi/s items_per_second=139.221M/s
+BM_STC_Hotspot/100000             721914 ns       719145 ns          972 bytes_per_second=1.03603Gi/s items_per_second=139.054M/s
+BM_STC_Arithmetic/100                557 ns          555 ns      1259242 bytes_per_second=1.34251Gi/s items_per_second=180.189M/s
+BM_STC_Arithmetic/1000              7492 ns         7463 ns        93180 bytes_per_second=1022.29Mi/s items_per_second=133.994M/s
+BM_STC_Arithmetic/10000            78239 ns        77937 ns         8997 bytes_per_second=978.915Mi/s items_per_second=128.308M/s
+BM_STC_Arithmetic/100000          783661 ns       780628 ns          884 bytes_per_second=977.34Mi/s items_per_second=128.102M/s
+BM_STC_DataMovement/100              503 ns          501 ns      1000000 bytes_per_second=1.486Gi/s items_per_second=199.447M/s
+BM_STC_DataMovement/1000            6026 ns         6307 ns       111551 bytes_per_second=1.18137Gi/s items_per_second=158.56M/s
+BM_STC_DataMovement/10000          60114 ns        64235 ns        10964 bytes_per_second=1.15989Gi/s items_per_second=155.678M/s
+BM_STC_DataMovement/100000        639017 ns       636112 ns         1091 bytes_per_second=1.17127Gi/s items_per_second=157.205M/s
+BM_STC_Loop/100                      303 ns          302 ns      2324158 bytes_per_second=2.46917Gi/s items_per_second=331.406M/s
+BM_STC_Loop/1000                    3066 ns         3052 ns       229823 bytes_per_second=2.44141Gi/s items_per_second=327.68M/s
+BM_STC_Loop/10000                  30671 ns        30532 ns        23063 bytes_per_second=2.44027Gi/s items_per_second=327.528M/s
+BM_STC_Loop/100000                307208 ns       305807 ns         2311 bytes_per_second=2.43637Gi/s items_per_second=327.004M/s
+BM_CTC_Sequential/100                382 ns          380 ns      1856001 bytes_per_second=1.95924Gi/s items_per_second=262.964M/s
+BM_CTC_Sequential/1000              4186 ns         4264 ns       164238 bytes_per_second=1.74732Gi/s items_per_second=234.521M/s
+BM_CTC_Sequential/10000            44578 ns        44762 ns        15590 bytes_per_second=1.66448Gi/s items_per_second=223.402M/s
+BM_CTC_Sequential/100000          425577 ns       423639 ns         1664 bytes_per_second=1.75871Gi/s items_per_second=236.05M/s
+BM_CTC_Random/100                    522 ns          520 ns      1337878 bytes_per_second=1.43321Gi/s items_per_second=192.363M/s
+BM_CTC_Random/1000                  7930 ns         7893 ns        88956 bytes_per_second=966.552Mi/s items_per_second=126.688M/s
+BM_CTC_Random/10000                81065 ns        80694 ns         8696 bytes_per_second=945.471Mi/s items_per_second=123.925M/s
+BM_CTC_Random/100000              818146 ns       814411 ns          864 bytes_per_second=936.799Mi/s items_per_second=122.788M/s
+BM_CTC_Hotspot/100                   617 ns          614 ns      1144058 bytes_per_second=1.21285Gi/s items_per_second=162.786M/s
+BM_CTC_Hotspot/1000                 7194 ns         7161 ns        98349 bytes_per_second=1.04039Gi/s items_per_second=139.639M/s
+BM_CTC_Hotspot/10000               73139 ns        73781 ns         9542 bytes_per_second=1.00982Gi/s items_per_second=135.535M/s
+BM_CTC_Hotspot/100000             702823 ns       730682 ns          954 bytes_per_second=1.01967Gi/s items_per_second=136.858M/s
+BM_CTC_Arithmetic/100                512 ns          511 ns      1366224 bytes_per_second=1.45691Gi/s items_per_second=195.544M/s
+BM_CTC_Arithmetic/1000              7458 ns         7449 ns        94162 bytes_per_second=1.00021Gi/s items_per_second=134.246M/s
+BM_CTC_Arithmetic/10000            76546 ns        76460 ns         9216 bytes_per_second=997.829Mi/s items_per_second=130.787M/s
+BM_CTC_Arithmetic/100000          764375 ns       763524 ns          911 bytes_per_second=999.234Mi/s items_per_second=130.972M/s
+BM_CTC_DataMovement/100              477 ns          484 ns      1436407 bytes_per_second=1.53907Gi/s items_per_second=206.57M/s
+BM_CTC_DataMovement/1000            6165 ns         6240 ns       112084 bytes_per_second=1.19397Gi/s items_per_second=160.251M/s
+BM_CTC_DataMovement/10000          61175 ns        61856 ns        11340 bytes_per_second=1.20451Gi/s items_per_second=161.667M/s
+BM_CTC_DataMovement/100000        624454 ns       630745 ns         1124 bytes_per_second=1.18123Gi/s items_per_second=158.543M/s
+BM_CTC_Loop/100                      184 ns          187 ns      3738687 bytes_per_second=3.98242Gi/s items_per_second=534.511M/s
+BM_CTC_Loop/1000                    1674 ns         1696 ns       415823 bytes_per_second=4.39401Gi/s items_per_second=589.754M/s
+BM_CTC_Loop/10000                  16332 ns        16457 ns        42434 bytes_per_second=4.5273Gi/s items_per_second=607.644M/s
+BM_CTC_Loop/100000                170905 ns       172045 ns         4063 bytes_per_second=4.33061Gi/s items_per_second=581.244M/s
+BM_ITC_Sequential/100                194 ns          195 ns      3599093 items_per_second=512.757M/s
+BM_ITC_Sequential/1000              1659 ns         1668 ns       419800 items_per_second=599.633M/s
+BM_ITC_Sequential/10000            16570 ns        16647 ns        42187 items_per_second=600.698M/s
+BM_ITC_Sequential/100000          168860 ns       169561 ns         4143 items_per_second=589.759M/s
+BM_ITC_Random/100                    224 ns          225 ns      3117133 items_per_second=444.007M/s
+BM_ITC_Random/1000                  2202 ns         2208 ns       315031 items_per_second=452.814M/s
+BM_ITC_Random/10000                51129 ns        51266 ns        13679 items_per_second=195.06M/s
+BM_ITC_Random/100000              533824 ns       535060 ns         1310 items_per_second=186.895M/s
+BM_ITC_Hotspot/100                   288 ns          289 ns      2425879 items_per_second=346.138M/s
+BM_ITC_Hotspot/1000                 3548 ns         3554 ns       196534 items_per_second=281.348M/s
+BM_ITC_Hotspot/10000               49067 ns        49136 ns        14293 items_per_second=203.517M/s
+BM_ITC_Hotspot/100000             508029 ns       508647 ns         1366 items_per_second=196.6M/s
+BM_ITC_Arithmetic/100                234 ns          235 ns      2967180 items_per_second=426.047M/s
+BM_ITC_Arithmetic/1000              2517 ns         2517 ns       278102 items_per_second=397.229M/s
+BM_ITC_Arithmetic/10000            49984 ns        49906 ns        14007 items_per_second=200.378M/s
+BM_ITC_Arithmetic/100000          519051 ns       518183 ns         1344 items_per_second=192.982M/s
+BM_ITC_Loop/100                     73.8 ns         73.6 ns      9579968 items_per_second=1.3579G/s
+BM_ITC_Loop/1000                     550 ns          549 ns      1292430 items_per_second=1.82213G/s
+BM_ITC_Loop/10000                   5304 ns         5293 ns       132887 items_per_second=1.88911G/s
+BM_ITC_Loop/100000                 52704 ns        52600 ns        13471 items_per_second=1.90115G/s
+BM_TTC_Sequential/100                124 ns          123 ns      5682571 items_per_second=810.553M/s
+BM_TTC_Sequential/1000              1186 ns         1184 ns       592204 items_per_second=844.782M/s
+BM_TTC_Sequential/10000            11859 ns        11833 ns        59315 items_per_second=845.075M/s
+BM_TTC_Sequential/100000          120481 ns       118565 ns         5874 items_per_second=843.422M/s
+BM_TTC_Random/100                    143 ns          141 ns      4970073 items_per_second=709.834M/s
+BM_TTC_Random/1000                  2443 ns         2403 ns       296950 items_per_second=416.166M/s
+BM_TTC_Random/10000                61814 ns        60801 ns        11288 items_per_second=164.47M/s
+BM_TTC_Random/100000              621456 ns       611242 ns         1147 items_per_second=163.601M/s
+BM_TTC_Hotspot/100                   181 ns          180 ns      3879808 items_per_second=556.278M/s
+BM_TTC_Hotspot/1000                 4345 ns         4345 ns       160208 items_per_second=230.153M/s
+BM_TTC_Hotspot/10000               56182 ns        56182 ns        12329 items_per_second=177.992M/s
+BM_TTC_Hotspot/100000             569806 ns       569826 ns         1240 items_per_second=175.492M/s
+BM_TTC_Arithmetic/100                184 ns          182 ns      3849435 items_per_second=550.73M/s
+BM_TTC_Arithmetic/1000              4070 ns         4002 ns       175928 items_per_second=249.893M/s
+BM_TTC_Arithmetic/10000            57884 ns        56917 ns        12342 items_per_second=175.693M/s
+BM_TTC_Arithmetic/100000          578493 ns       570447 ns         1229 items_per_second=175.301M/s
+BM_TTC_Loop/100                      137 ns          137 ns      5218415 items_per_second=728.272M/s
+BM_TTC_Loop/1000                    1355 ns         1355 ns       515176 items_per_second=737.901M/s
+BM_TTC_Loop/10000                  13509 ns        13508 ns        52262 items_per_second=740.317M/s
+BM_TTC_Loop/100000                134987 ns       134980 ns         5162 items_per_second=740.852M/s
+BM_Switch_TightLoop               589175 ns       589128 ns         1189 items_per_second=848.712M/s
+BM_DTC_TightLoop                  339843 ns       340810 ns         2056 items_per_second=1.46709G/s
+BM_Switch_ManyOpcodes              36761 ns        36898 ns        19044 items_per_second=271.019M/s
+BM_DTC_ManyOpcodes                 37656 ns        37795 ns        18565 items_per_second=264.583M/s
+
+
+basic.cpp+gcc14+O3+znver4
+==============================
+Run on (16 X 3792.92 MHz CPU s)
+CPU Caches:
+  L1 Data 32 KiB (x8)
+  L1 Instruction 32 KiB (x8)
+  L2 Unified 1024 KiB (x8)
+  L3 Unified 16384 KiB (x1)
+Load Average: 0.56, 0.43, 0.20
+----------------------------------------------------------------------------------------
+Benchmark                              Time             CPU   Iterations UserCounters...
+----------------------------------------------------------------------------------------
+BM_Switch_Sequential/100            92.1 ns         92.1 ns      7671421 bytes_per_second=8.09025Gi/s items_per_second=1.08585G/s
+BM_Switch_Sequential/1000            918 ns          918 ns       768316 bytes_per_second=8.11854Gi/s items_per_second=1.08965G/s
+BM_Switch_Sequential/10000          9121 ns         9120 ns        76384 bytes_per_second=8.16916Gi/s items_per_second=1.09645G/s
+BM_Switch_Sequential/100000        90046 ns        90923 ns         7602 bytes_per_second=8.19442Gi/s items_per_second=1.09984G/s
+BM_Switch_Random/100                 133 ns          135 ns      5220297 bytes_per_second=5.51082Gi/s items_per_second=739.65M/s
+BM_Switch_Random/1000               1783 ns         1808 ns       360110 bytes_per_second=4.12091Gi/s items_per_second=553.1M/s
+BM_Switch_Random/10000             62861 ns        63655 ns        11025 bytes_per_second=1.17047Gi/s items_per_second=157.098M/s
+BM_Switch_Random/100000           650752 ns       657996 ns         1069 bytes_per_second=1.13231Gi/s items_per_second=151.977M/s
+BM_Switch_Hotspot/100                161 ns          162 ns      4282856 bytes_per_second=4.59179Gi/s items_per_second=616.3M/s
+BM_Switch_Hotspot/1000              3402 ns         3431 ns       203225 bytes_per_second=2.17164Gi/s items_per_second=291.472M/s
+BM_Switch_Hotspot/10000            57328 ns        57780 ns        12174 bytes_per_second=1.28946Gi/s items_per_second=173.069M/s
+BM_Switch_Hotspot/100000          587320 ns       591546 ns         1185 bytes_per_second=1.25951Gi/s items_per_second=169.049M/s
+BM_Switch_Arithmetic/100             127 ns          128 ns      5545885 bytes_per_second=5.81206Gi/s items_per_second=780.082M/s
+BM_Switch_Arithmetic/1000           3296 ns         3314 ns       201415 bytes_per_second=2.24819Gi/s items_per_second=301.747M/s
+BM_Switch_Arithmetic/10000         59818 ns        60112 ns        11413 bytes_per_second=1.23944Gi/s items_per_second=166.355M/s
+BM_Switch_Arithmetic/100000       607319 ns       610008 ns         1150 bytes_per_second=1.22139Gi/s items_per_second=163.932M/s
+BM_Switch_DataMovement/100           196 ns          196 ns      3422052 bytes_per_second=3.80533Gi/s items_per_second=510.743M/s
+BM_Switch_DataMovement/1000         2959 ns         2958 ns       255192 bytes_per_second=2.5189Gi/s items_per_second=338.081M/s
+BM_Switch_DataMovement/10000       51887 ns        51859 ns        13640 bytes_per_second=1.43671Gi/s items_per_second=192.832M/s
+BM_Switch_DataMovement/100000     524707 ns       524269 ns         1345 bytes_per_second=1.42114Gi/s items_per_second=190.742M/s
+BM_Switch_Loop/100                  73.6 ns         73.5 ns      9408115 bytes_per_second=10.1343Gi/s items_per_second=1.3602G/s
+BM_Switch_Loop/1000                  689 ns          688 ns       998128 bytes_per_second=10.8278Gi/s items_per_second=1.45328G/s
+BM_Switch_Loop/10000                6866 ns         6855 ns       102796 bytes_per_second=10.8683Gi/s items_per_second=1.45872G/s
+BM_Switch_Loop/100000              68899 ns        68775 ns        10339 bytes_per_second=10.8333Gi/s items_per_second=1.45402G/s
+BM_DTC_Sequential/100               89.1 ns         88.9 ns      7870243 bytes_per_second=8.37656Gi/s items_per_second=1.12428G/s
+BM_DTC_Sequential/1000               811 ns          810 ns       868553 bytes_per_second=9.20235Gi/s items_per_second=1.23512G/s
+BM_DTC_Sequential/10000             8158 ns         8063 ns        87209 bytes_per_second=9.2401Gi/s items_per_second=1.24019G/s
+BM_DTC_Sequential/100000           81924 ns        80864 ns         8722 bytes_per_second=9.21372Gi/s items_per_second=1.23664G/s
+BM_DTC_Random/100                    130 ns          129 ns      5438245 bytes_per_second=5.78697Gi/s items_per_second=776.714M/s
+BM_DTC_Random/1000                  1944 ns         1918 ns       364000 bytes_per_second=3.88483Gi/s items_per_second=521.413M/s
+BM_DTC_Random/10000                57037 ns        56281 ns        12382 bytes_per_second=1.32383Gi/s items_per_second=177.681M/s
+BM_DTC_Random/100000              593972 ns       588327 ns         1194 bytes_per_second=1.2664Gi/s items_per_second=169.974M/s
+BM_DTC_Hotspot/100                   255 ns          255 ns      2723511 bytes_per_second=2.9162Gi/s items_per_second=391.406M/s
+BM_DTC_Hotspot/1000                 4686 ns         4689 ns       148707 bytes_per_second=1.58909Gi/s items_per_second=213.283M/s
+BM_DTC_Hotspot/10000               51208 ns        51234 ns        13681 bytes_per_second=1.45422Gi/s items_per_second=195.181M/s
+BM_DTC_Hotspot/100000             526176 ns       523781 ns         1340 bytes_per_second=1.42246Gi/s items_per_second=190.919M/s
+BM_DTC_Arithmetic/100                260 ns          258 ns      2708800 bytes_per_second=2.88905Gi/s items_per_second=387.762M/s
+BM_DTC_Arithmetic/1000              4744 ns         4711 ns       147742 bytes_per_second=1.58162Gi/s items_per_second=212.281M/s
+BM_DTC_Arithmetic/10000            54994 ns        54603 ns        12878 bytes_per_second=1.36449Gi/s items_per_second=183.139M/s
+BM_DTC_Arithmetic/100000          556945 ns       552984 ns         1268 bytes_per_second=1.34734Gi/s items_per_second=180.837M/s
+BM_DTC_DataMovement/100              117 ns          116 ns      6029705 bytes_per_second=6.39705Gi/s items_per_second=858.597M/s
+BM_DTC_DataMovement/1000            1432 ns         1424 ns       505532 bytes_per_second=5.23244Gi/s items_per_second=702.286M/s
+BM_DTC_DataMovement/10000          46929 ns        47777 ns        14637 bytes_per_second=1.55945Gi/s items_per_second=209.305M/s
+BM_DTC_DataMovement/100000        493422 ns       498499 ns         1405 bytes_per_second=1.4946Gi/s items_per_second=200.602M/s
+BM_DTC_Loop/100                     72.4 ns         72.8 ns      9508691 bytes_per_second=10.2374Gi/s items_per_second=1.37404G/s
+BM_DTC_Loop/1000                     682 ns          685 ns      1016903 bytes_per_second=10.8777Gi/s items_per_second=1.45998G/s
+BM_DTC_Loop/10000                   6702 ns         6717 ns       101720 bytes_per_second=11.0916Gi/s items_per_second=1.4887G/s
+BM_DTC_Loop/100000                 67288 ns        67376 ns        10650 bytes_per_second=11.0582Gi/s items_per_second=1.48421G/s
+BM_STC_Sequential/100                453 ns          454 ns      1547340 bytes_per_second=1.64206Gi/s items_per_second=220.393M/s
+BM_STC_Sequential/1000              5571 ns         5613 ns       125005 bytes_per_second=1.32729Gi/s items_per_second=178.146M/s
+BM_STC_Sequential/10000            57600 ns        57999 ns        12108 bytes_per_second=1.2846Gi/s items_per_second=172.415M/s
+BM_STC_Sequential/100000          575476 ns       579119 ns         1213 bytes_per_second=1.28654Gi/s items_per_second=172.676M/s
+BM_STC_Random/100                    592 ns          595 ns      1179000 bytes_per_second=1.25183Gi/s items_per_second=168.018M/s
+BM_STC_Random/1000                  8481 ns         8439 ns        83179 bytes_per_second=904.019Mi/s items_per_second=118.492M/s
+BM_STC_Random/10000                87909 ns        87148 ns         8088 bytes_per_second=875.458Mi/s items_per_second=114.748M/s
+BM_STC_Random/100000              879930 ns       871941 ns          804 bytes_per_second=874.99Mi/s items_per_second=114.687M/s
+BM_STC_Hotspot/100                   587 ns          582 ns      1201931 bytes_per_second=1.281Gi/s items_per_second=171.933M/s
+BM_STC_Hotspot/1000                 7142 ns         7108 ns        98653 bytes_per_second=1.04813Gi/s items_per_second=140.677M/s
+BM_STC_Hotspot/10000               72116 ns        72324 ns         9711 bytes_per_second=1.03016Gi/s items_per_second=138.266M/s
+BM_STC_Hotspot/100000             720816 ns       722730 ns          973 bytes_per_second=1.03089Gi/s items_per_second=138.364M/s
+BM_STC_Arithmetic/100                512 ns          513 ns      1370593 bytes_per_second=1.45288Gi/s items_per_second=195.002M/s
+BM_STC_Arithmetic/1000              7598 ns         7614 ns        92281 bytes_per_second=1001.99Mi/s items_per_second=131.333M/s
+BM_STC_Arithmetic/10000            78137 ns        78285 ns         8956 bytes_per_second=974.566Mi/s items_per_second=127.738M/s
+BM_STC_Arithmetic/100000          787428 ns       784166 ns          897 bytes_per_second=972.93Mi/s items_per_second=127.524M/s
+BM_STC_DataMovement/100              475 ns          471 ns      1473674 bytes_per_second=1.5824Gi/s items_per_second=212.386M/s
+BM_STC_DataMovement/1000            6158 ns         6101 ns       115268 bytes_per_second=1.22123Gi/s items_per_second=163.911M/s
+BM_STC_DataMovement/10000          62232 ns        61646 ns        11425 bytes_per_second=1.20861Gi/s items_per_second=162.217M/s
+BM_STC_DataMovement/100000        624445 ns       619260 ns         1120 bytes_per_second=1.20314Gi/s items_per_second=161.483M/s
+BM_STC_Loop/100                      184 ns          185 ns      3801230 bytes_per_second=4.03618Gi/s items_per_second=541.726M/s
+BM_STC_Loop/1000                    1641 ns         1643 ns       427658 bytes_per_second=4.53548Gi/s items_per_second=608.741M/s
+BM_STC_Loop/10000                  16337 ns        16349 ns        42910 bytes_per_second=4.55711Gi/s items_per_second=611.645M/s
+BM_STC_Loop/100000                175753 ns       175866 ns         3998 bytes_per_second=4.23651Gi/s items_per_second=568.614M/s
+BM_CTC_Sequential/100                279 ns          278 ns      2522506 bytes_per_second=2.6816Gi/s items_per_second=359.918M/s
+BM_CTC_Sequential/1000              2719 ns         2700 ns       260084 bytes_per_second=2.7599Gi/s items_per_second=370.428M/s
+BM_CTC_Sequential/10000            27547 ns        27351 ns        25608 bytes_per_second=2.72402Gi/s items_per_second=365.611M/s
+BM_CTC_Sequential/100000          272889 ns       270944 ns         2577 bytes_per_second=2.74986Gi/s items_per_second=369.08M/s
+BM_CTC_Random/100                    328 ns          328 ns      2140163 bytes_per_second=2.27378Gi/s items_per_second=305.181M/s
+BM_CTC_Random/1000                  8013 ns         8015 ns        87828 bytes_per_second=951.883Mi/s items_per_second=124.765M/s
+BM_CTC_Random/10000                82660 ns        83284 ns         8439 bytes_per_second=916.072Mi/s items_per_second=120.071M/s
+BM_CTC_Random/100000              819254 ns       832067 ns          842 bytes_per_second=916.921Mi/s items_per_second=120.183M/s
+BM_CTC_Hotspot/100                   467 ns          472 ns      1482670 bytes_per_second=1.57868Gi/s items_per_second=211.887M/s
+BM_CTC_Hotspot/1000                 7238 ns         7264 ns        96324 bytes_per_second=1.02573Gi/s items_per_second=137.672M/s
+BM_CTC_Hotspot/10000               75850 ns        76025 ns         9237 bytes_per_second=1003.54Mi/s items_per_second=131.536M/s
+BM_CTC_Hotspot/100000             763065 ns       763859 ns          921 bytes_per_second=998.796Mi/s items_per_second=130.914M/s
+BM_CTC_Arithmetic/100                391 ns          391 ns      1796016 bytes_per_second=1.90394Gi/s items_per_second=255.543M/s
+BM_CTC_Arithmetic/1000              7365 ns         7412 ns        94696 bytes_per_second=1.0052Gi/s items_per_second=134.915M/s
+BM_CTC_Arithmetic/10000            78265 ns        78782 ns         8934 bytes_per_second=968.425Mi/s items_per_second=126.933M/s
+BM_CTC_Arithmetic/100000          779407 ns       784073 ns          895 bytes_per_second=973.046Mi/s items_per_second=127.539M/s
+BM_CTC_DataMovement/100              420 ns          422 ns      1655448 bytes_per_second=1.76365Gi/s items_per_second=236.713M/s
+BM_CTC_DataMovement/1000            6861 ns         6893 ns       102164 bytes_per_second=1.08092Gi/s items_per_second=145.079M/s
+BM_CTC_DataMovement/10000          70917 ns        70452 ns         9848 bytes_per_second=1.05754Gi/s items_per_second=141.94M/s
+BM_CTC_DataMovement/100000        679237 ns       674427 ns         1055 bytes_per_second=1.10473Gi/s items_per_second=148.274M/s
+BM_CTC_Loop/100                      159 ns          158 ns      4465707 bytes_per_second=4.72312Gi/s items_per_second=633.926M/s
+BM_CTC_Loop/1000                    1365 ns         1354 ns       522853 bytes_per_second=5.50159Gi/s items_per_second=738.411M/s
+BM_CTC_Loop/10000                  13466 ns        13502 ns        52049 bytes_per_second=5.51829Gi/s items_per_second=740.653M/s
+BM_CTC_Loop/100000                144265 ns       144606 ns         4698 bytes_per_second=5.15235Gi/s items_per_second=691.536M/s
+BM_ITC_Sequential/100                210 ns          211 ns      3310291 items_per_second=474.279M/s
+BM_ITC_Sequential/1000              1791 ns         1794 ns       384874 items_per_second=557.285M/s
+BM_ITC_Sequential/10000            17557 ns        17585 ns        40054 items_per_second=568.665M/s
+BM_ITC_Sequential/100000          179490 ns       177796 ns         3962 items_per_second=562.442M/s
+BM_ITC_Random/100                    240 ns          237 ns      2948813 items_per_second=421.352M/s
+BM_ITC_Random/1000                  2376 ns         2349 ns       294609 items_per_second=425.687M/s
+BM_ITC_Random/10000                55812 ns        55610 ns        12631 items_per_second=179.823M/s
+BM_ITC_Random/100000              577337 ns       577849 ns         1205 items_per_second=173.056M/s
+BM_ITC_Hotspot/100                   247 ns          247 ns      2830034 items_per_second=404.922M/s
+BM_ITC_Hotspot/1000                 3746 ns         3749 ns       186720 items_per_second=266.751M/s
+BM_ITC_Hotspot/10000               52843 ns        52876 ns        13198 items_per_second=189.122M/s
+BM_ITC_Hotspot/100000             546635 ns       546932 ns         1276 items_per_second=182.838M/s
+BM_ITC_Arithmetic/100                254 ns          252 ns      2758026 items_per_second=396.573M/s
+BM_ITC_Arithmetic/1000              3434 ns         3413 ns       206887 items_per_second=293.034M/s
+BM_ITC_Arithmetic/10000            55831 ns        55487 ns        12663 items_per_second=180.224M/s
+BM_ITC_Arithmetic/100000          573158 ns       569599 ns         1225 items_per_second=175.562M/s
+BM_ITC_Loop/100                     99.2 ns         99.0 ns      7256172 items_per_second=1.01015G/s
+BM_ITC_Loop/1000                     862 ns          862 ns       904539 items_per_second=1.1602G/s
+BM_ITC_Loop/10000                   8651 ns         8669 ns        87739 items_per_second=1.15357G/s
+BM_ITC_Loop/100000                 82782 ns        84316 ns         8262 items_per_second=1.18602G/s
+BM_TTC_Sequential/100                103 ns          105 ns      6711921 items_per_second=956.421M/s
+BM_TTC_Sequential/1000               993 ns         1005 ns       699981 items_per_second=995.41M/s
+BM_TTC_Sequential/10000             9934 ns         9962 ns        70419 items_per_second=1.00383G/s
+BM_TTC_Sequential/100000           99438 ns        99586 ns         7054 items_per_second=1.00416G/s
+BM_TTC_Random/100                    150 ns          150 ns      4696343 items_per_second=667.416M/s
+BM_TTC_Random/1000                  3812 ns         3847 ns       181339 items_per_second=259.96M/s
+BM_TTC_Random/10000                57300 ns        57762 ns        12157 items_per_second=173.124M/s
+BM_TTC_Random/100000              584041 ns       588208 ns         1190 items_per_second=170.008M/s
+BM_TTC_Hotspot/100                   352 ns          354 ns      1970102 items_per_second=282.167M/s
+BM_TTC_Hotspot/1000                 4843 ns         4869 ns       143625 items_per_second=205.389M/s
+BM_TTC_Hotspot/10000               53661 ns        53378 ns        13107 items_per_second=187.345M/s
+BM_TTC_Hotspot/100000             543104 ns       537174 ns         1306 items_per_second=186.159M/s
+BM_TTC_Arithmetic/100                274 ns          271 ns      2587373 items_per_second=369.267M/s
+BM_TTC_Arithmetic/1000              4764 ns         4746 ns       147372 items_per_second=210.684M/s
+BM_TTC_Arithmetic/10000            55241 ns        55211 ns        12686 items_per_second=181.122M/s
+BM_TTC_Arithmetic/100000          554899 ns       554456 ns         1237 items_per_second=180.357M/s
+BM_TTC_Loop/100                      131 ns          131 ns      5382442 items_per_second=763.217M/s
+BM_TTC_Loop/1000                    1417 ns         1415 ns       493605 items_per_second=706.465M/s
+BM_TTC_Loop/10000                  14218 ns        14196 ns        49994 items_per_second=704.412M/s
+BM_TTC_Loop/100000                140347 ns       139949 ns         5135 items_per_second=714.546M/s
+BM_Switch_TightLoop               468886 ns       467149 ns         1499 items_per_second=1.07032G/s
+BM_DTC_TightLoop                  463112 ns       461302 ns         1515 items_per_second=1.08389G/s
+BM_Switch_ManyOpcodes              35499 ns        35353 ns        19453 items_per_second=282.858M/s
+BM_DTC_ManyOpcodes                 44260 ns        44072 ns        15915 items_per_second=226.904M/s
+
+
+json.cpp+clang20+O3+znver4
+==============================
+Run on (16 X 3792.92 MHz CPU s)
+CPU Caches:
+  L1 Data 32 KiB (x8)
+  L1 Instruction 32 KiB (x8)
+  L2 Unified 1024 KiB (x8)
+  L3 Unified 16384 KiB (x1)
+Load Average: 0.26, 0.11, 0.04
+Test data: small=1012B, medium=65514B, large=1048530B
+---------------------------------------------------------------------------------------------
+Benchmark                                   Time             CPU   Iterations UserCounters...
+---------------------------------------------------------------------------------------------
+BM_CharClassify_Switch                1159502 ns      1155161 ns          602 bytes_per_second=865.68Mi/s
+BM_CharClassify_Table                 1158126 ns      1153771 ns          609 bytes_per_second=866.723Mi/s
+BM_CharClassify_DirectThreaded        4380784 ns      4364215 ns          161 bytes_per_second=229.136Mi/s
+BM_CharClassify_ComputedGoto          4763352 ns      4745200 ns          148 bytes_per_second=210.739Mi/s
+BM_CharClassify_Hybrid                3108835 ns      3102489 ns          227 bytes_per_second=322.322Mi/s
+BM_Tokenizer_Switch_Small                 885 ns          885 ns       788866 bytes_per_second=1.06552Gi/s
+BM_Tokenizer_Table_Small                  590 ns          589 ns      1212212 bytes_per_second=1.60001Gi/s
+BM_Tokenizer_DirectThreaded_Small         874 ns          874 ns       803099 bytes_per_second=1.07879Gi/s
+BM_Tokenizer_ComputedGoto_Small           853 ns          852 ns       814506 bytes_per_second=1.10571Gi/s
+BM_Tokenizer_Switch_Medium              88678 ns        88603 ns         7869 bytes_per_second=705.157Mi/s
+BM_Tokenizer_Table_Medium               53755 ns        53710 ns        12721 bytes_per_second=1.136Gi/s
+BM_Tokenizer_DirectThreaded_Medium      90917 ns        90841 ns         7729 bytes_per_second=687.785Mi/s
+BM_Tokenizer_ComputedGoto_Medium        73377 ns        73315 ns         9567 bytes_per_second=852.195Mi/s
+BM_Tokenizer_Switch_Large             1746680 ns      1745200 ns          401 bytes_per_second=572.975Mi/s
+BM_Tokenizer_Table_Large              1264457 ns      1277594 ns          546 bytes_per_second=782.687Mi/s
+BM_Tokenizer_DirectThreaded_Large     1705991 ns      1735357 ns          402 bytes_per_second=576.225Mi/s
+BM_Tokenizer_ComputedGoto_Large       1442452 ns      1460241 ns          481 bytes_per_second=684.789Mi/s
+BM_VM_Switch                             50.1 ns         50.1 ns     13886646
+BM_VM_DirectThreaded                     96.1 ns         96.0 ns      7277778
+BM_VM_ComputedGoto                       36.8 ns         36.7 ns     18684137
+
+
+json.cpp+gcc14+O3+znver4
+==============================
+Run on (16 X 3792.92 MHz CPU s)
+CPU Caches:
+  L1 Data 32 KiB (x8)
+  L1 Instruction 32 KiB (x8)
+  L2 Unified 1024 KiB (x8)
+  L3 Unified 16384 KiB (x1)
+Load Average: 0.16, 0.14, 0.06
+Test data: small=1012B, medium=65514B, large=1048530B
+---------------------------------------------------------------------------------------------
+Benchmark                                   Time             CPU   Iterations UserCounters...
+---------------------------------------------------------------------------------------------
+BM_CharClassify_Switch                1313101 ns      1289733 ns          540 bytes_per_second=775.354Mi/s
+BM_CharClassify_Table                 1171501 ns      1153291 ns          609 bytes_per_second=867.084Mi/s
+BM_CharClassify_DirectThreaded        4357956 ns      4368478 ns          160 bytes_per_second=228.913Mi/s
+BM_CharClassify_ComputedGoto          4577807 ns      4587362 ns          153 bytes_per_second=217.99Mi/s
+BM_CharClassify_Hybrid                3290386 ns      3296344 ns          214 bytes_per_second=303.366Mi/s
+BM_Tokenizer_Switch_Small                 534 ns          535 ns      1327878 bytes_per_second=1.76193Gi/s
+BM_Tokenizer_Table_Small                  751 ns          752 ns       935233 bytes_per_second=1.25334Gi/s
+BM_Tokenizer_DirectThreaded_Small         879 ns          874 ns       800157 bytes_per_second=1.07882Gi/s
+BM_Tokenizer_ComputedGoto_Small           923 ns          912 ns       759646 bytes_per_second=1.03382Gi/s
+BM_Tokenizer_Switch_Medium              57292 ns        56580 ns        12399 bytes_per_second=1.07837Gi/s
+BM_Tokenizer_Table_Medium               62106 ns        61327 ns        11294 bytes_per_second=1018.79Mi/s
+BM_Tokenizer_DirectThreaded_Medium      89877 ns        89185 ns         7865 bytes_per_second=700.557Mi/s
+BM_Tokenizer_ComputedGoto_Medium        84571 ns        84638 ns         8299 bytes_per_second=738.195Mi/s
+BM_Tokenizer_Switch_Large             1203074 ns      1203928 ns          585 bytes_per_second=830.578Mi/s
+BM_Tokenizer_Table_Large              1382122 ns      1382991 ns          507 bytes_per_second=723.039Mi/s
+BM_Tokenizer_DirectThreaded_Large     1732969 ns      1733902 ns          404 bytes_per_second=576.709Mi/s
+BM_Tokenizer_ComputedGoto_Large       1571909 ns      1572666 ns          444 bytes_per_second=635.835Mi/s
+BM_VM_Switch                             38.8 ns         38.7 ns     18005626
+BM_VM_DirectThreaded                     79.0 ns         78.8 ns      8885101
+BM_VM_ComputedGoto                       32.0 ns         31.9 ns     22008583
