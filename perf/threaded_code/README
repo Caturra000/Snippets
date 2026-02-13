@@ -377,3 +377,38 @@ BM_Tokenizer_ComputedGoto_Large       1571909 ns      1572666 ns          444 by
 BM_VM_Switch                             38.8 ns         38.7 ns     18005626
 BM_VM_DirectThreaded                     79.0 ns         78.8 ns      8885101
 BM_VM_ComputedGoto                       32.0 ns         31.9 ns     22008583
+
+
+json_musttail.cpp+clang20+O3+znver4
+==============================
+Run on (16 X 3792.92 MHz CPU s)
+CPU Caches:
+  L1 Data 32 KiB (x8)
+  L1 Instruction 32 KiB (x8)
+  L2 Unified 1024 KiB (x8)
+  L3 Unified 16384 KiB (x1)
+Load Average: 0.12, 0.12, 0.09
+Test data: small=953B, medium=65473B, large=1048513B
+---------------------------------------------------------------------------------------
+Benchmark                             Time             CPU   Iterations UserCounters...
+---------------------------------------------------------------------------------------
+BM_CharClassify_Table           1156342 ns      1161557 ns          605 bytes_per_second=860.913Mi/s
+BM_CharClassify_Direct          5712439 ns      5735784 ns          122 bytes_per_second=174.344Mi/s
+BM_CharClassify_Musttail        5020608 ns      5039227 ns          140 bytes_per_second=198.443Mi/s
+BM_Tokenizer_Switch_Small           522 ns          524 ns      1329754 bytes_per_second=1.69442Gi/s
+BM_Tokenizer_Direct_Small           861 ns          862 ns       799570 bytes_per_second=1.02955Gi/s
+BM_Tokenizer_Musttail_Small         610 ns          601 ns      1171496 bytes_per_second=1.47785Gi/s
+BM_Tokenizer_Switch_Medium        45013 ns        44295 ns        15536 bytes_per_second=1.3766Gi/s
+BM_Tokenizer_Direct_Medium        91035 ns        89562 ns         7885 bytes_per_second=697.171Mi/s
+BM_Tokenizer_Musttail_Medium      61310 ns        60306 ns        11173 bytes_per_second=1.01111Gi/s
+BM_Tokenizer_Switch_Large       1239623 ns      1241494 ns          569 bytes_per_second=805.433Mi/s
+BM_Tokenizer_Direct_Large       1776030 ns      1778350 ns          392 bytes_per_second=562.285Mi/s
+BM_Tokenizer_Musttail_Large     1226397 ns      1227760 ns          571 bytes_per_second=814.443Mi/s
+BM_VM_Switch                       38.9 ns         39.0 ns     18360346
+BM_VM_ComputedGoto                 32.0 ns         31.8 ns     22064138
+BM_VM_Musttail                     60.9 ns         60.1 ns     11726857
+
+
+json_musttail.cpp+gcc14+O3+znver4
+==============================
+N/A
