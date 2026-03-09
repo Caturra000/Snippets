@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bruce的硬核训练日志 V5 - 终极极客版</title>
+    <style>
+        /* 彻底隐藏整个网页的全局上下滚动条，但保留鼠标滚轮滑动功能 */
+        html { scrollbar-width: none; -ms-overflow-style: none; }
+        html::-webkit-scrollbar { display: none; }
+        
+        :root {
+            --bg-color: #0d1117;
+            --panel-bg: #161b22;
+            --text-main: #c9d1d9;
+            --text-muted: #8b949e;
+            --border-color: #30363d;
+            --accent: #238636;
+            --accent-hover: #2ea043;
+            --danger: #da3633;
+            --quick-fill: #dba61f;
+            --level-0: #161b22;
+            --level-1: #0e4429;
+            --level-2: #006d32;
+            --level-3: #26a641;
+            --level-4: #39d353;
+        }
+
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px 10px; display: flex; justify-content: center; line-height: 1.5; position: relative; }
+        
+        /* 窄版紧凑布局 */
+        .container { max-width: 800px; width: 100%; box-sizing: border-box; }
+        
+        /* 导航 */
+        .tabs { display: flex; border-bottom: 1px solid var(--border-color); margin-bottom: 20px; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
+        .tabs::-webkit-scrollbar { display: none; }
+        .tab { padding: 10px 20px; cursor: pointer; color: var(--text-muted); border-bottom: 2px solid transparent; font-weight: bold; transition: 0.2s; white-space: nowrap; }
+        .tab:hover { color: var(--text-main); }
+        .tab.active { color: var(--text-main); border-bottom-color: #f78166; }
+
+        .panel { display: none; background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 6px; padding: 20px; box-sizing: border-box; }
+        .panel.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        /* 表单与输入 */
+        select, input[type="date"], input[type="text"], input[type="number"] { background: var(--bg-color); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px; border-radius: 4px; box-sizing: border-box; }
+        select { width: 100%; margin-bottom: 15px; font-size: 1em; }
+        button { background-color: var(--accent); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        button:hover { background-color: var(--accent-hover); }
+        .btn-outline { background-color: transparent; border: 1px solid var(--border-color); color: var(--text-main); }
+        .btn-quick { background-color: rgba(219, 166, 31, 0.1); color: var(--quick-fill); border: 1px solid var(--quick-fill); padding: 4px 8px; border-radius: 4px; font-size: 0.8em; margin-left: auto; }
+        .btn-quick:hover { background-color: var(--quick-fill); color: #000; }
+
+        /* 训练项 UI */
+        .exercise-item { border: 1px solid var(--border-color); border-radius: 6px; padding: 15px; margin-bottom: 15px; background: #0d1117; }
+        .exercise-header { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 8px; border-bottom: 1px dashed var(--border-color); padding-bottom: 8px; }
+        .exercise-title { font-weight: bold; font-size: 1.1em; color: #58a6ff; }
+        .exercise-target { font-size: 0.9em; color: var(--text-muted); }
+        .bruce-tip { font-size: 0.85em; color: #d2a8ff; font-style: italic; margin-bottom: 12px; }
+        
+        /* 组数输入区域 */
+        .sets-container { display: flex; flex-direction: column; gap: 10px; }
+        .set-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .set-label { width: 50px; font-size: 0.9em; color: var(--text-muted); }
+        .set-input { width: 80px; text-align: center; flex-grow: 1; max-width: 100px; }
+        .set-unit { color: var(--text-muted); font-size: 0.9em; }
+        .rest-day-check { display: flex; align-items: center; gap: 10px; font-size: 1.1em; cursor: pointer; user-select: none; }
+
+        /* GitHub 风格热力图 - 还原 V3 半隐藏横向滚动条 */
+        .year-selector { display: flex; gap: 10px; margin-bottom: 15px; overflow-x: auto; scrollbar-width: none; }
+        .year-selector::-webkit-scrollbar { display: none; }
+        .year-btn { background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 6px 12px; border-radius: 4px; font-size: 1em; }
+        .year-btn.active { background: var(--accent); color: white; }
+        
+        .heatmap-wrapper { 
+            overflow-x: auto; 
+            padding-bottom: 15px; 
+            scrollbar-width: thin; 
+            scrollbar-color: var(--border-color) transparent; 
+        }
+        /* 强制展示横向滚动条 */
+        .heatmap-wrapper::-webkit-scrollbar { height: 8px; display: block; } 
+        .heatmap-wrapper::-webkit-scrollbar-thumb { background-color: var(--border-color); border-radius: 4px; }
+
+        .heatmap-grid { position: relative; display: grid; grid-template-rows: repeat(7, 14px); grid-auto-flow: column; gap: 4px; width: max-content; }
+        .cell { width: 14px; height: 14px; border-radius: 3px; background-color: var(--level-0); border: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: 0.1s; }
+        .cell[data-level="1"] { background-color: var(--level-1); }
+        .cell[data-level="2"] { background-color: var(--level-2); }
+        .cell[data-level="3"] { background-color: var(--level-3); }
+        .cell[data-level="4"] { background-color: var(--level-4); }
+        .cell:hover { border-color: #fff; transform: scale(1.2); }
+
+        /* 全局 Tooltip 气泡 (解决遮挡问题) */
+        .global-tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.15s;
+            white-space: nowrap;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            border: 1px solid var(--border-color);
+        }
+
+        /* 日志回放区域 */
+        .playback-box { background: #0d1117; border: 1px solid var(--border-color); border-radius: 6px; padding: 15px; margin-top: 20px; display: none; }
+        .playback-set { font-size: 0.9em; color: var(--text-muted); margin-left: 15px; }
+
+        /* 纯 CSS 趋势图 */
+        .trend-chart { display: flex; align-items: flex-end; gap: 8px; height: 150px; margin-top: 30px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
+        .bar-container { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
+        .bar { width: 100%; max-width: 35px; background-color: var(--accent); border-radius: 3px 3px 0 0; transition: height 0.5s; position: relative; }
+        .bar:hover::after { content: attr(data-val); position: absolute; top: -25px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 2px 6px; border-radius: 3px; font-size: 12px; font-weight: bold; z-index: 2;}
+        .month-label { font-size: 12px; color: var(--text-muted); margin-top: 5px; }
+
+        .analysis-box { background: rgba(35, 134, 54, 0.1); border-left: 4px solid var(--accent); padding: 15px; margin-top: 20px; border-radius: 4px; }
+        .warning-box { border-left-color: var(--danger); background: rgba(218, 54, 51, 0.1); }
+
+        /* 移动端适配 */
+        @media (max-width: 600px) {
+            .set-row { justify-content: space-between; }
+            .set-input { width: 30%; flex-grow: 0; }
+            .btn-quick { width: 100%; text-align: center; margin-top: 5px; margin-left: 0; }
+            .panel { padding: 15px 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- 全局悬浮气泡容器 -->
+<div id="global-tooltip" class="global-tooltip"></div>
+
+<div class="container">
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('today')">📝 今日打卡</div>
+        <div class="tab" onclick="switchTab('stats')">📊 统计与回放</div>
+        <div class="tab" onclick="switchTab('data')">💾 数据管理</div>
+    </div>
+
+    <!-- 面板1：今日打卡 -->
+    <div id="today" class="panel active">
+        <h2>🔥 今天的战斗容量</h2>
+        <input type="date" id="date-picker" style="margin-bottom: 15px; width: auto;">
+        
+        <select id="day-selector" onchange="loadDayPlan()">
+            <option value="">-- 选择今天的计划 --</option>
+            <option value="day1">Day 1：绝对力量推日 + 核心激活</option>
+            <option value="day2">Day 2：绝对力量拉日 + 后链轰炸</option>
+            <option value="day3">Day 3：完全休息日 (Eat & Sleep)</option>
+            <option value="day4">Day 4：肌肥大推日 + 单腿折磨</option>
+            <option value="day5">Day 5：肌肥大拉日 + 全身爆发</option>
+        </select>
+
+        <div id="exercise-list"></div>
+        <input type="text" id="daily-note" placeholder="今日总体备注 (状态、饮食等，选填)" style="width:100%; margin-top:15px; display:none;">
+        <button id="save-btn" style="display: none; width: 100%; margin-top: 20px; font-size: 1.1em;" onclick="saveDailyLog()">保存今日容量</button>
+        <div id="daily-feedback" style="margin-top: 15px;"></div>
+    </div>
+
+    <!-- 面板2：统计分析 -->
+    <div id="stats" class="panel">
+        <div class="year-selector" id="year-tabs"></div>
+        
+        <div class="heatmap-wrapper" id="heatmap-scroll-area">
+            <div class="heatmap-grid" id="heatmap"></div>
+        </div>
+        
+        <!-- 回放区域 -->
+        <div id="playback-area" class="playback-box">
+            <h3 id="pb-title" style="margin-top:0; color:#58a6ff;">点击上方的方块查看记录</h3>
+            <div id="pb-content"></div>
+        </div>
+
+        <h3 style="margin-top: 30px;">📈 训练频次趋势 (月度)</h3>
+        <div class="trend-chart" id="trend-chart"></div>
+
+        <h3 style="margin-top: 30px;">Bruce的近期评估：</h3>
+        <div id="ai-analysis">加载中...</div>
+    </div>
+
+    <!-- 面板3：数据管理 -->
+    <div id="data" class="panel">
+        <h2>💾 数据存档</h2>
+        <p style="color: var(--text-muted); font-size: 0.9em;">数据全量保存在你的浏览器中。如果清理浏览器缓存或换电脑，请先导出 JSON 备份。</p>
+        <button onclick="exportJSON()">📥 导出完整数据 (JSON)</button>
+        <div style="margin-top: 20px;">
+            <input type="file" id="import-file" accept=".json" style="display:none" onchange="importJSON(event)">
+            <button class="btn-outline" onclick="document.getElementById('import-file').click()">📤 导入恢复数据 (JSON)</button>
+        </div>
+        <button class="btn-outline" style="color: var(--danger); border-color: var(--danger); margin-top: 40px;" onclick="clearData()">⚠️ 清空本地所有数据</button>
+    </div>
+</div>
+
+<script>
+    // --- 训练计划数据源 ---
+    const workoutPlan = {
+        "day1": [
+            { id: "d1e1", name: "泽奇/高脚杯深蹲", sets: 3, repsDesc: "8-10次", tip: "激素启动器！重点在激活神经。", isCore: true },
+            { id: "d1e2", name: "站姿杠铃推举", sets: 4, repsDesc: "6-8次", tip: "上肢深蹲，夹紧臀部！" },
+            { id: "d1e3", name: "地板卧推", sets: 4, repsDesc: "6-8次", tip: "安全的大重量推胸。" },
+            { id: "d1e4", name: "侧平举", sets: 4, repsDesc: "15-20次", tip: "雕刻肩膀细节。" },
+            { id: "d1e5", name: "窄距俯卧撑", sets: 2, repsDesc: "力竭", tip: "榨干最后一丝力气。" }
+        ],
+        "day2": [
+            { id: "d2e1", name: "传统硬拉", sets: 4, repsDesc: "3-5次", tip: "今日主角！睾酮开关，直击神经！", isCore: true },
+            { id: "d2e2", name: "引体向上", sets: 4, repsDesc: "力竭", tip: "背部的绝对王者。" },
+            { id: "d2e3", name: "杠铃划船", sets: 3, repsDesc: "8-10次", tip: "增加背部厚度。" },
+            { id: "d2e4", name: "杠铃弯举", sets: 3, repsDesc: "10-12次", tip: "控制离心。" },
+            { id: "d2e5", name: "农夫行走", sets: 3, repsDesc: "45-60秒", tip: "拿最重的哑铃走！", isCore: true }
+        ],
+        "day3": [
+            { id: "d3e1", name: "完全休息日", sets: 1, repsDesc: "吃与睡", tip: "肌肉在休息时生长，今天放开吃好睡好。" }
+        ],
+        "day4": [
+            { id: "d4e1", name: "保加利亚分腿蹲", sets: 3, repsDesc: "8-10次", tip: "左腿做完立马右腿，让心率飙升！", isCore: true },
+            { id: "d4e2", name: "上斜哑铃卧推", sets: 4, repsDesc: "10-12次", tip: "主攻上胸。" },
+            { id: "d4e3", name: "哑铃地板飞鸟", sets: 3, repsDesc: "12-15次", tip: "感受胸肌拉伸。" },
+            { id: "d4e4", name: "坐姿哑铃推举", sets: 3, repsDesc: "10-12次", tip: "稳定推举。" },
+            { id: "d4e5", name: "过头臂屈伸", sets: 3, repsDesc: "12-15次", tip: "三头长头拉伸。" }
+        ],
+        "day5": [
+            { id: "d5e1", name: "高翻 / 悬垂翻", sets: 4, repsDesc: "3-5次", tip: "猛烈蹬地，快肌纤维生长的关键。", isCore: true },
+            { id: "d5e2", name: "单臂哑铃划船", sets: 4, repsDesc: "8-12次", tip: "大重量单侧拉伸。" },
+            { id: "d5e3", name: "反手引体向上", sets: 3, repsDesc: "力竭", tip: "背阔下部和二头。" },
+            { id: "d5e4", name: "上斜哑铃弯举", sets: 3, repsDesc: "12次", tip: "长头终结者。" },
+            { id: "d5e5", name: "俯身哑铃飞鸟", sets: 4, repsDesc: "15-20次", tip: "后束体态关键。" }
+        ]
+    };
+
+    let appData = JSON.parse(localStorage.getItem('bruceWorkoutV3')) || {};
+    let currentStatsYear = new Date().getFullYear();
+
+    const todayStr = new Date().toISOString().split('T')[0];
+    document.getElementById('date-picker').value = todayStr;
+
+    // --- UI 交互 ---
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        event.target.classList.add('active');
+        document.getElementById(tabId).classList.add('active');
+
+        if(tabId === 'stats') {
+            renderYearTabs();
+            renderStats(currentStatsYear);
+        }
+    }
+
+    // --- 智能填充逻辑 ---
+    // 仅获取历史重量
+    function getHistoryWeight(exId, setIndex) {
+        const dates = Object.keys(appData).sort((a,b) => new Date(b) - new Date(a));
+        const currentDate = document.getElementById('date-picker').value;
+        for (let d of dates) {
+            if (d === currentDate) continue;
+            const data = appData[d];
+            if (!data.exercises) continue;
+            const ex = data.exercises.find(e => e.id === exId);
+            if (ex && ex.setsData && ex.setsData[setIndex] && ex.setsData[setIndex].weight) {
+                return ex.setsData[setIndex].weight;
+            }
+        }
+        return '';
+    }
+
+    // 解析目标次数（获取正则匹配到的最后一个数字作为上限）
+    function parseTargetReps(repsDesc) {
+        const matches = repsDesc.match(/\d+/g);
+        return matches ? matches[matches.length - 1] : 12; // 如果是“力竭”，保底回退为 12
+    }
+
+    // ⚡ 一键填满：提取历史重量（若空），并强制覆盖所有的次数为上限！
+    window.quickFill = function(exId, defaultRepsStr) {
+        const item = document.querySelector(`.exercise-item[data-id="${exId}"]`);
+        const wInputs = item.querySelectorAll('.set-w');
+        const rInputs = item.querySelectorAll('.set-r');
+        const targetReps = parseTargetReps(defaultRepsStr);
+
+        for(let i = 0; i < wInputs.length; i++) {
+            if(!wInputs[i].value) wInputs[i].value = getHistoryWeight(exId, i);
+            rInputs[i].value = targetReps; // 强制覆盖已有次数
+        }
+    };
+
+    // --- 表单生成 ---
+    function loadDayPlan() {
+        const day = document.getElementById('day-selector').value;
+        const listDiv = document.getElementById('exercise-list');
+        const saveBtn = document.getElementById('save-btn');
+        const noteInput = document.getElementById('daily-note');
+        const feedbackDiv = document.getElementById('daily-feedback');
+        
+        listDiv.innerHTML = '';
+        feedbackDiv.innerHTML = '';
+        noteInput.value = '';
+        
+        if (!day) { 
+            saveBtn.style.display = 'none'; 
+            noteInput.style.display = 'none';
+            return; 
+        }
+
+        const date = document.getElementById('date-picker').value;
+        // 只有当这一天已经有保存记录，且就是当前选择的计划时，才读取数据覆盖
+        const savedData = appData[date] && appData[date].dayType === day ? appData[date] : null;
+
+        let html = '';
+        if (day === 'day3') {
+            const checked = savedData && savedData.score === 100 ? 'checked' : '';
+            html = `<div class="exercise-item">
+                        <label class="rest-day-check">
+                            <input type="checkbox" id="rest-check" style="width:25px;height:25px;" ${checked}>
+                            我今天乖乖休息，补充了足够的营养。
+                        </label>
+                        <div class="bruce-tip" style="margin-top:10px;">" ${workoutPlan.day3[0].tip} "</div>
+                    </div>`;
+        } else {
+            workoutPlan[day].forEach(ex => {
+                let setsHtml = '<div class="sets-container">';
+                for(let i = 0; i < ex.sets; i++) {
+                    let w = '', r = '';
+                    if (savedData) {
+                        // 如果这一天已经保存过，还原手填的重量和次数
+                        const savedEx = savedData.exercises.find(e => e.id === ex.id);
+                        if (savedEx && savedEx.setsData[i]) {
+                            w = savedEx.setsData[i].weight || '';
+                            r = savedEx.setsData[i].reps || '';
+                        }
+                    } else {
+                        // 全新计划：只提取历史重量，不填次数！
+                        w = getHistoryWeight(ex.id, i);
+                    }
+
+                    setsHtml += `
+                        <div class="set-row">
+                            <span class="set-label">第 ${i+1} 组</span>
+                            <input type="number" step="0.5" class="set-input set-w" placeholder="kg" value="${w}">
+                            <span class="set-unit">x</span>
+                            <input type="number" class="set-input set-r" placeholder="次数" value="${r}">
+                            <span class="set-unit">(${ex.repsDesc})</span>
+                        </div>`;
+                }
+                setsHtml += '</div>';
+
+                html += `
+                    <div class="exercise-item" data-id="${ex.id}" data-core="${ex.isCore || false}" data-total-sets="${ex.sets}">
+                        <div class="exercise-header">
+                            <div>
+                                <span class="exercise-title">${ex.name} ${ex.isCore ? '🔥' : ''}</span>
+                                <span class="exercise-target">/ ${ex.sets}组</span>
+                            </div>
+                            <button class="btn-quick" onclick="quickFill('${ex.id}', '${ex.repsDesc}')">⚡ 一键填满</button>
+                        </div>
+                        <div class="bruce-tip">" ${ex.tip} "</div>
+                        ${setsHtml}
+                    </div>
+                `;
+            });
+        }
+        
+        listDiv.innerHTML = html;
+        saveBtn.style.display = 'block';
+        noteInput.style.display = 'block';
+        if (savedData && savedData.note) noteInput.value = savedData.note;
+    }
+
+    document.getElementById('date-picker').addEventListener('change', () => {
+        const date = document.getElementById('date-picker').value;
+        document.getElementById('day-selector').value = appData[date] ? appData[date].dayType : '';
+        loadDayPlan();
+    });
+
+    // --- 数据保存与打分 ---
+    function saveDailyLog() {
+        const date = document.getElementById('date-picker').value;
+        const dayType = document.getElementById('day-selector').value;
+        const note = document.getElementById('daily-note').value;
+        const items = document.querySelectorAll('.exercise-item');
+        
+        let targetTotalSets = 0;
+        let completedTotalSets = 0;
+        let coreMissedName = "";
+        let logs = [];
+
+        if (dayType === 'day3') {
+            const done = document.getElementById('rest-check').checked;
+            appData[date] = { dayType, score: done ? 100 : 0, note, exercises: [] };
+        } else {
+            items.forEach(item => {
+                const id = item.getAttribute('data-id');
+                const isCore = item.getAttribute('data-core') === 'true';
+                const totalSets = parseInt(item.getAttribute('data-total-sets'));
+                const name = item.querySelector('.exercise-title').innerText.replace('🔥', '').trim();
+                
+                targetTotalSets += totalSets;
+                let setsData = [];
+                let setsDoneForThisEx = 0;
+
+                const wInputs = item.querySelectorAll('.set-w');
+                const rInputs = item.querySelectorAll('.set-r');
+
+                for(let i=0; i<totalSets; i++) {
+                    const w = wInputs[i].value;
+                    const r = rInputs[i].value;
+                    setsData.push({ weight: w, reps: r });
+                    if (r !== '' || (w !== '' && w !== '0')) {
+                        setsDoneForThisEx++;
+                        completedTotalSets++;
+                    }
+                }
+
+                logs.push({ id, name, setsData, targetSets: totalSets, completedSets: setsDoneForThisEx });
+                if (isCore && setsDoneForThisEx === 0) coreMissedName = name;
+            });
+
+            const score = Math.round((completedTotalSets / targetTotalSets) * 100);
+            appData[date] = { dayType, score, note, exercises: logs, coreMissed: coreMissedName !== "" };
+        }
+
+        localStorage.setItem('bruceWorkoutV3', JSON.stringify(appData));
+        showFeedback(date);
+
+        const btn = document.getElementById('save-btn');
+        const oldTxt = btn.innerText;
+        btn.innerText = "✅ 数据已存入大脑";
+        btn.style.backgroundColor = "var(--level-4)";
+        setTimeout(() => { btn.innerText = oldTxt; btn.style.backgroundColor = "var(--accent)"; }, 2000);
+    }
+
+    function showFeedback(date) {
+        const data = appData[date];
+        const feedbackDiv = document.getElementById('daily-feedback');
+        if(data.score === 0) { feedbackDiv.innerHTML = ''; return; }
+
+        let fbHtml = "";
+        if (data.dayType === 'day3') {
+            fbHtml = `<div class="analysis-box">Bruce: “休息也是计划的一部分。合成代谢正在进行。”</div>`;
+        } else if (data.coreMissed) {
+            fbHtml = `<div class="analysis-box warning-box">Bruce: “嘿！你居然跳过了核心动作？容量再高，没有地基刺激，激素水平也上不去！”</div>`;
+        } else if (data.score === 100) {
+            fbHtml = `<div class="analysis-box">Bruce: “完美！所有的组都吃下了。去补充碳水吧！”</div>`;
+        } else if (data.score >= 60) {
+            fbHtml = `<div class="analysis-box">Bruce: “完成了 ${data.score}% 的容量。留得青山在，下次试着补齐。”</div>`;
+        } else {
+            fbHtml = `<div class="analysis-box warning-box">Bruce: “只完成了不到一半？不要让数字欺骗你，要对得起你流的汗。”</div>`;
+        }
+        feedbackDiv.innerHTML = fbHtml;
+    }
+
+    // --- 统计与渲染 ---
+    function renderYearTabs() {
+        const years = new Set(Object.keys(appData).map(d => d.split('-')[0]));
+        years.add(new Date().getFullYear().toString()); 
+        
+        const container = document.getElementById('year-tabs');
+        container.innerHTML = Array.from(years).sort().reverse().map(y => 
+            `<button class="year-btn ${y == currentStatsYear ? 'active' : ''}" onclick="changeYear('${y}')">${y}</button>`
+        ).join('');
+    }
+
+    function changeYear(year) {
+        currentStatsYear = year;
+        renderYearTabs();
+        renderStats(year);
+        document.getElementById('playback-area').style.display = 'none';
+    }
+
+    function renderStats(year) {
+        const heatmap = document.getElementById('heatmap');
+        heatmap.innerHTML = '';
+        
+        const startDate = new Date(year, 0, 1);
+        const endDate = new Date(year, 11, 31);
+        const startDayOfWeek = startDate.getDay();
+
+        // 填充年初空白
+        for(let i=0; i<startDayOfWeek; i++) {
+            const empty = document.createElement('div');
+            empty.className = 'cell';
+            empty.style.visibility = 'hidden';
+            heatmap.appendChild(empty);
+        }
+
+        // 绑定全局悬浮气泡逻辑
+        const globalTooltip = document.getElementById('global-tooltip');
+
+        // 填充全年
+        let d = new Date(startDate);
+        while(d <= endDate) {
+            const dateStr = d.toISOString().split('T')[0];
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            cell.setAttribute('data-date', dateStr); 
+            
+            let level = 0;
+            let info = dateStr + " - 无记录";
+            
+            if (appData[dateStr]) {
+                const score = appData[dateStr].score;
+                const type = appData[dateStr].dayType.toUpperCase();
+                if(appData[dateStr].dayType === 'day3') {
+                    level = 1;
+                    info = `${dateStr} - 休息日`;
+                } else if(score > 0) {
+                    if (score === 100) level = 4;
+                    else if (score >= 75) level = 3;
+                    else if (score >= 40) level = 2;
+                    else level = 1;
+                    info = `${dateStr} - 容量完成: ${score}%`;
+                }
+            }
+            
+            cell.setAttribute('data-level', level);
+            
+            // 鼠标移入显示全局气泡
+            cell.addEventListener('mouseenter', () => {
+                globalTooltip.innerText = info;
+                const rect = cell.getBoundingClientRect();
+                // 定位在格子的正上方
+                globalTooltip.style.left = (rect.left + window.scrollX + (rect.width / 2) - (globalTooltip.offsetWidth / 2)) + 'px';
+                globalTooltip.style.top = (rect.top + window.scrollY - globalTooltip.offsetHeight - 8) + 'px';
+                globalTooltip.style.opacity = '1';
+            });
+            // 鼠标移出隐藏全局气泡
+            cell.addEventListener('mouseleave', () => {
+                globalTooltip.style.opacity = '0';
+            });
+
+            cell.onclick = () => showPlayback(dateStr);
+            heatmap.appendChild(cell);
+            
+            d.setDate(d.getDate() + 1);
+        }
+
+        // --- 彻底修复：将当天的格子完美居中显示 ---
+        setTimeout(() => {
+            const wrapper = document.getElementById('heatmap-scroll-area');
+            let targetCell = document.querySelector(`.cell[data-date="${todayStr}"]`);
+            if (!targetCell) {
+                const allCells = document.querySelectorAll('.cell[data-date]');
+                targetCell = allCells[allCells.length - 1]; // 如果不是本年，定位到年末
+            }
+            if (targetCell) {
+                // targetCell.offsetLeft 是基于相对定位的 .heatmap-grid 的精确坐标
+                const centerPos = targetCell.offsetLeft - (wrapper.clientWidth / 2) + (targetCell.clientWidth / 2);
+                wrapper.scrollTo({ left: centerPos, behavior: 'smooth' });
+            }
+        }, 150);
+
+        renderTrendChart(year);
+        generateAnalysis(year);
+    }
+
+    // --- 日志回放 ---
+    function showPlayback(dateStr) {
+        const pbArea = document.getElementById('playback-area');
+        const title = document.getElementById('pb-title');
+        const content = document.getElementById('pb-content');
+        
+        pbArea.style.display = 'block';
+        
+        if(!appData[dateStr] || appData[dateStr].score === 0) {
+            title.innerText = `📅 ${dateStr} - 无记录`;
+            title.style.color = "var(--text-muted)";
+            content.innerHTML = "<p>这天什么都没留下。</p>";
+            return;
+        }
+
+        const data = appData[dateStr];
+        title.innerText = `📅 ${dateStr} - ${document.querySelector(`option[value="${data.dayType}"]`).innerText}`;
+        title.style.color = "#58a6ff";
+        
+        if (data.dayType === 'day3') {
+            content.innerHTML = "<p>✅ 乖乖按计划执行了休息与营养补充。</p>";
+            return;
+        }
+
+        let html = `<p><strong>容量完成度：</strong><span style="color:var(--level-4)">${data.score}%</span></p>`;
+        if (data.note) html += `<p><strong>备注：</strong>${data.note}</p>`;
+        html += '<hr style="border-color:var(--border-color); margin: 15px 0;">';
+
+        data.exercises.forEach(ex => {
+            html += `<div style="margin-bottom: 12px;">
+                        <strong>${ex.name}</strong> (${ex.completedSets}/${ex.targetSets} 组)
+                        <div style="margin-top: 4px;">`;
+            if(ex.completedSets === 0) {
+                html += `<span class="playback-set" style="color:var(--danger)">未执行</span>`;
+            } else {
+                ex.setsData.forEach((set, idx) => {
+                    if(set.weight !== '' || set.reps !== '') {
+                        const w = set.weight ? `${set.weight}kg` : `自重`;
+                        const r = set.reps ? `${set.reps}次` : `?次`;
+                        html += `<span class="playback-set">[第${idx+1}组] ${w} x ${r}</span><br>`;
+                    }
+                });
+            }
+            html += `</div></div>`;
+        });
+
+        content.innerHTML = html;
+        pbArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // --- 趋势图与分析 ---
+    function renderTrendChart(year) {
+        const chart = document.getElementById('trend-chart');
+        chart.innerHTML = '';
+        
+        const monthData = new Array(12).fill(0);
+        Object.keys(appData).forEach(date => {
+            if(date.startsWith(year) && appData[date].dayType !== 'day3' && appData[date].score > 0) {
+                const month = parseInt(date.split('-')[1]) - 1;
+                monthData[month]++;
+            }
+        });
+
+        const maxDays = 25; 
+        monthData.forEach((days, idx) => {
+            const height = Math.min((days / maxDays) * 100, 100);
+            chart.innerHTML += `
+                <div class="bar-container">
+                    <div class="bar" style="height: ${height}%" data-val="${days}天"></div>
+                    <div class="month-label">${idx + 1}月</div>
+                </div>
+            `;
+        });
+    }
+
+    function generateAnalysis(year) {
+        const aiDiv = document.getElementById('ai-analysis');
+        let workoutDays = 0, totalScore = 0;
+        
+        Object.keys(appData).forEach(d => {
+            if(d.startsWith(year) && appData[d].dayType !== 'day3' && appData[d].score > 0) {
+                workoutDays++; totalScore += appData[d].score;
+            }
+        });
+
+        if(workoutDays === 0) { aiDiv.innerHTML = "<p>今年还没有记录。种一棵树最好的时间是十年前，其次是现在。</p>"; return; }
+
+        const avgScore = Math.round(totalScore / workoutDays);
+        let html = `<div class="analysis-box">
+            <strong>${year}年数据总览：</strong><br>
+            全年打卡训练 (不含纯休息日)：<span style="color:var(--accent); font-size:1.2em; font-weight:bold">${workoutDays}</span> 天<br>
+            平均容量完成度：<span style="color:var(--accent); font-size:1.2em; font-weight:bold">${avgScore}%</span>
+        </div>`;
+        aiDiv.innerHTML = html;
+    }
+
+    // --- 数据管理 ---
+    function exportJSON() {
+        const dataStr = JSON.stringify(appData, null, 2);
+        const blob = new Blob([dataStr], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `bruce_v5_log_${new Date().toISOString().split('T')[0]}.json`;
+        a.click(); URL.revokeObjectURL(url);
+    }
+
+    function importJSON(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const imported = JSON.parse(e.target.result);
+                appData = { ...appData, ...imported };
+                localStorage.setItem('bruceWorkoutV3', JSON.stringify(appData));
+                alert("✅ 数据导入成功！"); location.reload();
+            } catch (err) { alert("❌ 文件格式错误！"); }
+        };
+        reader.readAsText(file);
+    }
+
+    function clearData() {
+        if(confirm("⚠️ 确定要清空？如果没有备份 JSON，数据将永远消失。")) {
+            localStorage.removeItem('bruceWorkoutV3'); location.reload();
+        }
+    }
+
+    // 初始加载
+    if(appData[todayStr]) {
+        document.getElementById('day-selector').value = appData[todayStr].dayType;
+        loadDayPlan();
+    }
+</script>
+</body>
+</html>
