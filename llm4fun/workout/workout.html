@@ -5,11 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bruce的硬核训练日志</title>
     <style>
-        /* 隐藏全局滚动条 */
         html { scrollbar-width: none; -ms-overflow-style: none; }
         html::-webkit-scrollbar { display: none; }
         
-        /* 主题色变量 */
         :root {
             --bg-color: #0d1117;
             --panel-bg: #161b22;
@@ -27,10 +25,14 @@
             --level-4: #39d353;
         }
 
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px 10px; display: flex; justify-content: center; line-height: 1.5; position: relative; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px 10px; display: flex; justify-content: center; line-height: 1.5; }
         .container { max-width: 800px; width: 100%; box-sizing: border-box; }
         
-        /* 导航标签 */
+        /* 去除数字输入框的上下箭头 */
+        input[type=number]::-webkit-outer-spin-button,
+        input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+
         .tabs { display: flex; border-bottom: 1px solid var(--border-color); margin-bottom: 20px; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
         .tabs::-webkit-scrollbar { display: none; }
         .tab { padding: 10px 20px; cursor: pointer; color: var(--text-muted); border-bottom: 2px solid transparent; font-weight: bold; transition: 0.2s; white-space: nowrap; }
@@ -41,7 +43,6 @@
         .panel.active { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
-        /* 表单基础样式 */
         select, input[type="date"], input[type="text"], input[type="number"] { background: var(--bg-color); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px; border-radius: 4px; box-sizing: border-box; }
         select { width: 100%; margin-bottom: 15px; font-size: 1em; cursor: pointer; }
         button { background-color: var(--accent); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; }
@@ -52,12 +53,6 @@
         .btn-danger { background-color: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 4px 8px; font-size: 0.8em;}
         .btn-danger:hover { background-color: var(--danger); color: white; }
 
-        /* 隐藏数字输入框的默认调节箭头 */
-        input[type="number"]::-webkit-outer-spin-button,
-        input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        input[type="number"] { -moz-appearance: textfield; }
-
-        /* 训练项 UI */
         .exercise-item { border: 1px solid var(--border-color); border-radius: 6px; padding: 15px; margin-bottom: 15px; background: #0d1117; }
         .exercise-header { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 8px; border-bottom: 1px dashed var(--border-color); padding-bottom: 8px; }
         .exercise-title { font-weight: bold; font-size: 1.1em; color: #58a6ff; }
@@ -70,14 +65,12 @@
         .set-unit { color: var(--text-muted); font-size: 0.9em; }
         .rest-day-check { display: flex; align-items: center; gap: 10px; font-size: 1.1em; cursor: pointer; user-select: none; }
 
-        /* 编辑页 UI */
         .edit-meta-box { background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 6px; padding: 15px; margin-bottom: 20px; }
         .edit-card { border: 1px solid var(--border-color); background: #0d1117; border-radius: 6px; padding: 15px; margin-bottom: 15px; position: relative;}
         .edit-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; flex-wrap: wrap;}
         .edit-row label { display: flex; align-items: center; gap: 5px; font-size: 0.9em; cursor: pointer; color: var(--text-main);}
         .edit-card input[type="text"] { flex: 1; min-width: 150px;}
 
-        /* 热力图 */
         .year-selector { display: flex; gap: 10px; margin-bottom: 15px; overflow-x: auto; scrollbar-width: none; }
         .year-selector::-webkit-scrollbar { display: none; }
         .year-btn { background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 6px 12px; border-radius: 4px; font-size: 1em; }
@@ -94,10 +87,8 @@
         .cell[data-level="4"] { background-color: var(--level-4); }
         .cell:hover { border-color: #fff; transform: scale(1.2); }
 
-        /* 全局悬浮气泡 */
         .global-tooltip { position: fixed; background: rgba(0, 0, 0, 0.9); color: #fff; padding: 6px 10px; border-radius: 4px; font-size: 12px; pointer-events: none; z-index: 9999; opacity: 0; transition: opacity 0.15s; white-space: nowrap; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 1px solid var(--border-color); }
 
-        /* 分析与回放 */
         .playback-box { background: #0d1117; border: 1px solid var(--border-color); border-radius: 6px; padding: 15px; margin-top: 20px; display: none; }
         .playback-set { font-size: 0.9em; color: var(--text-muted); margin-left: 15px; }
         .trend-chart { display: flex; align-items: flex-end; gap: 8px; height: 150px; margin-top: 30px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
@@ -108,8 +99,7 @@
         .analysis-box { background: rgba(35, 134, 54, 0.1); border-left: 4px solid var(--accent); padding: 15px; margin-top: 20px; border-radius: 4px; }
         .warning-box { border-left-color: var(--danger); background: rgba(218, 54, 51, 0.1); }
 
-        /* 加载过渡层 */
-        #loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); display: flex; align-items: center; justify-content: center; z-index: 10000; font-size: 1.2em; font-weight: bold; color: var(--text-muted); transition: opacity 0.3s; }
+        #loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); display: flex; align-items: center; justify-content: center; z-index: 10000; font-size: 1.2em; font-weight: bold; color: var(--accent); transition: opacity 0.3s; }
 
         @media (max-width: 600px) {
             .set-row { justify-content: space-between; }
@@ -121,7 +111,7 @@
 </head>
 <body>
 
-<div id="loading-screen">加载中...</div>
+<div id="loading-screen">加载训练数据...</div>
 <div id="global-tooltip" class="global-tooltip"></div>
 
 <div class="container">
@@ -132,7 +122,7 @@
         <div class="tab" onclick="switchTab('data', this)">💾 数据管理</div>
     </div>
 
-    <!-- 面板1：今日打卡 -->
+    <!-- 打卡面板 -->
     <div id="today" class="panel active">
         <h2>🔥 今天的战斗容量</h2>
         <input type="date" id="date-picker" style="margin-bottom: 15px; width: auto;">
@@ -145,7 +135,7 @@
         <div id="daily-feedback" style="margin-top: 15px;"></div>
     </div>
 
-    <!-- 面板2：统计分析 -->
+    <!-- 统计面板 -->
     <div id="stats" class="panel">
         <div class="year-selector" id="year-tabs"></div>
         <div class="heatmap-wrapper" id="heatmap-scroll-area">
@@ -157,14 +147,14 @@
         </div>
         <h3 style="margin-top: 30px;">📈 训练频次趋势 (月度)</h3>
         <div class="trend-chart" id="trend-chart"></div>
-        <h3 style="margin-top: 30px;">Bruce 的近期评估：</h3>
+        <h3 style="margin-top: 30px;">近期评估：</h3>
         <div id="ai-analysis">加载中...</div>
     </div>
 
-    <!-- 面板3：编辑计划 -->
+    <!-- 计划编辑面板 -->
     <div id="edit" class="panel">
-        <h2>⚙️ 自由定制每周循环</h2>
-        <p style="color:var(--text-muted); font-size:0.9em;">在此重塑你的训练分化表。修改此处<b>不会影响</b>过去的打卡历史。</p>
+        <h2>⚙️ 训练矩阵定制</h2>
+        <p style="color:var(--text-muted); font-size:0.9em;">完全重塑你的分化表。修改此处<b>不影响</b>过去的历史打卡快照。</p>
         
         <select id="edit-day-selector" onchange="loadEditPlan()"></select>
 
@@ -175,7 +165,7 @@
             </div>
             <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--accent);">
                 <input type="checkbox" id="ed-day-isrest" onchange="toggleEditRestDay()" style="width:18px;height:18px; accent-color: var(--accent);">
-                <b>将这一天设为【休息日 / 自定义有氧日】(无需记录容量)</b>
+                <b>将这一天设为【休息日 / 有氧日】(不记录容量)</b>
             </label>
         </div>
 
@@ -191,26 +181,26 @@
         <div id="edit-feedback" style="margin-top: 15px; color: var(--level-4); font-weight: bold;"></div>
     </div>
 
-    <!-- 面板4：数据管理 -->
+    <!-- 数据管理面板 -->
     <div id="data" class="panel">
-        <h2>💾 数据存档与恢复</h2>
-        <p style="color: var(--text-muted); font-size: 0.9em;">所有数据均安全地保存在您的设备本地。建议定期导出备份，以便在更换设备或清理浏览器缓存时恢复。</p>
-        <button onclick="exportJSON()">📥 导出完整备份 (JSON)</button>
+        <h2>💾 数据存档与迁移</h2>
+        <p style="color: var(--text-muted); font-size: 0.9em;">数据存储在本地。为了防止清理浏览器缓存导致丢失，请定期导出完整数据备份。</p>
+        <button onclick="exportJSON()">📥 导出完整数据 (JSON)</button>
         <div style="margin-top: 20px;">
             <input type="file" id="import-file" accept=".json" style="display:none" onchange="importJSON(event)">
             <button class="btn-outline" onclick="document.getElementById('import-file').click()">📤 导入恢复数据 (JSON)</button>
         </div>
-        <button class="btn-outline" style="color: var(--danger); border-color: var(--danger); margin-top: 40px;" onclick="clearData()">⚠️ 清空所有本地数据</button>
+        <button class="btn-outline" style="color: var(--danger); border-color: var(--danger); margin-top: 40px;" onclick="clearData()">⚠️ 清空本地所有数据</button>
     </div>
 </div>
 
 <script>
-    // ==========================================
-    // 1. 本地数据库驱动 (IndexedDB)
-    // ==========================================
-    const DB_NAME = 'BruceWorkoutData';
+    // =========================================================================
+    // 数据库与工具库
+    // =========================================================================
+    const DB_NAME = 'HardcoreLogDB';
     const STORE_NAME = 'store';
-
+    
     function openDB() {
         return new Promise((resolve, reject) => {
             const req = indexedDB.open(DB_NAME, 1);
@@ -223,7 +213,8 @@
     async function dbGet(key) {
         const db = await openDB();
         return new Promise((resolve, reject) => {
-            const req = db.transaction(STORE_NAME, 'readonly').objectStore(STORE_NAME).get(key);
+            const tx = db.transaction(STORE_NAME, 'readonly');
+            const req = tx.objectStore(STORE_NAME).get(key);
             req.onsuccess = () => resolve(req.result);
             req.onerror = () => reject(req.error);
         });
@@ -233,25 +224,11 @@
         const db = await openDB();
         return new Promise((resolve, reject) => {
             const tx = db.transaction(STORE_NAME, 'readwrite');
-            if (value === null || value === undefined) {
-                tx.objectStore(STORE_NAME).delete(key).onsuccess = () => resolve();
-            } else {
-                tx.objectStore(STORE_NAME).put(value, key).onsuccess = () => resolve();
-            }
+            if (value === null) tx.objectStore(STORE_NAME).delete(key).onsuccess = () => resolve();
+            else tx.objectStore(STORE_NAME).put(value, key).onsuccess = () => resolve();
         });
     }
 
-    async function dbClear() {
-        return new Promise((resolve, reject) => {
-            const req = indexedDB.deleteDatabase(DB_NAME);
-            req.onsuccess = () => resolve();
-            req.onerror = () => reject();
-        });
-    }
-
-    // ==========================================
-    // 2. 工具与核心逻辑函数
-    // ==========================================
     function esc(s) { 
         if (!s) return "";
         const d = document.createElement('div'); 
@@ -268,44 +245,49 @@
     }
 
     function isRestDayLog(data) {
-        return data && data.exercises && data.exercises.length === 0;
+        if (!data) return false;
+        return (data.exercises && data.exercises.length === 0);
     }
 
-    // ==========================================
-    // 3. 初始状态与预设数据
-    // ==========================================
+    // =========================================================================
+    // 默认初始计划 (基于 Bruce 硬核原则)
+    // =========================================================================
     const defaultWorkoutPlan = {
-        "day1": { title: "Day 1：绝对力量推日", isRest: false, exercises: [
-            { id: "d1e1", name: "泽奇/高脚杯深蹲", sets: 3, repsDesc: "8-10次", tip: "激素启动器！重点在激活神经。", isCore: true },
-            { id: "d1e2", name: "站姿杠铃推举", sets: 4, repsDesc: "6-8次", tip: "上肢深蹲，夹紧臀部！", isCore: false },
-            { id: "d1e3", name: "地板卧推", sets: 4, repsDesc: "6-8次", tip: "安全的大重量推胸。", isCore: false },
-            { id: "d1e4", name: "侧平举", sets: 4, repsDesc: "15-20次", tip: "雕刻肩膀细节。", isCore: false },
-            { id: "d1e5", name: "窄距俯卧撑", sets: 2, repsDesc: "力竭", tip: "榨干最后一丝力气。", isCore: false }
+        "day1": { title: "Day 1：推 A", isRest: false, exercises: [
+            { id: "d1e1", name: "站姿杠铃推肩", sets: 4, repsDesc: "6-8次", tip: "全身绷紧，腿夹臀。若clean技术不行，改大重量坐姿哑铃推肩。", isCore: true },
+            { id: "d1e2", name: "上斜哑铃卧推", sets: 3, repsDesc: "8-10次", tip: "肩部优先时胸部辅助即可。感受肌肉的收缩。", isCore: false },
+            { id: "d1e3", name: "哑铃地板卧推", sets: 3, repsDesc: "10-12次", tip: "无牵张反射，纯肌肉力量启动。顶端抗阻才是王道，扔掉垃圾飞鸟动作。", isCore: false },
+            { id: "d1e4", name: "倾斜哑铃侧平举", sets: 4, repsDesc: "12-15次", tip: "一手扶墙身体外倾，底端即受力。慢上2秒慢下3秒，榨干每一丝纤维。", isCore: false },
+            { id: "d1e5", name: "哑铃碎颅者", sets: 3, repsDesc: "10-12次", tip: "起止点在脑袋后方，保持三头扭矩。三头长头首选，用你的最大重量。", isCore: false },
+            { id: "d1e6", name: "哑铃保加利亚分腿蹲", sets: 3, repsDesc: "10-12次", tip: "无需深蹲架，股四和臀部的极强刺激。咬紧牙关，撑过去。", isCore: true }
         ]},
-        "day2": { title: "Day 2：绝对力量拉日", isRest: false, exercises: [
-            { id: "d2e1", name: "传统硬拉", sets: 4, repsDesc: "3-5次", tip: "今日主角！睾酮开关，直击神经！", isCore: true },
-            { id: "d2e2", name: "引体向上", sets: 4, repsDesc: "力竭", tip: "背部的绝对王者。", isCore: false },
-            { id: "d2e3", name: "杠铃划船", sets: 3, repsDesc: "8-10次", tip: "增加背部厚度。", isCore: false },
-            { id: "d2e4", name: "杠铃弯举", sets: 3, repsDesc: "10-12次", tip: "控制离心。", isCore: false },
-            { id: "d2e5", name: "农夫行走", sets: 3, repsDesc: "45-60秒", tip: "拿最重的哑铃走！", isCore: true }
+        "day2": { title: "Day 2：拉 A", isRest: false, exercises: [
+            { id: "d2e1", name: "宽握硬拉", sets: 3, repsDesc: "6-8次", tip: "今日主角！使用助力带和腰带，腰椎全程中立。6-8次兼顾力量和肌肥大。", isCore: true },
+            { id: "d2e2", name: "负重正手引体向上", sets: 4, repsDesc: "5-8次", tip: "不用助力带。含肩胛下压，身体微倾。背部的绝对王者。", isCore: true },
+            { id: "d2e3", name: "杠铃划船", sets: 3, repsDesc: "8-10次", tip: "背部力量远大于握力，必须用助力带，别让小臂限制了你的背部刺激。", isCore: false },
+            { id: "d2e4", name: "俯身哑铃飞鸟", sets: 3, repsDesc: "12-15次", tip: "顶端有意识做肩外旋。外旋是后束主要功能之一，雕刻细节。", isCore: false },
+            { id: "d2e5", name: "杠铃弯举 (EZ杆)", sets: 3, repsDesc: "8-10次", tip: "身体不摇晃才是技术力竭的标准，严格控制离心。", isCore: false },
+            { id: "d2e6", name: "哑铃锤式弯举", sets: 3, repsDesc: "10-12次", tip: "对握持铃，主攻肱肌和肱桡肌，让手臂更有立体感。", isCore: false }
         ]},
-        "day3": { title: "Day 3：完全休息日", isRest: true, exercises: [] },
-        "day4": { title: "Day 4：肌肥大推日", isRest: false, exercises: [
-            { id: "d4e1", name: "保加利亚分腿蹲", sets: 3, repsDesc: "8-10次", tip: "左腿做完立马右腿，让心率飙升！", isCore: true },
-            { id: "d4e2", name: "上斜哑铃卧推", sets: 4, repsDesc: "10-12次", tip: "主攻上胸。", isCore: false },
-            { id: "d4e3", name: "哑铃地板飞鸟", sets: 3, repsDesc: "12-15次", tip: "感受胸肌拉伸。", isCore: false },
-            { id: "d4e4", name: "坐姿哑铃推举", sets: 3, repsDesc: "10-12次", tip: "稳定推举。", isCore: false },
-            { id: "d4e5", name: "过头臂屈伸", sets: 3, repsDesc: "12-15次", tip: "三头长头拉伸。", isCore: false }
+        "day3": { title: "Day 3：休息", isRest: true, exercises: [] },
+        "day4": { title: "Day 4：推 B", isRest: false, exercises: [
+            { id: "d4e1", name: "哑铃卧推", sets: 4, repsDesc: "8-10次", tip: "全程控制触胸。推不起来时翻转至身侧放下，安全第一。", isCore: false },
+            { id: "d4e2", name: "坐姿哑铃推肩 (对握)", sets: 3, repsDesc: "10-12次", tip: "对握是对肩关节压力最小的握法。中等重量慢速控制，下至耳朵下方。", isCore: false },
+            { id: "d4e3", name: "吕小军飞鸟", sets: 3, repsDesc: "力竭", tip: "全程离心收缩最长，兼顾中束增肌与肩袖健康。用轻重量感受极致控制。", isCore: false },
+            { id: "d4e4", name: "单臂哑铃颈后臂屈伸", sets: 3, repsDesc: "10-12次", tip: "单臂行程更大，切记肩部不要借力，孤立刺激。", isCore: false },
+            { id: "d4e5", name: "窄距俯卧撑", sets: 2, repsDesc: "力竭", tip: "科学证明，窄距对三头和胸大肌的刺激均强于宽距。做到起不来为止。", isCore: false },
+            { id: "d4e6", name: "哑铃行走弓步", sets: 3, repsDesc: "10-12次", tip: "与保加利亚蹲交替，确保股四的每周容量。迈开大步，稳住核心。", isCore: true }
         ]},
-        "day5": { title: "Day 5：肌肥大拉日", isRest: false, exercises: [
-            { id: "d5e1", name: "高翻 / 悬垂翻", sets: 4, repsDesc: "3-5次", tip: "猛烈蹬地，快肌纤维生长的关键。", isCore: true },
-            { id: "d5e2", name: "单臂哑铃划船", sets: 4, repsDesc: "8-12次", tip: "大重量单侧拉伸。", isCore: false },
-            { id: "d5e3", name: "反手引体向上", sets: 3, repsDesc: "力竭", tip: "背阔下部和二头。", isCore: false },
-            { id: "d5e4", name: "上斜哑铃弯举", sets: 3, repsDesc: "12次", tip: "长头终结者。", isCore: false },
-            { id: "d5e5", name: "俯身哑铃飞鸟", sets: 4, repsDesc: "15-20次", tip: "后束体态关键。", isCore: false }
+        "day5": { title: "Day 5：拉 B", isRest: false, exercises: [
+            { id: "d5e1", name: "反手引体向上", sets: 3, repsDesc: "8-12次", tip: "二头最好的复合动作。不用助力带。可负重或自重高次数。", isCore: true },
+            { id: "d5e2", name: "哑铃RDL", sets: 3, repsDesc: "12-15次", tip: "较轻重量高次数，与传统硬拉形成轻重互补。注意髋铰链的发力。", isCore: true },
+            { id: "d5e3", name: "上斜哑铃划船", sets: 3, repsDesc: "10-12次", tip: "胸靠椅面，完全消除脊柱负荷，在RDL之后纯粹地孤立背阔肌。", isCore: false },
+            { id: "d5e4", name: "上斜哑铃弯举", sets: 3, repsDesc: "10-12次", tip: "底端拉伸极强，底端拉伸更长的弯举增粗更多。控制下放。", isCore: false },
+            { id: "d5e5", name: "哑铃腕弯举", sets: 2, repsDesc: "15-20次", tip: "站姿垂于身侧，下降到指尖增加行程，榨干小臂。", isCore: false },
+            { id: "d5e6", name: "农夫行走", sets: 2, repsDesc: "60-90秒", tip: "握力训练王牌！距下次拉日有3天恢复，走到握不住为止！", isCore: true }
         ]},
-        "day6": { title: "Day 6：自定义安排 (预留)", isRest: true, exercises: [] },
-        "day7": { title: "Day 7：自定义安排 (预留)", isRest: true, exercises: [] }
+        "day6": { title: "Day 6：自定义", isRest: true, exercises: [] },
+        "day7": { title: "Day 7：自定义", isRest: true, exercises: [] }
     };
 
     let appData = {};
@@ -313,13 +295,13 @@
     let currentStatsYear = String(new Date().getFullYear());
     const todayStr = toLocalDateStr();
 
+    // =========================================================================
+    // 系统初始化
+    // =========================================================================
     window.onload = async () => {
         try {
-            const savedLogs = await dbGet('logs');
-            const savedPlan = await dbGet('plan');
-
-            appData = savedLogs || {};
-            currentWorkoutPlan = savedPlan || JSON.parse(JSON.stringify(defaultWorkoutPlan));
+            appData = (await dbGet('appData_logs')) || {};
+            currentWorkoutPlan = (await dbGet('appData_plan')) || JSON.parse(JSON.stringify(defaultWorkoutPlan));
 
             document.getElementById('date-picker').value = todayStr;
             updateSelectOptions();
@@ -335,13 +317,13 @@
             loadingScreen.style.opacity = '0';
             setTimeout(() => loadingScreen.style.display = 'none', 300);
         } catch (e) {
-            document.getElementById('loading-screen').innerHTML = "加载失败，请确保浏览器支持本地存储。";
+            document.getElementById('loading-screen').innerHTML = "加载失败，请确保存储权限已开启。";
         }
     };
 
-    // ==========================================
-    // 4. UI 交互与通用功能
-    // ==========================================
+    // =========================================================================
+    // 核心 UI 控制与打卡逻辑
+    // =========================================================================
     function updateSelectOptions() {
         const trackerSelect = document.getElementById('day-selector');
         const editSelect = document.getElementById('edit-day-selector');
@@ -383,9 +365,6 @@
         }
     }
 
-    // ==========================================
-    // 5. 今日打卡模块
-    // ==========================================
     function getHistoryWeight(exId, setIndex) {
         const dates = Object.keys(appData).sort((a,b) => new Date(b) - new Date(a));
         const currentDate = document.getElementById('date-picker').value;
@@ -445,7 +424,7 @@
             html = `<div class="exercise-item" style="border-color: var(--accent);">
                         <label class="rest-day-check">
                             <input type="checkbox" id="rest-check" style="width:25px;height:25px;" ${checked}>
-                            我今天完成了休息或有氧安排。
+                            我今天乖乖休息/完成了有氧安排。
                         </label>
                         <div class="bruce-tip" style="margin-top:10px;">" 肌肉是在休息时生长的，不要有负罪感。 "</div>
                     </div>`;
@@ -482,7 +461,7 @@
                                 <span class="exercise-title">${esc(ex.name)} ${ex.isCore ? '🔥' : ''}</span>
                                 <span class="exercise-target">/ ${ex.sets}组</span>
                             </div>
-                            <button class="btn-quick" onclick="quickFill('${ex.id}', '${esc(ex.repsDesc)}')">⚡ 一键填满</button>
+                            <button class="btn-quick" onclick="quickFill('${ex.id}', '${esc(ex.repsDesc)}')">⚡ 填满</button>
                         </div>
                         <div class="bruce-tip">" ${esc(ex.tip)} "</div>
                         ${setsHtml}
@@ -552,12 +531,12 @@
             appData[date] = { dayType, title: dayTitle, score, note, exercises: logs, coreMissed: coreMissedName !== "" };
         }
 
-        await dbSet('logs', appData);
+        await dbSet('appData_logs', appData);
         showFeedback(date);
 
         const btn = document.getElementById('save-btn');
         const oldTxt = btn.innerText;
-        btn.innerText = "✅ 记录已保存";
+        btn.innerText = "✅ 数据已保存";
         btn.style.backgroundColor = "var(--level-4)";
         setTimeout(() => { btn.innerText = oldTxt; btn.style.backgroundColor = "var(--accent)"; }, 2000);
     }
@@ -571,9 +550,9 @@
         if (isRestDayLog(data)) {
             fbHtml = `<div class="analysis-box">Bruce: “很好的执行力，休息也是计划的一部分。”</div>`;
         } else if (data.coreMissed) {
-            fbHtml = `<div class="analysis-box warning-box">Bruce: “嘿！你跳过了核心动作？容量再高，没有地基刺激，效果也会大打折扣！”</div>`;
+            fbHtml = `<div class="analysis-box warning-box">Bruce: “嘿！你居然跳过了核心动作？容量再高，没有地基刺激，激素水平也上不去！”</div>`;
         } else if (data.score === 100) {
-            fbHtml = `<div class="analysis-box">Bruce: “完美！所有的组都吃下了。去补充营养吧！”</div>`;
+            fbHtml = `<div class="analysis-box">Bruce: “完美！所有的组都吃下了。去补充碳水吧！”</div>`;
         } else if (data.score >= 60) {
             fbHtml = `<div class="analysis-box">Bruce: “完成了 ${data.score}% 的容量。留得青山在，下次试着补齐。”</div>`;
         } else {
@@ -582,9 +561,9 @@
         feedbackDiv.innerHTML = fbHtml;
     }
 
-    // ==========================================
-    // 6. 编辑计划模块
-    // ==========================================
+    // =========================================================================
+    // 编辑计划逻辑
+    // =========================================================================
     function toggleEditRestDay() {
         const isRest = document.getElementById('ed-day-isrest').checked;
         document.getElementById('edit-exercise-wrapper').style.display = isRest ? 'none' : 'block';
@@ -618,7 +597,7 @@
                     <input type="text" class="ed-reps" value="${esc(ex.repsDesc)}" placeholder="如: 8-10次">
                 </div>
                 <div class="edit-row" style="margin-bottom:0;">
-                    <input type="text" class="ed-tip" value="${esc(ex.tip)}" placeholder="提示或要点 (选填)" style="width:100%; font-size:0.9em;">
+                    <input type="text" class="ed-tip" value="${esc(ex.tip)}" placeholder="教练骚话或要点 (选填)" style="width:100%; font-size:0.9em;">
                 </div>
             `;
             container.appendChild(el);
@@ -644,7 +623,7 @@
                 <input type="text" class="ed-reps" value="8-12次" placeholder="如: 8-10次">
             </div>
             <div class="edit-row" style="margin-bottom:0;">
-                <input type="text" class="ed-tip" value="" placeholder="提示或要点 (选填)" style="width:100%; font-size:0.9em;">
+                <input type="text" class="ed-tip" value="" placeholder="教练提示 (选填)" style="width:100%; font-size:0.9em;">
             </div>
         `;
         container.appendChild(el);
@@ -672,27 +651,27 @@
 
         currentWorkoutPlan[day] = { title: title, isRest: isRest, exercises: newExercises };
         
-        await dbSet('plan', currentWorkoutPlan);
+        await dbSet('appData_plan', currentWorkoutPlan);
         updateSelectOptions(); 
         
         const fb = document.getElementById('edit-feedback');
-        fb.innerText = `✅ [${esc(title)}] 计划已更新！`;
+        fb.innerText = `✅ [${esc(title)}] 已保存！`;
         setTimeout(() => fb.innerText = '', 3000);
     }
 
     async function restoreDefaultPlan() {
-        if(confirm("⚠️ 是否恢复为初始的预设计划？这不会影响您的打卡历史记录。")) {
-            await dbSet('plan', null); 
+        if(confirm("⚠️ 恢复默认训练计划！你的历史打卡记录不会受影响。确定恢复吗？")) {
+            await dbSet('appData_plan', null); 
             currentWorkoutPlan = JSON.parse(JSON.stringify(defaultWorkoutPlan));
             updateSelectOptions();
             loadEditPlan();
-            alert("已恢复默认计划。");
+            alert("已成功恢复默认计划。");
         }
     }
 
-    // ==========================================
-    // 7. 统计与分析模块
-    // ==========================================
+    // =========================================================================
+    // 统计分析与日历视图
+    // =========================================================================
     function renderYearTabs() {
         const years = new Set(Object.keys(appData).map(d => d.split('-')[0]));
         years.add(String(new Date().getFullYear())); 
@@ -797,7 +776,7 @@
         if(!appData[dateStr] || appData[dateStr].score === 0) {
             title.innerText = `📅 ${dateStr} - 无记录`;
             title.style.color = "var(--text-muted)";
-            content.innerHTML = "<p>这一天没有留下记录。</p>";
+            content.innerHTML = "<p>这一天像风一样消散了，什么都没留下。</p>";
             return;
         }
 
@@ -808,12 +787,12 @@
         title.style.color = "#58a6ff";
         
         if (isRestDayLog(data)) {
-            content.innerHTML = "<p>✅ 这一天，您选择了休息或进行了其他活动。</p>";
+            content.innerHTML = "<p>✅ 这一天，你选择了休息或有氧，让身体进行恢复。</p>";
             if (data.note) content.innerHTML += `<p><strong>备注：</strong>${esc(data.note)}</p>`;
             return;
         }
 
-        let html = `<p><strong>完成度：</strong><span style="color:var(--level-4)">${data.score}%</span></p>`;
+        let html = `<p><strong>容量完成度：</strong><span style="color:var(--level-4)">${data.score}%</span></p>`;
         if (data.note) html += `<p><strong>备注：</strong>${esc(data.note)}</p>`;
         html += '<hr style="border-color:var(--border-color); margin: 15px 0;">';
 
@@ -871,18 +850,18 @@
                 workoutDays++; totalScore += data.score;
             }
         });
-        if(workoutDays === 0) { aiDiv.innerHTML = "<p>今年还没有训练记录，开始您的第一次打卡吧。</p>"; return; }
+        if(workoutDays === 0) { aiDiv.innerHTML = "<p>今年还没有容量记录。种一棵树最好的时间是十年前，其次是现在。</p>"; return; }
         const avgScore = Math.round(totalScore / workoutDays);
         aiDiv.innerHTML = `<div class="analysis-box">
             <strong>${esc(year)}年数据总览：</strong><br>
             全年有效训练 (不含纯休息日)：<span style="color:var(--accent); font-size:1.2em; font-weight:bold">${workoutDays}</span> 天<br>
-            平均计划完成度：<span style="color:var(--accent); font-size:1.2em; font-weight:bold">${avgScore}%</span>
+            平均容量完成度：<span style="color:var(--accent); font-size:1.2em; font-weight:bold">${avgScore}%</span>
         </div>`;
     }
 
-    // ==========================================
-    // 8. 导入与导出模块
-    // ==========================================
+    // =========================================================================
+    // 数据导入导出
+    // =========================================================================
     function exportJSON() {
         const exportPackage = {
             logs: appData,
@@ -893,7 +872,7 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `Workout_Backup_${toLocalDateStr()}.json`;
+        a.download = `hardcore_log_${toLocalDateStr()}.json`;
         a.click(); URL.revokeObjectURL(url);
     }
 
@@ -904,27 +883,30 @@
         reader.onload = async function(e) {
             try {
                 const imported = JSON.parse(e.target.result);
-                if (imported.logs && imported.customPlan) {
-                    appData = imported.logs;
-                    currentWorkoutPlan = imported.customPlan;
-                    await dbSet('logs', appData);
-                    await dbSet('plan', currentWorkoutPlan);
-                    alert("✅ 数据导入成功！"); 
-                    location.reload();
+                if (imported.logs) {
+                    appData = { ...appData, ...imported.logs };
+                    if (imported.customPlan) {
+                        currentWorkoutPlan = imported.customPlan;
+                        await dbSet('appData_plan', currentWorkoutPlan);
+                    }
                 } else {
-                    alert("❌ 文件格式不兼容，无法解析。");
+                    appData = { ...appData, ...imported };
                 }
-            } catch (err) { alert("❌ 文件读取失败，请检查文件是否损坏。"); }
+                await dbSet('appData_logs', appData);
+                alert("✅ 数据导入成功！"); location.reload();
+            } catch (err) { alert("❌ 文件格式错误！"); }
         };
         reader.readAsText(file);
     }
 
     async function clearData() {
-        if(confirm("⚠️ 此操作不可逆！\n如果您没有导出备份，所有记录和计划将被彻底删除。\n确认清空吗？")) {
-            await dbClear(); 
+        if(confirm("⚠️ 确定要清空？如果没有备份 JSON，数据将永远消失。")) {
+            await dbSet('appData_logs', null);
+            await dbSet('appData_plan', null);
             location.reload();
         }
     }
+
 </script>
 </body>
 </html>
