@@ -28,7 +28,6 @@
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px 10px; display: flex; justify-content: center; line-height: 1.5; }
         .container { max-width: 800px; width: 100%; box-sizing: border-box; }
         
-        /* 去除数字输入框的上下箭头 */
         input[type=number]::-webkit-outer-spin-button,
         input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
@@ -122,7 +121,6 @@
         <div class="tab" onclick="switchTab('data', this)">💾 数据管理</div>
     </div>
 
-    <!-- 打卡面板 -->
     <div id="today" class="panel active">
         <h2>🔥 今天的战斗容量</h2>
         <input type="date" id="date-picker" style="margin-bottom: 15px; width: auto;">
@@ -135,7 +133,6 @@
         <div id="daily-feedback" style="margin-top: 15px;"></div>
     </div>
 
-    <!-- 统计面板 -->
     <div id="stats" class="panel">
         <div class="year-selector" id="year-tabs"></div>
         <div class="heatmap-wrapper" id="heatmap-scroll-area">
@@ -151,10 +148,10 @@
         <div id="ai-analysis">加载中...</div>
     </div>
 
-    <!-- 计划编辑面板 -->
     <div id="edit" class="panel">
         <h2>⚙️ 训练矩阵定制</h2>
         <p style="color:var(--text-muted); font-size:0.9em;">完全重塑你的分化表。修改此处<b>不影响</b>过去的历史打卡快照。</p>
+        <p style="color:var(--text-muted); font-size:0.85em; margin-top:-8px;">提示：只是改动作名会默认保留历史重量继承；如果你想把它视为全新动作，请删除旧动作后重新新增。</p>
         
         <select id="edit-day-selector" onchange="loadEditPlan()"></select>
 
@@ -181,7 +178,6 @@
         <div id="edit-feedback" style="margin-top: 15px; color: var(--level-4); font-weight: bold;"></div>
     </div>
 
-    <!-- 数据管理面板 -->
     <div id="data" class="panel">
         <h2>💾 数据存档与迁移</h2>
         <p style="color: var(--text-muted); font-size: 0.9em;">数据存储在本地。为了防止清理浏览器缓存导致丢失，请定期导出完整数据备份。</p>
@@ -195,25 +191,35 @@
 </div>
 
 <script>
-    // =========================================================================
-    // 数据库与工具库
-    // =========================================================================
     const DB_NAME = 'HardcoreLogDB';
     const STORE_NAME = 'store';
-    
+    let dbPromise = null;
+
     function openDB() {
-        return new Promise((resolve, reject) => {
+        if (dbPromise) return dbPromise;
+        dbPromise = new Promise((resolve, reject) => {
             const req = indexedDB.open(DB_NAME, 1);
-            req.onupgradeneeded = e => { e.target.result.createObjectStore(STORE_NAME); };
+            req.onupgradeneeded = e => {
+                const db = e.target.result;
+                if (!db.objectStoreNames.contains(STORE_NAME)) {
+                    db.createObjectStore(STORE_NAME);
+                }
+            };
             req.onsuccess = () => resolve(req.result);
-            req.onerror = () => reject(req.error);
+            req.onerror = () => {
+                dbPromise = null;
+                reject(req.error);
+            };
         });
+        return dbPromise;
     }
 
     async function dbGet(key) {
         const db = await openDB();
         return new Promise((resolve, reject) => {
             const tx = db.transaction(STORE_NAME, 'readonly');
+            tx.onerror = () => reject(tx.error);
+            tx.onabort = () => reject(tx.error);
             const req = tx.objectStore(STORE_NAME).get(key);
             req.onsuccess = () => resolve(req.result);
             req.onerror = () => reject(req.error);
@@ -224,16 +230,27 @@
         const db = await openDB();
         return new Promise((resolve, reject) => {
             const tx = db.transaction(STORE_NAME, 'readwrite');
-            if (value === null) tx.objectStore(STORE_NAME).delete(key).onsuccess = () => resolve();
-            else tx.objectStore(STORE_NAME).put(value, key).onsuccess = () => resolve();
+            tx.oncomplete = () => resolve();
+            tx.onerror = () => reject(tx.error);
+            tx.onabort = () => reject(tx.error);
+            const store = tx.objectStore(STORE_NAME);
+            if (value === null) store.delete(key);
+            else store.put(value, key);
         });
     }
 
-    function esc(s) { 
-        if (!s) return "";
-        const d = document.createElement('div'); 
-        d.textContent = s; 
-        return d.innerHTML; 
+    function esc(s) {
+        if (s === null || s === undefined) return "";
+        return String(s)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function deepClone(obj) {
+        return JSON.parse(JSON.stringify(obj));
     }
 
     function toLocalDateStr(dateObj) {
@@ -244,14 +261,33 @@
         return `${y}-${m}-${day}`;
     }
 
-    function isRestDayLog(data) {
-        if (!data) return false;
-        return (data.exercises && data.exercises.length === 0);
+    function inferMeasureType(repsDesc) {
+        const s = String(repsDesc || '').trim();
+        if (!s) return 'reps';
+        if (s.includes('力竭')) return 'amrap';
+        if (/[秒分]/.test(s)) return 'time';
+        return 'reps';
     }
 
-    // =========================================================================
-    // 默认初始计划 (基于 Bruce 硬核原则)
-    // =========================================================================
+    function parseTargetValue(repsDesc) {
+        const type = inferMeasureType(repsDesc);
+        if (type !== 'reps') return '';
+        const matches = String(repsDesc || '').match(/\d+/g);
+        return matches ? matches[matches.length - 1] : '';
+    }
+
+    function isRestDayLog(data) {
+        if (!data) return false;
+        if (typeof data.isRest === 'boolean') return data.isRest;
+        return Array.isArray(data.exercises) && data.exercises.length === 0;
+    }
+
+    function hasSetActivity(w, r) {
+        const weightVal = String(w ?? '').trim();
+        const repsVal = String(r ?? '').trim();
+        return repsVal !== '' || (weightVal !== '' && weightVal !== '0');
+    }
+
     const defaultWorkoutPlan = {
         "day1": { title: "Day 1：推 A", isRest: false, exercises: [
             { id: "d1e1", name: "站姿杠铃推肩", sets: 4, repsDesc: "6-8次", tip: "全身绷紧，腿夹臀。若clean技术不行，改大重量坐姿哑铃推肩。", isCore: true },
@@ -290,25 +326,111 @@
         "day7": { title: "Day 7：自定义", isRest: true, exercises: [] }
     };
 
+    function normalizePlan(plan) {
+        const merged = deepClone(defaultWorkoutPlan);
+        if (!plan || typeof plan !== 'object' || Array.isArray(plan)) return merged;
+
+        for (let i = 1; i <= 7; i++) {
+            const k = 'day' + i;
+            const src = plan[k];
+            if (!src || typeof src !== 'object' || Array.isArray(src)) continue;
+
+            merged[k].title = (typeof src.title === 'string' && src.title.trim()) ? src.title.trim() : merged[k].title;
+            merged[k].isRest = !!src.isRest;
+
+            if (Array.isArray(src.exercises)) {
+                merged[k].exercises = src.exercises.map((ex, idx) => {
+                    const exObj = (ex && typeof ex === 'object' && !Array.isArray(ex)) ? ex : {};
+                    return {
+                        id: (typeof exObj.id === 'string' && exObj.id.trim()) ? exObj.id.trim() : `${k}_ex_${idx + 1}`,
+                        name: (typeof exObj.name === 'string' && exObj.name.trim()) ? exObj.name.trim() : `动作 ${idx + 1}`,
+                        sets: Math.min(20, Math.max(1, parseInt(exObj.sets, 10) || 1)),
+                        repsDesc: (typeof exObj.repsDesc === 'string' && exObj.repsDesc.trim()) ? exObj.repsDesc.trim() : '力竭',
+                        tip: typeof exObj.tip === 'string' ? exObj.tip : '',
+                        isCore: !!exObj.isCore
+                    };
+                });
+            }
+        }
+        return merged;
+    }
+
+    function normalizeLogs(logs) {
+        if (!logs || typeof logs !== 'object' || Array.isArray(logs)) return {};
+        const out = {};
+        for (const [date, value] of Object.entries(logs)) {
+            if (/^\d{4}-\d{2}-\d{2}$/.test(date) && value && typeof value === 'object' && !Array.isArray(value)) {
+                out[date] = value;
+            }
+        }
+        return out;
+    }
+
     let appData = {};
     let currentWorkoutPlan = {};
     let currentStatsYear = String(new Date().getFullYear());
     const todayStr = toLocalDateStr();
+    let currentRenderedPlan = null;
 
-    // =========================================================================
-    // 系统初始化
-    // =========================================================================
-    window.onload = async () => {
+    function getPlanExercise(dayType, exId) {
+        const dayPlan = currentWorkoutPlan[dayType];
+        if (!dayPlan || !Array.isArray(dayPlan.exercises)) return null;
+        return dayPlan.exercises.find(ex => ex.id === exId) || null;
+    }
+
+    function getPlanTitleFromData(data) {
+        if (!data) return '未知计划';
+        return data.title || (currentWorkoutPlan[data.dayType] ? currentWorkoutPlan[data.dayType].title : '未知计划');
+    }
+
+    function buildRenderedPlan(day, savedData) {
+        const livePlan = deepClone(currentWorkoutPlan[day] || defaultWorkoutPlan[day] || { title: '未知计划', isRest: false, exercises: [] });
+
+        if (!savedData || savedData.dayType !== day) return livePlan;
+
+        if (isRestDayLog(savedData)) {
+            return {
+                title: savedData.title || livePlan.title,
+                isRest: true,
+                exercises: []
+            };
+        }
+
+        if (Array.isArray(savedData.exercises) && savedData.exercises.length > 0) {
+            return {
+                title: savedData.title || livePlan.title,
+                isRest: false,
+                exercises: savedData.exercises.map((ex, idx) => {
+                    const matched = getPlanExercise(day, ex.id) || {};
+                    const setsFromLog = parseInt(ex.targetSets, 10) || (Array.isArray(ex.weights) ? Math.max(ex.weights.length, (ex.reps || []).length) : 0) || parseInt(matched.sets, 10) || 1;
+                    return {
+                        id: ex.id || `legacy_${day}_${idx + 1}`,
+                        name: ex.name || matched.name || `动作 ${idx + 1}`,
+                        sets: setsFromLog,
+                        repsDesc: matched.repsDesc || '',
+                        measureType: ex.measureType || matched.measureType || inferMeasureType(matched.repsDesc),
+                        tip: matched.tip || '',
+                        isCore: typeof matched.isCore === 'boolean' ? matched.isCore : false
+                    };
+                })
+            };
+        }
+
+        return livePlan;
+    }
+
+    window.addEventListener('load', async () => {
         try {
-            appData = (await dbGet('appData_logs')) || {};
-            currentWorkoutPlan = (await dbGet('appData_plan')) || JSON.parse(JSON.stringify(defaultWorkoutPlan));
+            appData = normalizeLogs((await dbGet('appData_logs')) || {});
+            currentWorkoutPlan = normalizePlan(await dbGet('appData_plan'));
 
             document.getElementById('date-picker').value = todayStr;
             updateSelectOptions();
-            if(appData[todayStr]) {
+
+            if (appData[todayStr] && appData[todayStr].dayType) {
                 document.getElementById('day-selector').value = appData[todayStr].dayType;
             }
-            
+
             loadDayPlan();
             renderYearTabs();
             renderStats(currentStatsYear);
@@ -317,13 +439,11 @@
             loadingScreen.style.opacity = '0';
             setTimeout(() => loadingScreen.style.display = 'none', 300);
         } catch (e) {
+            console.error(e);
             document.getElementById('loading-screen').innerHTML = "加载失败，请确保存储权限已开启。";
         }
-    };
+    });
 
-    // =========================================================================
-    // 核心 UI 控制与打卡逻辑
-    // =========================================================================
     function updateSelectOptions() {
         const trackerSelect = document.getElementById('day-selector');
         const editSelect = document.getElementById('edit-day-selector');
@@ -333,9 +453,10 @@
         let tHtml = '<option value="">-- 选择今天的计划 --</option>';
         let eHtml = '';
         
-        for(let i=1; i<=7; i++) {
-            let k = 'day'+i;
-            let title = esc(currentWorkoutPlan[k].title);
+        for (let i = 1; i <= 7; i++) {
+            const k = 'day' + i;
+            const plan = currentWorkoutPlan[k] || defaultWorkoutPlan[k];
+            const title = esc(plan.title);
             tHtml += `<option value="${k}">${title}</option>`;
             eHtml += `<option value="${k}">编辑：${title}</option>`;
         }
@@ -344,8 +465,8 @@
         editSelect.innerHTML = eHtml;
         
         if (tVal) trackerSelect.value = tVal;
-        if (eVal) editSelect.value = eVal;  
-        if (!editSelect.value) editSelect.value = 'day1'; 
+        if (eVal) editSelect.value = eVal;
+        if (!editSelect.value) editSelect.value = 'day1';
     }
 
     function switchTab(tabId, tabEl) {
@@ -354,48 +475,52 @@
         tabEl.classList.add('active');
         document.getElementById(tabId).classList.add('active');
 
-        if(tabId === 'stats') {
+        if (tabId === 'stats') {
             renderYearTabs();
             renderStats(currentStatsYear);
         } else if (tabId === 'edit') {
             loadEditPlan();
         } else if (tabId === 'today') {
             updateSelectOptions();
-            loadDayPlan(); 
+            loadDayPlan();
         }
     }
 
     function getHistoryWeight(exId, setIndex) {
-        const dates = Object.keys(appData).sort((a,b) => new Date(b) - new Date(a));
+        const dates = Object.keys(appData).filter(d => /^\d{4}-\d{2}-\d{2}$/.test(d)).sort().reverse();
         const currentDate = document.getElementById('date-picker').value;
-        for (let d of dates) {
-            if (d === currentDate) continue;
+        for (const d of dates) {
+            if (d >= currentDate) continue;
             const data = appData[d];
-            if (!data.exercises) continue;
+            if (!Array.isArray(data.exercises)) continue;
             const ex = data.exercises.find(e => e.id === exId);
-            if (ex && ex.setsData && ex.setsData[setIndex] && ex.setsData[setIndex].weight) {
-                return ex.setsData[setIndex].weight;
+            if (ex && Array.isArray(ex.weights) && ex.weights[setIndex] !== undefined && ex.weights[setIndex] !== null) {
+                return ex.weights[setIndex];
             }
         }
         return '';
     }
 
-    function parseTargetReps(repsDesc) {
-        const matches = repsDesc.match(/\d+/g);
-        return matches ? matches[matches.length - 1] : 12; 
-    }
-
     window.quickFill = function(exId, defaultRepsStr) {
-        const item = document.querySelector(`.exercise-item[data-id="${exId}"]`);
+        const item = document.querySelector(`.exercise-item[data-id="${CSS.escape(exId)}"]`);
+        if (!item) return;
         const wInputs = item.querySelectorAll('.set-w');
         const rInputs = item.querySelectorAll('.set-r');
-        const targetReps = parseTargetReps(defaultRepsStr);
+        const targetValue = parseTargetValue(defaultRepsStr);
 
-        for(let i = 0; i < wInputs.length; i++) {
-            if(!wInputs[i].value) wInputs[i].value = getHistoryWeight(exId, i);
-            rInputs[i].value = targetReps; 
+        for (let i = 0; i < wInputs.length; i++) {
+            if (!wInputs[i].value) wInputs[i].value = getHistoryWeight(exId, i);
+            if (targetValue !== '') rInputs[i].value = targetValue;
         }
     };
+
+    function bindTodayButtons() {
+        document.querySelectorAll('.js-quick-fill').forEach(btn => {
+            btn.addEventListener('click', () => {
+                quickFill(btn.dataset.exid, btn.dataset.repsdesc);
+            });
+        });
+    }
 
     function loadDayPlan() {
         const day = document.getElementById('day-selector').value;
@@ -407,16 +532,18 @@
         listDiv.innerHTML = '';
         feedbackDiv.innerHTML = '';
         noteInput.value = '';
+        currentRenderedPlan = null;
         
-        if (!day) { 
-            saveBtn.style.display = 'none'; 
+        if (!day || !currentWorkoutPlan[day]) {
+            saveBtn.style.display = 'none';
             noteInput.style.display = 'none';
-            return; 
+            return;
         }
 
         const date = document.getElementById('date-picker').value;
         const savedData = appData[date] && appData[date].dayType === day ? appData[date] : null;
-        const planObj = currentWorkoutPlan[day];
+        const planObj = buildRenderedPlan(day, savedData);
+        currentRenderedPlan = planObj;
 
         let html = '';
         if (planObj.isRest) {
@@ -430,14 +557,17 @@
                     </div>`;
         } else {
             planObj.exercises.forEach(ex => {
+                const measureType = ex.measureType || inferMeasureType(ex.repsDesc);
+                const resultPlaceholder = measureType === 'time' ? '秒' : '次数';
                 let setsHtml = '<div class="sets-container">';
-                for(let i = 0; i < ex.sets; i++) {
+
+                for (let i = 0; i < ex.sets; i++) {
                     let w = '', r = '';
-                    if (savedData) {
+                    if (savedData && Array.isArray(savedData.exercises)) {
                         const savedEx = savedData.exercises.find(e => e.id === ex.id);
-                        if (savedEx && savedEx.setsData[i]) {
-                            w = esc(savedEx.setsData[i].weight);
-                            r = esc(savedEx.setsData[i].reps);
+                        if (savedEx) {
+                            if (Array.isArray(savedEx.weights) && savedEx.weights[i] !== undefined) w = savedEx.weights[i];
+                            if (Array.isArray(savedEx.reps) && savedEx.reps[i] !== undefined) r = savedEx.reps[i];
                         }
                     } else {
                         w = getHistoryWeight(ex.id, i);
@@ -445,23 +575,23 @@
 
                     setsHtml += `
                         <div class="set-row">
-                            <span class="set-label">第 ${i+1} 组</span>
-                            <input type="number" step="0.5" class="set-input set-w" placeholder="kg" value="${w}">
+                            <span class="set-label">第 ${i + 1} 组</span>
+                            <input type="number" step="0.5" min="0" class="set-input set-w" placeholder="kg" value="${esc(w)}">
                             <span class="set-unit">x</span>
-                            <input type="number" class="set-input set-r" placeholder="次数" value="${r}">
+                            <input type="number" step="1" min="0" class="set-input set-r" placeholder="${resultPlaceholder}" value="${esc(r)}">
                             <span class="set-unit">(${esc(ex.repsDesc)})</span>
                         </div>`;
                 }
                 setsHtml += '</div>';
 
                 html += `
-                    <div class="exercise-item" data-id="${ex.id}" data-core="${ex.isCore || false}" data-total-sets="${ex.sets}">
+                    <div class="exercise-item" data-id="${esc(ex.id)}" data-core="${ex.isCore || false}" data-total-sets="${ex.sets}" data-measure="${measureType}" data-repsdesc="${esc(ex.repsDesc)}">
                         <div class="exercise-header">
                             <div>
                                 <span class="exercise-title">${esc(ex.name)} ${ex.isCore ? '🔥' : ''}</span>
                                 <span class="exercise-target">/ ${ex.sets}组</span>
                             </div>
-                            <button class="btn-quick" onclick="quickFill('${ex.id}', '${esc(ex.repsDesc)}')">⚡ 填满</button>
+                            <button type="button" class="btn-quick js-quick-fill" data-exid="${esc(ex.id)}" data-repsdesc="${esc(ex.repsDesc)}">⚡ 填满</button>
                         </div>
                         <div class="bruce-tip">" ${esc(ex.tip)} "</div>
                         ${setsHtml}
@@ -471,9 +601,13 @@
         }
         
         listDiv.innerHTML = html;
+        bindTodayButtons();
+
         saveBtn.style.display = 'block';
         noteInput.style.display = 'block';
         if (savedData && savedData.note) noteInput.value = savedData.note;
+
+        if (savedData) showFeedback(date);
     }
 
     document.getElementById('date-picker').addEventListener('change', () => {
@@ -484,17 +618,32 @@
 
     async function saveDailyLog() {
         const dayType = document.getElementById('day-selector').value;
-        if (!dayType || !currentWorkoutPlan[dayType]) return; 
+        if (!dayType || !currentWorkoutPlan[dayType]) return;
 
         const date = document.getElementById('date-picker').value;
         const note = document.getElementById('daily-note').value;
-        const items = document.querySelectorAll('.exercise-item');
-        const dayTitle = currentWorkoutPlan[dayType].title; 
-        
-        if (currentWorkoutPlan[dayType].isRest) {
+        const renderedPlan = currentRenderedPlan || buildRenderedPlan(dayType, null);
+        const dayTitle = renderedPlan.title || currentWorkoutPlan[dayType].title || '未知计划';
+
+        if (renderedPlan.isRest) {
             const done = document.getElementById('rest-check').checked;
-            appData[date] = { dayType, title: dayTitle, score: done ? 100 : 0, note, exercises: [] };
+            appData[date] = {
+                dayType,
+                title: dayTitle,
+                isRest: true,
+                score: done ? 100 : 0,
+                note,
+                exercises: []
+            };
         } else {
+            const items = document.querySelectorAll('.exercise-item');
+            const feedbackDiv = document.getElementById('daily-feedback');
+
+            if (items.length === 0) {
+                feedbackDiv.innerHTML = `<div class="analysis-box warning-box">当前计划没有动作，请先去“计划定制”里补充动作后再保存。</div>`;
+                return;
+            }
+
             let targetTotalSets = 0;
             let completedTotalSets = 0;
             let coreMissedName = "";
@@ -503,32 +652,58 @@
             items.forEach(item => {
                 const id = item.getAttribute('data-id');
                 const isCore = item.getAttribute('data-core') === 'true';
-                const totalSets = parseInt(item.getAttribute('data-total-sets'));
+                const totalSets = parseInt(item.getAttribute('data-total-sets'), 10) || 1;
+                const measureType = item.getAttribute('data-measure') || 'reps';
                 const name = item.querySelector('.exercise-title').innerText.replace('🔥', '').trim();
-                
+
                 targetTotalSets += totalSets;
-                let setsData = [];
+                
+                let weights = [];
+                let reps = [];
                 let setsDoneForThisEx = 0;
+                let lastActiveIndex = -1;
 
                 const wInputs = item.querySelectorAll('.set-w');
                 const rInputs = item.querySelectorAll('.set-r');
 
-                for(let i=0; i<totalSets; i++) {
+                for (let i = 0; i < totalSets; i++) {
                     const w = wInputs[i].value;
                     const r = rInputs[i].value;
-                    setsData.push({ weight: w, reps: r });
-                    if (r !== '' || (w !== '' && w !== '0')) {
+                    weights.push(w);
+                    reps.push(r);
+                    if (hasSetActivity(w, r)) {
                         setsDoneForThisEx++;
                         completedTotalSets++;
+                        lastActiveIndex = i;
                     }
                 }
 
-                logs.push({ id, name, setsData, targetSets: totalSets, completedSets: setsDoneForThisEx });
+                weights = weights.slice(0, lastActiveIndex + 1);
+                reps = reps.slice(0, lastActiveIndex + 1);
+
+                logs.push({
+                    id,
+                    name,
+                    measureType,
+                    weights,
+                    reps,
+                    targetSets: totalSets,
+                    completedSets: setsDoneForThisEx
+                });
+
                 if (isCore && setsDoneForThisEx === 0) coreMissedName = name;
             });
 
             const score = targetTotalSets === 0 ? 0 : Math.round((completedTotalSets / targetTotalSets) * 100);
-            appData[date] = { dayType, title: dayTitle, score, note, exercises: logs, coreMissed: coreMissedName !== "" };
+            appData[date] = {
+                dayType,
+                title: dayTitle,
+                isRest: false,
+                score,
+                note,
+                exercises: logs,
+                coreMissed: coreMissedName !== ""
+            };
         }
 
         await dbSet('appData_logs', appData);
@@ -538,17 +713,29 @@
         const oldTxt = btn.innerText;
         btn.innerText = "✅ 数据已保存";
         btn.style.backgroundColor = "var(--level-4)";
-        setTimeout(() => { btn.innerText = oldTxt; btn.style.backgroundColor = "var(--accent)"; }, 2000);
+        setTimeout(() => {
+            btn.innerText = oldTxt;
+            btn.style.backgroundColor = "var(--accent)";
+        }, 2000);
     }
 
     function showFeedback(date) {
         const data = appData[date];
         const feedbackDiv = document.getElementById('daily-feedback');
-        if(!data || data.score === 0) { feedbackDiv.innerHTML = ''; return; }
+        if (!data) {
+            feedbackDiv.innerHTML = '';
+            return;
+        }
 
         let fbHtml = "";
         if (isRestDayLog(data)) {
-            fbHtml = `<div class="analysis-box">Bruce: “很好的执行力，休息也是计划的一部分。”</div>`;
+            if (data.score === 100) {
+                fbHtml = `<div class="analysis-box">Bruce: “很好的执行力，休息也是计划的一部分。”</div>`;
+            } else {
+                fbHtml = `<div class="analysis-box warning-box">Bruce: “这天被设成了休息/有氧日，但你还没勾选完成。恢复也要认真对待。”</div>`;
+            }
+        } else if (data.score === 0) {
+            fbHtml = `<div class="analysis-box warning-box">Bruce: “记录保存了，但今天没有完成任何有效组。下次别让空表格赢了你。”</div>`;
         } else if (data.coreMissed) {
             fbHtml = `<div class="analysis-box warning-box">Bruce: “嘿！你居然跳过了核心动作？容量再高，没有地基刺激，激素水平也上不去！”</div>`;
         } else if (data.score === 100) {
@@ -561,9 +748,6 @@
         feedbackDiv.innerHTML = fbHtml;
     }
 
-    // =========================================================================
-    // 编辑计划逻辑
-    // =========================================================================
     function toggleEditRestDay() {
         const isRest = document.getElementById('ed-day-isrest').checked;
         document.getElementById('edit-exercise-wrapper').style.display = isRest ? 'none' : 'block';
@@ -572,6 +756,7 @@
     function loadEditPlan() {
         const day = document.getElementById('edit-day-selector').value;
         const planObj = currentWorkoutPlan[day];
+        if (!planObj) return;
         
         document.getElementById('ed-day-title').value = planObj.title;
         document.getElementById('ed-day-isrest').checked = planObj.isRest;
@@ -588,7 +773,7 @@
                 <div class="edit-row">
                     <input type="text" class="ed-name" value="${esc(ex.name)}" placeholder="动作名称" style="font-weight:bold;">
                     <label><input type="checkbox" class="ed-core" ${ex.isCore ? 'checked' : ''}> 🔥核心</label>
-                    <button class="btn-danger" onclick="this.parentElement.parentElement.remove()" style="margin-left:auto;">删除</button>
+                    <button class="btn-danger" type="button" onclick="this.closest('.edit-card').remove()" style="margin-left:auto;">删除</button>
                 </div>
                 <div class="edit-row">
                     <span style="color:var(--text-muted); font-size:0.9em;">目标组数:</span>
@@ -609,12 +794,12 @@
         const container = document.getElementById('edit-exercise-list');
         const el = document.createElement('div');
         el.className = 'edit-card';
-        el.setAttribute('data-id', 'custom_' + Date.now());
+        el.setAttribute('data-id', 'custom_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6));
         el.innerHTML = `
             <div class="edit-row">
                 <input type="text" class="ed-name" value="" placeholder="新动作名称" style="font-weight:bold;">
                 <label><input type="checkbox" class="ed-core"> 🔥核心</label>
-                <button class="btn-danger" onclick="this.parentElement.parentElement.remove()" style="margin-left:auto;">删除</button>
+                <button class="btn-danger" type="button" onclick="this.closest('.edit-card').remove()" style="margin-left:auto;">删除</button>
             </div>
             <div class="edit-row">
                 <span style="color:var(--text-muted); font-size:0.9em;">目标组数:</span>
@@ -632,7 +817,8 @@
     async function saveCustomPlan() {
         const day = document.getElementById('edit-day-selector').value;
         const isRest = document.getElementById('ed-day-isrest').checked;
-        const title = document.getElementById('ed-day-title').value || `Day 自定义`;
+        const titleRaw = document.getElementById('ed-day-title').value.trim();
+        const title = titleRaw || `Day 自定义`;
         
         let newExercises = [];
         if (!isRest) {
@@ -640,38 +826,51 @@
             cards.forEach(card => {
                 newExercises.push({
                     id: card.getAttribute('data-id'),
-                    name: card.querySelector('.ed-name').value || "未命名动作",
-                    sets: parseInt(card.querySelector('.ed-sets').value) || 1,
-                    repsDesc: card.querySelector('.ed-reps').value || "力竭",
-                    tip: card.querySelector('.ed-tip').value || "",
+                    name: card.querySelector('.ed-name').value.trim() || "未命名动作",
+                    sets: Math.min(20, Math.max(1, parseInt(card.querySelector('.ed-sets').value, 10) || 1)),
+                    repsDesc: card.querySelector('.ed-reps').value.trim() || "力竭",
+                    tip: card.querySelector('.ed-tip').value.trim() || "",
                     isCore: card.querySelector('.ed-core').checked
                 });
             });
+
+            if (newExercises.length === 0) {
+                const fb = document.getElementById('edit-feedback');
+                fb.innerText = '❌ 非休息日至少保留一个动作。';
+                return;
+            }
         }
 
-        currentWorkoutPlan[day] = { title: title, isRest: isRest, exercises: newExercises };
+        currentWorkoutPlan[day] = { title, isRest, exercises: newExercises };
+        currentWorkoutPlan = normalizePlan(currentWorkoutPlan);
         
         await dbSet('appData_plan', currentWorkoutPlan);
-        updateSelectOptions(); 
+        updateSelectOptions();
+
+        if (document.getElementById('today').classList.contains('active')) {
+            loadDayPlan();
+        }
         
         const fb = document.getElementById('edit-feedback');
-        fb.innerText = `✅ [${esc(title)}] 已保存！`;
+        fb.innerText = `✅ [${title}] 已保存！`;
         setTimeout(() => fb.innerText = '', 3000);
     }
 
     async function restoreDefaultPlan() {
-        if(confirm("⚠️ 恢复默认训练计划！你的历史打卡记录不会受影响。确定恢复吗？")) {
-            await dbSet('appData_plan', null); 
-            currentWorkoutPlan = JSON.parse(JSON.stringify(defaultWorkoutPlan));
+        if (confirm("⚠️ 恢复默认训练计划！你的历史打卡记录不会受影响。确定恢复吗？")) {
+            await dbSet('appData_plan', null);
+            currentWorkoutPlan = normalizePlan(null);
             updateSelectOptions();
             loadEditPlan();
+            if (document.getElementById('today').classList.contains('active')) loadDayPlan();
+            if (document.getElementById('stats').classList.contains('active')) {
+                renderYearTabs();
+                renderStats(currentStatsYear);
+            }
             alert("已成功恢复默认计划。");
         }
     }
 
-    // =========================================================================
-    // 统计分析与日历视图
-    // =========================================================================
     function renderYearTabs() {
         const years = new Set(Object.keys(appData).map(d => d.split('-')[0]));
         years.add(String(new Date().getFullYear())); 
@@ -689,25 +888,41 @@
         document.getElementById('playback-area').style.display = 'none';
     }
 
+    function showTooltipNearCell(cell, text) {
+        const tooltip = document.getElementById('global-tooltip');
+        tooltip.innerText = text;
+        tooltip.style.opacity = '1';
+
+        requestAnimationFrame(() => {
+            const rect = cell.getBoundingClientRect();
+            let left = rect.left + (rect.width / 2) - (tooltip.offsetWidth / 2);
+            let top = rect.top - tooltip.offsetHeight - 8;
+
+            left = Math.max(8, Math.min(left, window.innerWidth - tooltip.offsetWidth - 8));
+            if (top < 8) top = rect.bottom + 8;
+
+            tooltip.style.left = left + 'px';
+            tooltip.style.top = top + 'px';
+        });
+    }
+
     function renderStats(year) {
         const heatmap = document.getElementById('heatmap');
         heatmap.innerHTML = '';
         
-        const startDate = new Date(year, 0, 1);
-        const endDate = new Date(year, 11, 31);
+        const startDate = new Date(Number(year), 0, 1);
+        const endDate = new Date(Number(year), 11, 31);
         const startDayOfWeek = startDate.getDay();
 
-        for(let i=0; i<startDayOfWeek; i++) {
+        for (let i = 0; i < startDayOfWeek; i++) {
             const empty = document.createElement('div');
             empty.className = 'cell';
             empty.style.visibility = 'hidden';
             heatmap.appendChild(empty);
         }
 
-        const globalTooltip = document.getElementById('global-tooltip');
-
         let d = new Date(startDate);
-        while(d <= endDate) {
+        while (d <= endDate) {
             const dateStr = toLocalDateStr(d);
             const cell = document.createElement('div');
             cell.className = 'cell';
@@ -718,31 +933,38 @@
             
             if (appData[dateStr]) {
                 const data = appData[dateStr];
-                const score = data.score;
-                const titleStr = data.title || (currentWorkoutPlan[data.dayType] ? currentWorkoutPlan[data.dayType].title : "未知计划");
+                const score = Number(data.score) || 0;
+                const titleStr = getPlanTitleFromData(data);
                 
-                if(isRestDayLog(data)) {
-                    level = 1;
-                    info = `${dateStr} - [休息] ${titleStr}`;
-                } else if(score > 0) {
+                if (isRestDayLog(data)) {
+                    level = score > 0 ? 1 : 0;
+                    info = score > 0
+                        ? `${dateStr} - [休息/有氧] ${titleStr}`
+                        : `${dateStr} - [休息/有氧未确认] ${titleStr}`;
+                } else {
                     if (score === 100) level = 4;
                     else if (score >= 75) level = 3;
                     else if (score >= 40) level = 2;
-                    else level = 1;
+                    else if (score > 0) level = 1;
+                    else level = 0;
+
                     info = `${dateStr} - ${titleStr} (${score}%)`;
                 }
             }
             
             cell.setAttribute('data-level', level);
-            
-            cell.addEventListener('mouseenter', () => {
-                globalTooltip.innerText = info;
-                const rect = cell.getBoundingClientRect();
-                globalTooltip.style.left = (rect.left + (rect.width / 2) - (globalTooltip.offsetWidth / 2)) + 'px';
-                globalTooltip.style.top = (rect.top - globalTooltip.offsetHeight - 8) + 'px';
-                globalTooltip.style.opacity = '1';
+            cell.addEventListener('mouseenter', () => showTooltipNearCell(cell, info));
+            cell.addEventListener('mouseleave', () => {
+                document.getElementById('global-tooltip').style.opacity = '0';
             });
-            cell.addEventListener('mouseleave', () => { globalTooltip.style.opacity = '0'; });
+            cell.addEventListener('touchstart', function() {
+                showTooltipNearCell(cell, info);
+            }, { passive: true });
+            cell.addEventListener('touchend', function() {
+                setTimeout(() => {
+                    document.getElementById('global-tooltip').style.opacity = '0';
+                }, 1500);
+            });
             cell.onclick = () => showPlayback(dateStr);
             heatmap.appendChild(cell);
             
@@ -754,7 +976,7 @@
             let targetCell = document.querySelector(`.cell[data-date="${todayStr}"]`);
             if (!targetCell) {
                 const allCells = document.querySelectorAll('.cell[data-date]');
-                targetCell = allCells[allCells.length - 1]; 
+                targetCell = allCells[allCells.length - 1];
             }
             if (targetCell) {
                 const centerPos = targetCell.offsetLeft - (wrapper.clientWidth / 2) + (targetCell.clientWidth / 2);
@@ -773,7 +995,7 @@
         
         pbArea.style.display = 'block';
         
-        if(!appData[dateStr] || appData[dateStr].score === 0) {
+        if (!appData[dateStr]) {
             title.innerText = `📅 ${dateStr} - 无记录`;
             title.style.color = "var(--text-muted)";
             content.innerHTML = "<p>这一天像风一样消散了，什么都没留下。</p>";
@@ -781,38 +1003,59 @@
         }
 
         const data = appData[dateStr];
-        const dayLabel = data.title || (currentWorkoutPlan[data.dayType] ? currentWorkoutPlan[data.dayType].title : "未知计划");
+        const dayLabel = getPlanTitleFromData(data);
 
-        title.innerText = `📅 ${dateStr} - ${esc(dayLabel)}`;
+        title.innerText = `📅 ${dateStr} - ${dayLabel}`;
         title.style.color = "#58a6ff";
         
         if (isRestDayLog(data)) {
-            content.innerHTML = "<p>✅ 这一天，你选择了休息或有氧，让身体进行恢复。</p>";
+            content.innerHTML = data.score > 0
+                ? "<p>✅ 这一天，你选择了休息或有氧，让身体进行恢复。</p>"
+                : "<p>🕒 这一天被标记为休息/有氧日，但你还没有勾选完成。</p>";
             if (data.note) content.innerHTML += `<p><strong>备注：</strong>${esc(data.note)}</p>`;
             return;
         }
 
-        let html = `<p><strong>容量完成度：</strong><span style="color:var(--level-4)">${data.score}%</span></p>`;
+        const score = Number(data.score) || 0;
+        let html = `<p><strong>容量完成度：</strong><span style="color:${score > 0 ? 'var(--level-4)' : 'var(--text-muted)'}">${score}%</span></p>`;
+        if (score === 0) html += `<p style="color:var(--danger)">这次记录已保存，但没有完成任何有效组。</p>`;
         if (data.note) html += `<p><strong>备注：</strong>${esc(data.note)}</p>`;
         html += '<hr style="border-color:var(--border-color); margin: 15px 0;">';
 
-        data.exercises.forEach(ex => {
-            html += `<div style="margin-bottom: 12px;">
-                        <strong>${esc(ex.name)}</strong> (${ex.completedSets}/${ex.targetSets} 组)
-                        <div style="margin-top: 4px;">`;
-            if(ex.completedSets === 0) {
-                html += `<span class="playback-set" style="color:var(--danger)">未执行</span>`;
-            } else {
-                ex.setsData.forEach((set, idx) => {
-                    if(set.weight !== '' || set.reps !== '') {
-                        const w = set.weight ? `${esc(set.weight)}kg` : `自重`;
-                        const r = set.reps ? `${esc(set.reps)}次` : `?次`;
-                        html += `<span class="playback-set">[第${idx+1}组] ${w} x ${r}</span><br>`;
+        const exercises = Array.isArray(data.exercises) ? data.exercises : [];
+        if (exercises.length === 0) {
+            html += `<p>没有可回放的动作明细。</p>`;
+        } else {
+            exercises.forEach(ex => {
+                const planEx = getPlanExercise(data.dayType, ex.id);
+                const measureType = ex.measureType || inferMeasureType(ex.repsDesc || planEx?.repsDesc);
+                const targetSets = parseInt(ex.targetSets, 10) || (Array.isArray(ex.weights) ? Math.max(ex.weights.length, (ex.reps || []).length) : (planEx ? planEx.sets : 0)) || 0;
+                const completedSets = Number.isInteger(ex.completedSets) ? ex.completedSets : 
+                    (Array.isArray(ex.weights) ? ex.weights.reduce((acc, w, i) => acc + (hasSetActivity(w, ex.reps && ex.reps[i]) ? 1 : 0), 0) : 0);
+
+                html += `<div style="margin-bottom: 12px;">
+                            <strong>${esc(ex.name || planEx?.name || '未命名动作')}</strong> (${completedSets}/${targetSets} 组)
+                            <div style="margin-top: 4px;">`;
+
+                if (completedSets === 0) {
+                    html += `<span class="playback-set" style="color:var(--danger)">未执行</span>`;
+                } else {
+                    const maxLen = Math.max((ex.weights || []).length, (ex.reps || []).length);
+                    for (let idx = 0; idx < maxLen; idx++) {
+                        const wObj = (ex.weights && ex.weights[idx]) ?? '';
+                        const rObj = (ex.reps && ex.reps[idx]) ?? '';
+                        if (hasSetActivity(wObj, rObj)) {
+                            const weightVal = String(wObj).trim();
+                            const perfVal = String(rObj).trim();
+                            const w = (weightVal !== '' && weightVal !== '0') ? `${esc(weightVal)}kg` : `自重`;
+                            const p = perfVal !== '' ? `${esc(perfVal)}${measureType === 'time' ? '秒' : '次'}` : (measureType === 'time' ? '?秒' : '?次');
+                            html += `<span class="playback-set">[第${idx + 1}组] ${w} x ${p}</span><br>`;
+                        }
                     }
-                });
-            }
-            html += `</div></div>`;
-        });
+                }
+                html += `</div></div>`;
+            });
+        }
 
         content.innerHTML = html;
         pbArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -822,16 +1065,18 @@
         const chart = document.getElementById('trend-chart');
         chart.innerHTML = '';
         const monthData = new Array(12).fill(0);
+
         Object.keys(appData).forEach(date => {
             const data = appData[date];
-            if(date.startsWith(year) && !isRestDayLog(data) && data.score > 0) {
-                const month = parseInt(date.split('-')[1]) - 1;
+            if (date.startsWith(year) && !isRestDayLog(data) && (Number(data.score) || 0) > 0) {
+                const month = parseInt(date.split('-')[1], 10) - 1;
                 monthData[month]++;
             }
         });
-        const maxDays = 25; 
+
+        const maxDays = Math.max(1, ...monthData);
         monthData.forEach((days, idx) => {
-            const height = Math.min((days / maxDays) * 100, 100);
+            const height = days === 0 ? 0 : (days / maxDays) * 100;
             chart.innerHTML += `
                 <div class="bar-container">
                     <div class="bar" style="height: ${height}%" data-val="${days}天"></div>
@@ -844,13 +1089,20 @@
     function generateAnalysis(year) {
         const aiDiv = document.getElementById('ai-analysis');
         let workoutDays = 0, totalScore = 0;
+
         Object.keys(appData).forEach(d => {
             const data = appData[d];
-            if(d.startsWith(year) && !isRestDayLog(data) && data.score > 0) {
-                workoutDays++; totalScore += data.score;
+            if (d.startsWith(year) && !isRestDayLog(data) && (Number(data.score) || 0) > 0) {
+                workoutDays++;
+                totalScore += Number(data.score) || 0;
             }
         });
-        if(workoutDays === 0) { aiDiv.innerHTML = "<p>今年还没有容量记录。种一棵树最好的时间是十年前，其次是现在。</p>"; return; }
+
+        if (workoutDays === 0) {
+            aiDiv.innerHTML = `<p>${esc(year)}年还没有容量记录。种一棵树最好的时间是十年前，其次是现在。</p>`;
+            return;
+        }
+
         const avgScore = Math.round(totalScore / workoutDays);
         aiDiv.innerHTML = `<div class="analysis-box">
             <strong>${esc(year)}年数据总览：</strong><br>
@@ -859,54 +1111,144 @@
         </div>`;
     }
 
-    // =========================================================================
-    // 数据导入导出
-    // =========================================================================
     function exportJSON() {
+        const cleanLogs = {};
+        const sortedDates = Object.keys(appData)
+            .filter(d => /^\d{4}-\d{2}-\d{2}$/.test(d))
+            .sort();
+
+        for (const date of sortedDates) {
+            const raw = appData[date];
+            const entry = {};
+
+            entry.dayType = raw.dayType;
+            entry.title = raw.title;
+            if (raw.isRest) entry.isRest = true;
+            entry.score = raw.score;
+            if (raw.note) entry.note = raw.note;
+
+            if (Array.isArray(raw.exercises) && raw.exercises.length > 0) {
+                entry.exercises = raw.exercises.map(ex => {
+                    const cleaned = {};
+                    cleaned.id = ex.id;
+                    cleaned.name = ex.name;
+
+                    if (ex.measureType && ex.measureType !== 'reps') {
+                        cleaned.measureType = ex.measureType;
+                    }
+
+                    cleaned.targetSets = ex.targetSets;
+
+                    if (Array.isArray(ex.weights) && ex.weights.length > 0) {
+                        cleaned.weights = ex.weights.map(toNumOrNull);
+                    }
+                    if (Array.isArray(ex.reps) && ex.reps.length > 0) {
+                        cleaned.reps = ex.reps.map(toNumOrNull);
+                    }
+
+                    return cleaned;
+                });
+            }
+
+            cleanLogs[date] = entry;
+        }
+
+        const cleanPlan = {};
+        for (let i = 1; i <= 7; i++) {
+            const k = 'day' + i;
+            const day = currentWorkoutPlan[k];
+            if (!day) continue;
+
+            const d = {};
+            d.title = day.title;
+            if (day.isRest) d.isRest = true;
+            d.exercises = (day.exercises || []).map(ex => {
+                const e = { id: ex.id, name: ex.name, sets: ex.sets, repsDesc: ex.repsDesc };
+                if (ex.tip) e.tip = ex.tip;
+                if (ex.isCore) e.isCore = true;
+                return e;
+            });
+
+            cleanPlan[k] = d;
+        }
+
         const exportPackage = {
-            logs: appData,
-            customPlan: currentWorkoutPlan 
+            schemaVersion: 2,
+            exportedAt: new Date().toISOString(),
+            customPlan: cleanPlan,
+            logs: cleanLogs
         };
+
         const dataStr = JSON.stringify(exportPackage, null, 2);
         const blob = new Blob([dataStr], { type: "application/json" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
         a.download = `hardcore_log_${toLocalDateStr()}.json`;
-        a.click(); URL.revokeObjectURL(url);
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    function toNumOrNull(v) {
+        if (v === '' || v === null || v === undefined) return null;
+        const n = Number(v);
+        return isNaN(n) ? v : n;
     }
 
     function importJSON(event) {
-        const file = event.target.files[0];
+        const fileInput = event.target;
+        const file = fileInput.files[0];
         if (!file) return;
+
         const reader = new FileReader();
         reader.onload = async function(e) {
             try {
                 const imported = JSON.parse(e.target.result);
-                if (imported.logs) {
-                    appData = { ...appData, ...imported.logs };
-                    if (imported.customPlan) {
-                        currentWorkoutPlan = imported.customPlan;
-                        await dbSet('appData_plan', currentWorkoutPlan);
-                    }
-                } else {
-                    appData = { ...appData, ...imported };
+                let importedLogs = {};
+                let importedPlan = null;
+
+                if (!imported || typeof imported !== 'object' || Array.isArray(imported)) {
+                    throw new Error('Invalid JSON structure');
                 }
+
+                if ('logs' in imported || 'customPlan' in imported) {
+                    importedLogs = normalizeLogs(imported.logs || {});
+                    if (imported.customPlan) importedPlan = normalizePlan(imported.customPlan);
+                } else {
+                    importedLogs = normalizeLogs(imported);
+                }
+
+                if (!Object.keys(importedLogs).length && !importedPlan) {
+                    throw new Error('No usable data');
+                }
+
+                appData = { ...appData, ...importedLogs };
+
+                if (importedPlan) {
+                    currentWorkoutPlan = importedPlan;
+                    await dbSet('appData_plan', currentWorkoutPlan);
+                }
+
                 await dbSet('appData_logs', appData);
-                alert("✅ 数据导入成功！"); location.reload();
-            } catch (err) { alert("❌ 文件格式错误！"); }
+                fileInput.value = '';
+                alert("✅ 数据导入成功！");
+                location.reload();
+            } catch (err) {
+                console.error(err);
+                fileInput.value = '';
+                alert("❌ 文件格式错误或内容无效！");
+            }
         };
         reader.readAsText(file);
     }
 
     async function clearData() {
-        if(confirm("⚠️ 确定要清空？如果没有备份 JSON，数据将永远消失。")) {
+        if (confirm("⚠️ 确定要清空？如果没有备份 JSON，数据将永远消失。")) {
             await dbSet('appData_logs', null);
             await dbSet('appData_plan', null);
             location.reload();
         }
     }
-
 </script>
 </body>
 </html>
