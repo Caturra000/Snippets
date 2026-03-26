@@ -1,0 +1,15 @@
+源码参考 lemire 的博客和仓库：https://lemire.me/blog/2026/03/18/how-many-branches-can-your-cpu-predict/
+
+1000                                               :  0.722 ns   1.39 Gv/s   0.00 bm 
+1778                                               :  0.729 ns   1.37 Gv/s   0.00 bm 
+3162                                               :  0.862 ns   1.16 Gv/s   0.00 bm 
+5623                                               :  1.149 ns   0.87 Gv/s   0.05 bm 
+10000                                              :  2.152 ns   0.46 Gv/s   0.20 bm 
+17783                                              :  1.239 ns   0.81 Gv/s   0.39 bm 
+31623                                              :  3.410 ns   0.29 Gv/s   0.49 bm 
+56234                                              :  3.932 ns   0.25 Gv/s   0.50 bm 
+100000                                             :  4.178 ns   0.24 Gv/s   0.50 bm 
+177828                                             :  4.180 ns   0.24 Gv/s   0.50 bm 
+316228                                             :  3.750 ns   0.27 Gv/s   0.50 bm 
+562341                                             :  3.744 ns   0.27 Gv/s   0.50 bm 
+1000000                                            :  3.996 ns   0.25 Gv/s   0.50 bm
