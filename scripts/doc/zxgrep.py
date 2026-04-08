@@ -7,6 +7,7 @@ import sys
 import shutil
 import tempfile
 import subprocess
+import concurrent.futures
 from pathlib import Path
 
 
@@ -34,11 +35,16 @@ _zxgrep() {
         prev=""
     fi
 
-    local opts="--help --install --print-bash-completion --file --case-sensitive --exact --regex --copy --move --list-files --name-only --color-path --no-color-path -h -s -x -r -l -N -o -O"
+    local opts="--help --install --print-bash-completion --file --case-sensitive --exact --regex --copy --move --list-files --name-only --color-path --no-color-path -h -s -x -r -l -N -o -O -j --jobs"
 
     if [[ "$prev" == "-o" ]]; then
         compopt -o filenames 2>/dev/null
         mapfile -t COMPREPLY < <(compgen -d -- "$cur")
+        return 0
+    fi
+
+    if [[ "$prev" == "-j" || "$prev" == "--jobs" ]]; then
+        COMPREPLY=()
         return 0
     fi
 
@@ -53,7 +59,7 @@ _zxgrep() {
         case "${COMP_WORDS[i]}" in
             --help|-h|--install|--print-bash-completion|--file|--case-sensitive|-s|--exact|-x|--regex|-r|--copy|--move|--list-files|-l|--name-only|-N|--color-path|--no-color-path|-O)
                 ;;
-            -o)
+            -o|-j|--jobs)
                 ((i++))
                 ;;
             --)
@@ -104,6 +110,7 @@ def usage():
   {PROGRAM} INPUT WORD1 [WORD2 ...] -s
   {PROGRAM} INPUT WORD1 [WORD2 ...] -l
   {PROGRAM} INPUT WORD1 [WORD2 ...] -N
+  {PROGRAM} INPUT WORD1 [WORD2 ...] -j 8
   {PROGRAM} --install
   {PROGRAM} --print-bash-completion
 
@@ -190,7 +197,15 @@ INPUT 可自动识别为：
   12) 文本文件判定：
       对目录/单文件输入，会跳过明显的二进制文件（基于 NUL 字节的简单判断）。
 
-  13) --install：
+  13) -j / --jobs：
+      指定并行工作进程数。
+      默认使用 CPU 核心数。
+      搜索使用多进程并行，输出实时流式（不保证顺序）。
+      例如：
+        {PROGRAM} ./docs exec task -j 8
+        {PROGRAM} archive.tar.zst exec -j 4
+
+  14) --install：
       安装到 /usr/local/bin/zxgrep
       并安装 bash completion。
 
@@ -207,6 +222,7 @@ INPUT 可自动识别为：
   {PROGRAM} ./docs exec task -O --move
   {PROGRAM} ./docs report -N
   {PROGRAM} ./docs 'report.*2024' -N -r
+  {PROGRAM} ./docs exec task -j 4
 """)
 
 
@@ -264,19 +280,15 @@ def pretty_local_path(path):
         return path.as_posix()
 
 
-def maybe_color_path_text(text, color_path):
-    if color_path and sys.stdout.isatty():
+def maybe_color_path_text(text, color_path, is_tty):
+    if color_path and is_tty:
         return f"{CYAN}{text}{RESET}"
     return text
 
 
-def make_location_label(display_path, lineno, colno, color_path=False):
+def make_location_label(display_path, lineno, colno, color_path, is_tty):
     text = f"{display_path}:{lineno}:{colno}"
-    return maybe_color_path_text(text, color_path)
-
-
-def print_path_line(display_path, color_path=False):
-    print(maybe_color_path_text(display_path, color_path))
+    return maybe_color_path_text(text, color_path, is_tty)
 
 
 def detect_input_kind(input_path):
@@ -326,12 +338,10 @@ def iter_dir_files(root, exclude_dir=None):
                 continue
             if not p.is_file():
                 continue
-            if not is_probably_text_file(p):
-                continue
             rel = p.relative_to(root).as_posix()
             yield {
                 "rel": rel,
-                "path": p,
+                "path": str(p),
                 "display_path": pretty_local_path(p),
             }
 
@@ -348,22 +358,20 @@ def iter_archive_files(extracted_root):
                 continue
             if not p.is_file():
                 continue
-            if not is_probably_text_file(p):
-                continue
             rel = p.relative_to(extracted_root).as_posix()
             yield {
                 "rel": rel,
-                "path": p,
+                "path": str(p),
                 "display_path": rel,
             }
 
 
 def iter_single_file(file_path):
     p = abs_path(file_path)
-    if p.is_file() and is_probably_text_file(p):
+    if p.is_file():
         yield {
             "rel": p.name,
-            "path": p,
+            "path": str(p),
             "display_path": pretty_local_path(p),
         }
 
@@ -435,77 +443,6 @@ def first_match_column(line, any_pattern):
     return m.start() + 1
 
 
-def emit_line(display_path, lineno, colno, line, any_pattern, color_path=False):
-    prefix = make_location_label(display_path, lineno, colno, color_path=color_path)
-    sys.stdout.write(f"{prefix}: {colorize_line(line, any_pattern)}\n")
-
-
-def file_contains_all_patterns(path, patterns):
-    remaining = set(range(len(patterns)))
-    if not remaining:
-        return True
-
-    with open(path, "r", encoding="utf-8", errors="replace", newline="") as f:
-        for line in f:
-            if not remaining:
-                return True
-            for idx in tuple(remaining):
-                if patterns[idx].search(line):
-                    remaining.remove(idx)
-                    if not remaining:
-                        return True
-
-    return not remaining
-
-
-def file_has_line_matching_all_patterns(path, patterns):
-    with open(path, "r", encoding="utf-8", errors="replace", newline="") as f:
-        for line in f:
-            ok = True
-            for pat in patterns:
-                if pat.search(line) is None:
-                    ok = False
-                    break
-            if ok:
-                return True
-    return False
-
-
-def basename_matches_all_patterns(rel_path, patterns):
-    name = Path(rel_path).name
-    for pat in patterns:
-        if pat.search(name) is None:
-            return False
-    return True
-
-
-def print_lines_matching_all_patterns(item, all_patterns, any_pattern, color_path=False):
-    printed = False
-    with open(item["path"], "r", encoding="utf-8", errors="replace", newline="") as f:
-        for lineno, line in enumerate(f, start=1):
-            ok = True
-            for pat in all_patterns:
-                if pat.search(line) is None:
-                    ok = False
-                    break
-            if ok:
-                printed = True
-                colno = first_match_column(line, any_pattern)
-                emit_line(item["display_path"], lineno, colno, line, any_pattern, color_path=color_path)
-    return printed
-
-
-def print_lines_matching_any_pattern(item, any_pattern, color_path=False):
-    printed = False
-    with open(item["path"], "r", encoding="utf-8", errors="replace", newline="") as f:
-        for lineno, line in enumerate(f, start=1):
-            if any_pattern.search(line):
-                printed = True
-                colno = first_match_column(line, any_pattern)
-                emit_line(item["display_path"], lineno, colno, line, any_pattern, color_path=color_path)
-    return printed
-
-
 def remove_path_if_exists(path):
     path = abs_path(path)
     if path.exists() or path.is_symlink():
@@ -554,131 +491,76 @@ def build_source_items(source_info, extracted_root=None, exclude_dir=None):
     if kind == "archive":
         if extracted_root is None:
             die("内部错误：archive 模式缺少 extracted_root")
-        return iter_archive_files(extracted_root)
+        return list(iter_archive_files(extracted_root))
 
     if kind == "dir":
-        return iter_dir_files(source_info["path"], exclude_dir=exclude_dir)
+        return list(iter_dir_files(source_info["path"], exclude_dir=exclude_dir))
 
     if kind == "file":
-        return iter_single_file(source_info["path"])
+        return list(iter_single_file(source_info["path"]))
 
     die(f"内部错误：未知输入类型 {kind}")
 
 
-def run_line_mode(items, all_patterns, any_pattern, outdir=None, transfer_mode="copy", list_files=False, color_path=False):
-    matched_items = []
+def worker_search_file(args):
+    item, all_patterns, any_pattern, opts = args
 
-    for item in items:
-        if file_has_line_matching_all_patterns(item["path"], all_patterns):
-            matched_items.append(item)
+    path = item["path"]
+    file_mode = opts["file_mode"]
+    list_files = opts["list_files"]
+    name_only = opts["name_only"]
 
-    if not matched_items:
-        return False
+    if name_only:
+        name = Path(item["rel"]).name
+        if all(p.search(name) for p in all_patterns):
+            return (item, [])
+        return None
 
-    final_items = matched_items
+    if not is_probably_text_file(path):
+        return None
 
-    if outdir is not None:
-        outdir = abs_path(outdir)
-        outdir.mkdir(parents=True, exist_ok=True)
+    try:
+        if file_mode:
+            remaining = set(range(len(all_patterns)))
+            lines_cache = []
 
-        transferred_items = []
-        for item in matched_items:
-            target = outdir / item["rel"]
-            safe_transfer(item["path"], target, transfer_mode)
-            transferred_items.append({
-                "rel": item["rel"],
-                "path": target,
-                "display_path": pretty_local_path(target),
-            })
+            with open(path, "r", encoding="utf-8", errors="replace", newline="") as f:
+                for line in f:
+                    lines_cache.append(line)
+                    if remaining:
+                        for idx in list(remaining):
+                            if all_patterns[idx].search(line):
+                                remaining.discard(idx)
 
-        final_items = transferred_items
-        action_text = "复制" if transfer_mode == "copy" else "移动"
-        eprint(f"已将匹配文件{action_text}到: {pretty_local_path(outdir)}")
+            if remaining:
+                return None
 
-    for item in final_items:
-        if list_files:
-            print_path_line(item["display_path"], color_path=color_path)
+            if list_files:
+                return (item, [])
+
+            matches = []
+            for lineno, line in enumerate(lines_cache, start=1):
+                if any_pattern.search(line):
+                    colno = first_match_column(line, any_pattern)
+                    matches.append((lineno, colno, line))
+            return (item, matches)
+
         else:
-            print_lines_matching_all_patterns(item, all_patterns, any_pattern, color_path=color_path)
+            matches = []
+            with open(path, "r", encoding="utf-8", errors="replace", newline="") as f:
+                for lineno, line in enumerate(f, start=1):
+                    if all(p.search(line) for p in all_patterns):
+                        if list_files:
+                            return (item, [])
+                        colno = first_match_column(line, any_pattern)
+                        matches.append((lineno, colno, line))
 
-    return True
+            if matches:
+                return (item, matches)
+            return None
 
-
-def run_file_mode(items, all_patterns, any_pattern, outdir=None, transfer_mode="copy", list_files=False, color_path=False):
-    matched_items = []
-    for item in items:
-        if file_contains_all_patterns(item["path"], all_patterns):
-            matched_items.append(item)
-
-    if not matched_items:
-        return False
-
-    final_items = matched_items
-
-    if outdir is not None:
-        outdir = abs_path(outdir)
-        outdir.mkdir(parents=True, exist_ok=True)
-
-        transferred_items = []
-        for item in matched_items:
-            target = outdir / item["rel"]
-            safe_transfer(item["path"], target, transfer_mode)
-            transferred_items.append({
-                "rel": item["rel"],
-                "path": target,
-                "display_path": pretty_local_path(target),
-            })
-
-        final_items = transferred_items
-
-        action_text = "复制" if transfer_mode == "copy" else "移动"
-        eprint(f"已将匹配文件{action_text}到: {pretty_local_path(outdir)}")
-
-    if list_files:
-        for item in final_items:
-            print_path_line(item["display_path"], color_path=color_path)
-        return True
-
-    for item in final_items:
-        print_lines_matching_any_pattern(item, any_pattern, color_path=color_path)
-
-    return True
-
-
-def run_name_only_mode(items, all_patterns, outdir=None, transfer_mode="copy", color_path=False):
-    matched_items = []
-    for item in items:
-        if basename_matches_all_patterns(item["rel"], all_patterns):
-            matched_items.append(item)
-
-    if not matched_items:
-        return False
-
-    final_items = matched_items
-
-    if outdir is not None:
-        outdir = abs_path(outdir)
-        outdir.mkdir(parents=True, exist_ok=True)
-
-        transferred_items = []
-        for item in matched_items:
-            target = outdir / item["rel"]
-            safe_transfer(item["path"], target, transfer_mode)
-            transferred_items.append({
-                "rel": item["rel"],
-                "path": target,
-                "display_path": pretty_local_path(target),
-            })
-
-        final_items = transferred_items
-
-        action_text = "复制" if transfer_mode == "copy" else "移动"
-        eprint(f"已将匹配文件{action_text}到: {pretty_local_path(outdir)}")
-
-    for item in final_items:
-        print_path_line(item["display_path"], color_path=color_path)
-
-    return True
+    except Exception:
+        return None
 
 
 def choose_completion_target():
@@ -764,6 +646,7 @@ def parse_args(argv):
     mode = "substr"           # substr / exact / regex
     transfer_mode = "copy"    # copy / move
     transfer_mode_set = False
+    jobs = None
 
     stop_opts = False
     i = 0
@@ -851,6 +734,18 @@ def parse_args(argv):
                 auto_out = True
                 i += 1
                 continue
+            elif arg in ("-j", "--jobs"):
+                i += 1
+                if i >= len(argv):
+                    die("-j/--jobs 需要指定进程数")
+                try:
+                    jobs = int(argv[i])
+                    if jobs < 1:
+                        die("进程数必须为正整数")
+                except ValueError:
+                    die(f"无效的进程数: {argv[i]}")
+                i += 1
+                continue
             elif arg.startswith("-"):
                 die(f"不支持的选项: {arg}")
 
@@ -873,6 +768,9 @@ def parse_args(argv):
     if transfer_mode_set and outdir is None:
         die("--copy/--move 只能和 -o 或 -O 一起使用")
 
+    if jobs is None:
+        jobs = os.cpu_count() or 4
+
     return {
         "action": "search",
         "input_path": abs_path(input_path),
@@ -885,20 +783,11 @@ def parse_args(argv):
         "name_only": name_only,
         "transfer_mode": transfer_mode,
         "color_path": color_path,
+        "jobs": jobs,
     }
 
 
-def main(argv):
-    args = parse_args(argv)
-
-    if args["action"] == "install":
-        install_self()
-        return 0
-
-    if args["action"] == "print-completion":
-        print_bash_completion()
-        return 0
-
+def run_search(args):
     input_path = args["input_path"]
     words = args["words"]
     file_mode = args["file_mode"]
@@ -909,11 +798,14 @@ def main(argv):
     name_only = args["name_only"]
     transfer_mode = args["transfer_mode"]
     color_path = args["color_path"]
+    jobs = args["jobs"]
 
     source_info = detect_input_kind(input_path)
 
     all_patterns = build_patterns(words, mode=mode, case_sensitive=case_sensitive)
     any_pattern = build_highlight_pattern(words, mode=mode, case_sensitive=case_sensitive)
+
+    is_tty = sys.stdout.isatty()
 
     temp_root = None
     extracted_root = None
@@ -935,39 +827,86 @@ def main(argv):
             exclude_dir=exclude_dir,
         )
 
-        if name_only:
-            found = run_name_only_mode(
-                items,
-                all_patterns=all_patterns,
-                outdir=outdir,
-                transfer_mode=transfer_mode,
-                color_path=color_path,
-            )
-        elif file_mode:
-            found = run_file_mode(
-                items,
-                all_patterns=all_patterns,
-                any_pattern=any_pattern,
-                outdir=outdir,
-                transfer_mode=transfer_mode,
-                list_files=list_files,
-                color_path=color_path,
-            )
-        else:
-            found = run_line_mode(
-                items,
-                all_patterns=all_patterns,
-                any_pattern=any_pattern,
-                outdir=outdir,
-                transfer_mode=transfer_mode,
-                list_files=list_files,
-                color_path=color_path,
-            )
+        if not items:
+            return False
+
+        opts = {
+            "file_mode": file_mode,
+            "list_files": list_files,
+            "name_only": name_only,
+        }
+
+        task_args = [
+            (item, all_patterns, any_pattern, opts)
+            for item in items
+        ]
+
+        matched_count = 0
+        found = False
+
+        if outdir is not None:
+            outdir = abs_path(outdir)
+            outdir.mkdir(parents=True, exist_ok=True)
+
+        with concurrent.futures.ProcessPoolExecutor(max_workers=jobs) as executor:
+            future_to_item = {
+                executor.submit(worker_search_file, arg): arg[0]
+                for arg in task_args
+            }
+
+            for future in concurrent.futures.as_completed(future_to_item):
+                try:
+                    result = future.result()
+                except Exception:
+                    continue
+
+                if result is None:
+                    continue
+
+                item, matches = result
+                found = True
+                matched_count += 1
+
+                if outdir is not None:
+                    target = outdir / item["rel"]
+                    safe_transfer(item["path"], target, transfer_mode)
+                    display = pretty_local_path(target)
+                else:
+                    display = item["display_path"]
+
+                if list_files or name_only:
+                    text = maybe_color_path_text(display, color_path, is_tty)
+                    sys.stdout.write(text + "\n")
+                    sys.stdout.flush()
+                else:
+                    for lineno, colno, line in matches:
+                        prefix = make_location_label(display, lineno, colno, color_path, is_tty)
+                        sys.stdout.write(f"{prefix}: {colorize_line(line, any_pattern)}\n")
+                        sys.stdout.flush()
+
+        if outdir is not None and matched_count > 0:
+            action_text = "复制" if transfer_mode == "copy" else "移动"
+            eprint(f"已将匹配文件{action_text}到: {pretty_local_path(outdir)}")
+
+        return found
 
     finally:
         if temp_root is not None:
             shutil.rmtree(temp_root, ignore_errors=True)
 
+
+def main(argv):
+    args = parse_args(argv)
+
+    if args["action"] == "install":
+        install_self()
+        return 0
+
+    if args["action"] == "print-completion":
+        print_bash_completion()
+        return 0
+
+    found = run_search(args)
     return 0 if found else 1
 
 
