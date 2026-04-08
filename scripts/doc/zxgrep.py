@@ -165,14 +165,15 @@ INPUT 可自动识别为：
        path/to/file.txt:12:8: matched line
 
   10) 路径着色：
-      为避免影响 VSCode 对 path:line:col 的定位识别，默认不对路径着色。
-      如果你愿意自己尝试，可用：
-        --color-path
+      默认对路径着色。
+      为避免影响 VSCode 对 path:line:col 的定位识别，可以尝试不对路径着色。
       关闭可用：
         --no-color-path
+      显式开启（默认模式）：
+        --color-path
 
   11) -o / -O：
-      自动启用 --file 模式，并把匹配到的文件输出到目标目录。
+      把匹配到的文件输出到目标目录（不改变匹配模式）。
       默认行为是“复制”。
       如需改成移动，请加：
         --move
@@ -564,19 +565,43 @@ def build_source_items(source_info, extracted_root=None, exclude_dir=None):
     die(f"内部错误：未知输入类型 {kind}")
 
 
-def run_line_mode(items, all_patterns, any_pattern, list_files=False, color_path=False):
-    found = False
+def run_line_mode(items, all_patterns, any_pattern, outdir=None, transfer_mode="copy", list_files=False, color_path=False):
+    matched_items = []
 
     for item in items:
-        if list_files:
-            if file_has_line_matching_all_patterns(item["path"], all_patterns):
-                print_path_line(item["display_path"], color_path=color_path)
-                found = True
-        else:
-            if print_lines_matching_all_patterns(item, all_patterns, any_pattern, color_path=color_path):
-                found = True
+        if file_has_line_matching_all_patterns(item["path"], all_patterns):
+            matched_items.append(item)
 
-    return found
+    if not matched_items:
+        return False
+
+    final_items = matched_items
+
+    if outdir is not None:
+        outdir = abs_path(outdir)
+        outdir.mkdir(parents=True, exist_ok=True)
+
+        transferred_items = []
+        for item in matched_items:
+            target = outdir / item["rel"]
+            safe_transfer(item["path"], target, transfer_mode)
+            transferred_items.append({
+                "rel": item["rel"],
+                "path": target,
+                "display_path": pretty_local_path(target),
+            })
+
+        final_items = transferred_items
+        action_text = "复制" if transfer_mode == "copy" else "移动"
+        eprint(f"已将匹配文件{action_text}到: {pretty_local_path(outdir)}")
+
+    for item in final_items:
+        if list_files:
+            print_path_line(item["display_path"], color_path=color_path)
+        else:
+            print_lines_matching_all_patterns(item, all_patterns, any_pattern, color_path=color_path)
+
+    return True
 
 
 def run_file_mode(items, all_patterns, any_pattern, outdir=None, transfer_mode="copy", list_files=False, color_path=False):
@@ -735,7 +760,7 @@ def parse_args(argv):
     case_sensitive = False
     list_files = False
     name_only = False
-    color_path = False
+    color_path = True
     mode = "substr"           # substr / exact / regex
     transfer_mode = "copy"    # copy / move
     transfer_mode_set = False
@@ -818,14 +843,12 @@ def parse_args(argv):
                 if auto_out:
                     die("-o 与 -O 不能同时使用")
                 outdir = abs_path(argv[i])
-                file_mode = True
                 i += 1
                 continue
             elif arg == "-O":
                 if outdir is not None:
                     die("-o 与 -O 不能同时使用")
                 auto_out = True
-                file_mode = True
                 i += 1
                 continue
             elif arg.startswith("-"):
@@ -935,6 +958,8 @@ def main(argv):
                 items,
                 all_patterns=all_patterns,
                 any_pattern=any_pattern,
+                outdir=outdir,
+                transfer_mode=transfer_mode,
                 list_files=list_files,
                 color_path=color_path,
             )
