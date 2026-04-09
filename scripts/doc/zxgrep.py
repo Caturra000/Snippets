@@ -4,6 +4,7 @@
 import os
 import re
 import sys
+import fnmatch
 import shutil
 import tempfile
 import subprocess
@@ -35,7 +36,7 @@ _zxgrep() {
         prev=""
     fi
 
-    local opts="--help --install --print-bash-completion --file --case-sensitive --exact --regex --copy --move --list-files --name-only --color-path --no-color-path -h -s -x -r -l -N -o -O -j --jobs"
+    local opts="--help --install --print-bash-completion --clean --file --case-sensitive --exact --regex --or --include --exclude --copy --move --list-files --name-only --color-path --no-color-path -h -s -x -r -l -N -o -O -j --jobs"
 
     if [[ "$prev" == "-o" ]]; then
         compopt -o filenames 2>/dev/null
@@ -48,18 +49,24 @@ _zxgrep() {
         return 0
     fi
 
+    if [[ "$prev" == "--include" || "$prev" == "--exclude" ]]; then
+        COMPREPLY=()
+        return 0
+    fi
+
     if [[ "$cur" == -* ]]; then
         mapfile -t COMPREPLY < <(compgen -W "$opts" -- "$cur")
         return 0
     fi
 
+    # 跳过 --include / --exclude 的参数
     input_seen=0
     i=1
     while (( i < COMP_CWORD )); do
         case "${COMP_WORDS[i]}" in
-            --help|-h|--install|--print-bash-completion|--file|--case-sensitive|-s|--exact|-x|--regex|-r|--copy|--move|--list-files|-l|--name-only|-N|--color-path|--no-color-path|-O)
+            --help|-h|--install|--print-bash-completion|--clean|--file|--case-sensitive|-s|--exact|-x|--regex|-r|--or|--copy|--move|--list-files|-l|--name-only|-N|--color-path|--no-color-path|-O)
                 ;;
-            -o|-j|--jobs)
+            -o|-j|--jobs|--include|--exclude)
                 ((i++))
                 ;;
             --)
@@ -108,11 +115,14 @@ def usage():
   {PROGRAM} INPUT WORD1 [WORD2 ...] -x
   {PROGRAM} INPUT WORD1 [WORD2 ...] -r
   {PROGRAM} INPUT WORD1 [WORD2 ...] -s
+  {PROGRAM} INPUT WORD1 [WORD2 ...] --or
+  {PROGRAM} INPUT WORD1 [WORD2 ...] --include '*.py' --exclude 'test_*'
   {PROGRAM} INPUT WORD1 [WORD2 ...] -l
   {PROGRAM} INPUT WORD1 [WORD2 ...] -N
   {PROGRAM} INPUT WORD1 [WORD2 ...] -j 8
   {PROGRAM} --install
   {PROGRAM} --print-bash-completion
+  {PROGRAM} --clean
 
 INPUT 可自动识别为：
   1) *.tar.zst 归档
@@ -122,7 +132,7 @@ INPUT 可自动识别为：
 说明:
   1) 默认模式：
      按“行”搜索。
-     要求同一行同时包含全部关键词。
+     要求同一行同时包含全部关键词（AND 模式）。
      如果 INPUT 是 tar.zst，会先解压到 /dev/shm（若不可用则回退 /tmp）。
 
   2) --file 模式：
@@ -153,25 +163,49 @@ INPUT 可自动识别为：
   6) -s / --case-sensitive：
      开启区分大小写。
 
-  7) -l / --list-files：
-     只列出匹配文件名，不输出匹配行。
-     - 默认模式下：列出“至少有一行同时匹配全部关键词”的文件
-     - --file 模式下：列出“文件内包含全部关键词”的文件
-
-  8) -N / --name-only：
-     只在“文件名本身”上搜索，不看文件内容。
-     这里的“文件名”指 basename，不包含父目录。
-     该模式会自动按文件级处理，并只输出匹配文件路径。
-     也支持 -o/-O、--copy、--move。
+  7) --or：
+     使用 OR 逻辑连接多个关键词（默认为 AND）。
+     - 默认（AND）：要求同时包含全部关键词
+     - OR 模式：包含任一关键词即可匹配
      例如：
-       {PROGRAM} ./docs report -N
-       {PROGRAM} ./docs 'report.*2024' -N -r
+       {PROGRAM} ./docs exec task        # AND: 同时包含 exec 和 task
+       {PROGRAM} ./docs exec task --or   # OR:  包含 exec 或 task
 
-  9) 默认输出带行号和列号：
-     形如:
-       path/to/file.txt:12:8: matched line
+  8) --include GLOB：
+     只搜索文件名匹配指定 glob 模式的文件。
+     匹配基于文件的 basename（不含目录部分）。
+     可多次指定以添加多个模式（满足任一即可）。
+     例如：
+       {PROGRAM} ./docs exec --include '*.py'
+       {PROGRAM} ./docs exec --include '*.py' --include '*.js'
 
-  10) 路径着色：
+  9) --exclude GLOB：
+     排除文件名匹配指定 glob 模式的文件。
+     匹配 basename 和相对路径（满足任一则排除）。
+     可多次指定以添加多个模式。
+     例如：
+       {PROGRAM} ./docs exec --exclude '*.log'
+       {PROGRAM} ./docs exec --exclude 'node_modules' --exclude '*.min.js'
+
+  10) -l / --list-files：
+      只列出匹配文件名，不输出匹配行。
+      - 默认模式下：列出“至少有一行同时匹配全部关键词”的文件
+      - --file 模式下：列出“文件内包含全部关键词”的文件
+
+  11) -N / --name-only：
+      只在“文件名本身”上搜索，不看文件内容。
+      这里的“文件名”指 basename，不包含父目录。
+      该模式会自动按文件级处理，并只输出匹配文件路径。
+      也支持 -o/-O、--copy、--move。
+      例如：
+        {PROGRAM} ./docs report -N
+        {PROGRAM} ./docs 'report.*2024' -N -r
+
+  12) 默认输出带行号和列号：
+      形如:
+        path/to/file.txt:12:8: matched line
+
+  13) 路径着色：
       默认对路径着色。
       为避免影响 VSCode 对 path:line:col 的定位识别，可以尝试不对路径着色。
       关闭可用：
@@ -179,7 +213,7 @@ INPUT 可自动识别为：
       显式开启（默认模式）：
         --color-path
 
-  11) -o / -O：
+  14) -o / -O：
       把匹配到的文件输出到目标目录（不改变匹配模式）。
       默认行为是“复制”。
       如需改成移动，请加：
@@ -194,10 +228,10 @@ INPUT 可自动识别为：
       - 对目录：保留相对于输入目录的路径
       - 对单文件：输出为目标目录下的同名文件
 
-  12) 文本文件判定：
+  15) 文本文件判定：
       对目录/单文件输入，会跳过明显的二进制文件（基于 NUL 字节的简单判断）。
 
-  13) -j / --jobs：
+  16) -j / --jobs：
       指定并行工作进程数。
       默认使用 CPU 核心数。
       搜索使用多进程并行，输出实时流式（不保证顺序）。
@@ -205,9 +239,13 @@ INPUT 可自动识别为：
         {PROGRAM} ./docs exec task -j 8
         {PROGRAM} archive.tar.zst exec -j 4
 
-  14) --install：
+  17) --install：
       安装到 /usr/local/bin/zxgrep
       并安装 bash completion。
+
+  18) --clean：
+      清理当前目录下所有由 -O 自动生成的输出目录（以 zxgrep_ 开头）。
+      清理前会提示确认。
 
 示例:
   {PROGRAM} archive.tar.zst exec task
@@ -218,11 +256,16 @@ INPUT 可自动识别为：
   {PROGRAM} ./docs exec task --exact
   {PROGRAM} ./docs 'exec(ute)?' --regex
   {PROGRAM} ./docs 'exec.*task' --regex -s
+  {PROGRAM} ./docs exec task --or
+  {PROGRAM} ./docs exec task --or -l
+  {PROGRAM} ./docs exec --include '*.py'
+  {PROGRAM} ./docs exec --include '*.py' --include '*.js' --exclude 'test_*'
   {PROGRAM} ./docs exec task -l
   {PROGRAM} ./docs exec task -O --move
   {PROGRAM} ./docs report -N
   {PROGRAM} ./docs 'report.*2024' -N -r
   {PROGRAM} ./docs exec task -j 4
+  {PROGRAM} --clean
 """)
 
 
@@ -291,6 +334,21 @@ def make_location_label(display_path, lineno, colno, color_path, is_tty):
     return maybe_color_path_text(text, color_path, is_tty)
 
 
+def check_file_filters(rel_path, filters):
+    if not filters:
+        return True
+    basename = Path(rel_path).name
+    for pat in filters.get("exclude", []):
+        if fnmatch.fnmatch(basename, pat):
+            return False
+        if fnmatch.fnmatch(rel_path, pat):
+            return False
+    includes = filters.get("include", [])
+    if includes:
+        return any(fnmatch.fnmatch(basename, pat) for pat in includes)
+    return True
+
+
 def detect_input_kind(input_path):
     p = abs_path(input_path)
     if not p.exists():
@@ -312,7 +370,7 @@ def extract_archive(archive, dest):
     )
 
 
-def iter_dir_files(root, exclude_dir=None):
+def iter_dir_files(root, exclude_dir=None, filters=None):
     root = abs_path(root)
     exclude_abs = abs_path(exclude_dir) if exclude_dir is not None else None
 
@@ -339,6 +397,8 @@ def iter_dir_files(root, exclude_dir=None):
             if not p.is_file():
                 continue
             rel = p.relative_to(root).as_posix()
+            if not check_file_filters(rel, filters):
+                continue
             yield {
                 "rel": rel,
                 "path": str(p),
@@ -346,7 +406,7 @@ def iter_dir_files(root, exclude_dir=None):
             }
 
 
-def iter_archive_files(extracted_root):
+def iter_archive_files(extracted_root, filters=None):
     extracted_root = abs_path(extracted_root)
     for current, dirnames, filenames in os.walk(str(extracted_root), followlinks=False):
         dirnames[:] = sorted(dirnames)
@@ -359,6 +419,8 @@ def iter_archive_files(extracted_root):
             if not p.is_file():
                 continue
             rel = p.relative_to(extracted_root).as_posix()
+            if not check_file_filters(rel, filters):
+                continue
             yield {
                 "rel": rel,
                 "path": str(p),
@@ -431,9 +493,12 @@ def build_highlight_pattern(words, mode, case_sensitive):
     return pat
 
 
-def colorize_line(line, any_pattern):
+def colorize_line(line, any_pattern, colorize=True):
     text = line.rstrip("\r\n")
-    return any_pattern.sub(lambda m: f"{RED}{m.group(0)}{RESET}", text)
+    if colorize:
+        return any_pattern.sub(lambda m: f"{RED}{m.group(0)}{RESET}", text)
+    else:
+        return text
 
 
 def first_match_column(line, any_pattern):
@@ -485,16 +550,16 @@ def safe_transfer(src, dst, transfer_mode):
         die(f"内部错误：未知输出模式 {transfer_mode}")
 
 
-def build_source_items(source_info, extracted_root=None, exclude_dir=None):
+def build_source_items(source_info, extracted_root=None, exclude_dir=None, filters=None):
     kind = source_info["kind"]
 
     if kind == "archive":
         if extracted_root is None:
             die("内部错误：archive 模式缺少 extracted_root")
-        return list(iter_archive_files(extracted_root))
+        return list(iter_archive_files(extracted_root, filters=filters))
 
     if kind == "dir":
-        return list(iter_dir_files(source_info["path"], exclude_dir=exclude_dir))
+        return list(iter_dir_files(source_info["path"], exclude_dir=exclude_dir, filters=filters))
 
     if kind == "file":
         return list(iter_single_file(source_info["path"]))
@@ -509,6 +574,7 @@ def worker_search_file(args):
     file_mode = opts["file_mode"]
     list_files = opts["list_files"]
     name_only = opts["name_only"]
+    or_mode = opts["or_mode"]
 
     if name_only:
         name = Path(item["rel"]).name
@@ -521,19 +587,22 @@ def worker_search_file(args):
 
     try:
         if file_mode:
-            remaining = set(range(len(all_patterns)))
+            found_patterns = set()
             lines_cache = []
 
             with open(path, "r", encoding="utf-8", errors="replace", newline="") as f:
                 for line in f:
                     lines_cache.append(line)
-                    if remaining:
-                        for idx in list(remaining):
-                            if all_patterns[idx].search(line):
-                                remaining.discard(idx)
+                    for idx, pat in enumerate(all_patterns):
+                        if pat.search(line):
+                            found_patterns.add(idx)
 
-            if remaining:
-                return None
+            if or_mode:
+                if not found_patterns:
+                    return None
+            else:
+                if found_patterns != set(range(len(all_patterns))):
+                    return None
 
             if list_files:
                 return (item, [])
@@ -549,7 +618,12 @@ def worker_search_file(args):
             matches = []
             with open(path, "r", encoding="utf-8", errors="replace", newline="") as f:
                 for lineno, line in enumerate(f, start=1):
-                    if all(p.search(line) for p in all_patterns):
+                    if or_mode:
+                        matched = any(p.search(line) for p in all_patterns)
+                    else:
+                        matched = all(p.search(line) for p in all_patterns)
+
+                    if matched:
                         if list_files:
                             return (item, [])
                         colno = first_match_column(line, any_pattern)
@@ -619,6 +693,29 @@ def print_bash_completion():
     print(BASH_COMPLETION_SCRIPT, end="")
 
 
+def clean_auto_outdirs():
+    current_dir = Path.cwd()
+    pattern = "zxgrep_*"
+    dirs = list(current_dir.glob(pattern))
+    if not dirs:
+        print("没有找到自动生成的输出目录。")
+        return
+
+    print("将清理以下目录：")
+    for d in dirs:
+        print(f"  {d}")
+
+    response = input("确认删除这些目录吗？[y/N] ").strip().lower()
+    if response in ('y', 'yes'):
+        for d in dirs:
+            if d.is_dir():
+                shutil.rmtree(d)
+                print(f"已删除: {d}")
+        print("清理完成。")
+    else:
+        print("取消清理。")
+
+
 def parse_args(argv):
     if not argv:
         usage()
@@ -634,6 +731,9 @@ def parse_args(argv):
     if len(argv) == 1 and argv[0] == "--print-bash-completion":
         return {"action": "print-completion"}
 
+    if len(argv) == 1 and argv[0] == "--clean":
+        return {"action": "clean"}
+
     input_path = None
     words = []
     file_mode = False
@@ -647,6 +747,9 @@ def parse_args(argv):
     transfer_mode = "copy"    # copy / move
     transfer_mode_set = False
     jobs = None
+    or_mode = False
+    includes = []
+    excludes = []
 
     stop_opts = False
     i = 0
@@ -667,6 +770,8 @@ def parse_args(argv):
                 die("--install 不能和搜索参数一起使用")
             elif arg == "--print-bash-completion":
                 die("--print-bash-completion 不能和搜索参数一起使用")
+            elif arg == "--clean":
+                die("--clean 不能和搜索参数一起使用")
             elif arg == "--file":
                 file_mode = True
                 i += 1
@@ -685,6 +790,24 @@ def parse_args(argv):
                 if mode == "exact":
                     die("--exact 与 --regex 不能同时使用")
                 mode = "regex"
+                i += 1
+                continue
+            elif arg == "--or":
+                or_mode = True
+                i += 1
+                continue
+            elif arg == "--include":
+                i += 1
+                if i >= len(argv):
+                    die("--include 需要指定 glob 模式")
+                includes.append(argv[i])
+                i += 1
+                continue
+            elif arg == "--exclude":
+                i += 1
+                if i >= len(argv):
+                    die("--exclude 需要指定 glob 模式")
+                excludes.append(argv[i])
                 i += 1
                 continue
             elif arg in ("-l", "--list-files"):
@@ -771,6 +894,10 @@ def parse_args(argv):
     if jobs is None:
         jobs = os.cpu_count() or 4
 
+    filters = None
+    if includes or excludes:
+        filters = {"include": includes, "exclude": excludes}
+
     return {
         "action": "search",
         "input_path": abs_path(input_path),
@@ -779,11 +906,13 @@ def parse_args(argv):
         "outdir": outdir,
         "case_sensitive": case_sensitive,
         "mode": mode,
+        "or_mode": or_mode,
         "list_files": list_files,
         "name_only": name_only,
         "transfer_mode": transfer_mode,
         "color_path": color_path,
         "jobs": jobs,
+        "filters": filters,
     }
 
 
@@ -794,11 +923,13 @@ def run_search(args):
     outdir = args["outdir"]
     case_sensitive = args["case_sensitive"]
     mode = args["mode"]
+    or_mode = args["or_mode"]
     list_files = args["list_files"]
     name_only = args["name_only"]
     transfer_mode = args["transfer_mode"]
     color_path = args["color_path"]
     jobs = args["jobs"]
+    filters = args["filters"]
 
     source_info = detect_input_kind(input_path)
 
@@ -825,6 +956,7 @@ def run_search(args):
             source_info,
             extracted_root=extracted_root,
             exclude_dir=exclude_dir,
+            filters=filters,
         )
 
         if not items:
@@ -834,6 +966,7 @@ def run_search(args):
             "file_mode": file_mode,
             "list_files": list_files,
             "name_only": name_only,
+            "or_mode": or_mode,
         }
 
         task_args = [
@@ -881,7 +1014,8 @@ def run_search(args):
                 else:
                     for lineno, colno, line in matches:
                         prefix = make_location_label(display, lineno, colno, color_path, is_tty)
-                        sys.stdout.write(f"{prefix}: {colorize_line(line, any_pattern)}\n")
+                        colored_line = colorize_line(line, any_pattern, colorize=is_tty)
+                        sys.stdout.write(f"{prefix}: {colored_line}\n")
                         sys.stdout.flush()
 
         if outdir is not None and matched_count > 0:
@@ -904,6 +1038,10 @@ def main(argv):
 
     if args["action"] == "print-completion":
         print_bash_completion()
+        return 0
+
+    if args["action"] == "clean":
+        clean_auto_outdirs()
         return 0
 
     found = run_search(args)
