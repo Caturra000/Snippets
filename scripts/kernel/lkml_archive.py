@@ -5,9 +5,10 @@ LKML 子模块离线归档一键整理脚本
 用法:
     python lkml_archive.py <模块名> <卷号>
     python lkml_archive.py linux-nvme 0
-    python lkml_archive.py linux-nvme 1
+    python lkml_archive.py linux-nvme 1 -o /data/lkml
 
-中间过程在 /dev/shm 中进行，最终结果输出到 ~/lkml/<模块名>/<卷号>/out/
+中间过程在 /dev/shm 中进行，最终结果输出到 <输出目录>/<模块名>/<卷号>.tar.zst
+每一步完成后立即清理不再需要的中间数据，避免 /dev/shm OOM。
 """
 
 import argparse
@@ -25,7 +26,7 @@ from collections import defaultdict
 # ─────────────────────────── 配置 ───────────────────────────
 
 SHM_BASE = "/dev/shm/lkml_work"
-OUTPUT_BASE = os.path.expanduser("~/lkml")
+DEFAULT_OUTPUT = os.path.expanduser("~/lkml")
 
 
 # ──────────────────────── 头部安全读取 ────────────────────────
@@ -38,7 +39,6 @@ def _safe_get_header(msg, name: str, default: str = "") -> str:
             return default
         return str(val).replace("\r", "").replace("\n", " ")
     except Exception:
-        # 回退：从底层 _headers 取出原始字符串并清洗
         for k, v in msg._headers:
             if k.lower() == name.lower():
                 return v.replace("\r", "").replace("\n", " ")
@@ -56,6 +56,32 @@ def _safe_get_all(msg, name: str) -> list[str]:
             if k.lower() == name.lower():
                 values.append(v.replace("\r", "").replace("\n", " "))
         return values
+
+
+# ──────────────────────── 正文安全读取 ────────────────────────
+
+def _get_body_text(msg) -> str:
+    """安全提取邮件正文，兼容 str/bytes 返回值"""
+    body = ""
+    if msg.is_multipart():
+        for part in msg.walk():
+            if part.get_content_type() == "text/plain":
+                try:
+                    content = part.get_content()
+                    if isinstance(content, bytes):
+                        content = content.decode("utf-8", errors="replace")
+                    body += content
+                except Exception:
+                    pass
+    else:
+        try:
+            content = msg.get_content()
+            if isinstance(content, bytes):
+                content = content.decode("utf-8", errors="replace")
+            body = content
+        except Exception:
+            pass
+    return body
 
 
 # ─────────────────────────── 步骤一：克隆 ───────────────────────────
@@ -161,7 +187,7 @@ def _union(i: str, j: str) -> None:
         _parent[ri] = rj
 
 
-def step_build_threads(raw_dir: str, output_dir: str) -> None:
+def step_build_threads(raw_dir: str, out_dir: str) -> None:
     print("[步骤三] 正在读取并解析所有邮件...")
     emails_data: dict[str, email.message.EmailMessage] = {}
 
@@ -196,7 +222,7 @@ def step_build_threads(raw_dir: str, output_dir: str) -> None:
         threads[root_id].append(msg)
 
     print(f"[步骤三] 共发现 {len(threads)} 个 Thread，正在生成文件...")
-    os.makedirs(output_dir, exist_ok=True)
+    os.makedirs(out_dir, exist_ok=True)
 
     saved_count = 0
     name_counter: dict[str, int] = defaultdict(int)
@@ -220,7 +246,7 @@ def step_build_threads(raw_dir: str, output_dir: str) -> None:
         else:
             filename = base_filename
 
-        filepath = os.path.join(output_dir, filename)
+        filepath = os.path.join(out_dir, filename)
 
         with open(filepath, "w", encoding="utf-8") as f:
             subject = _safe_get_header(first_msg, "Subject", "No-Subject").strip()
@@ -236,26 +262,47 @@ def step_build_threads(raw_dir: str, output_dir: str) -> None:
                 f.write(f"Message-ID: {_safe_get_header(m, 'Message-ID', '')}\n")
                 f.write("-" * 80 + "\n\n")
 
-                body = ""
-                if m.is_multipart():
-                    for part in m.walk():
-                        if part.get_content_type() == "text/plain":
-                            try:
-                                body += part.get_content()
-                            except Exception:
-                                pass
-                else:
-                    try:
-                        body = m.get_content()
-                    except Exception:
-                        pass
+                body = _get_body_text(m)
                 f.write(body.strip() + "\n\n")
 
         saved_count += 1
         if saved_count % 500 == 0:
             print(f"[步骤三] 已生成 {saved_count} 个文件...")
 
-    print(f"[步骤三] 完成！共保存 {saved_count} 个 Thread 文件至: {output_dir}")
+    print(f"[步骤三] 完成！共生成 {saved_count} 个 Thread 文件。")
+
+
+# ─────────────────────────── 步骤四：压缩归档 ───────────────────────────
+
+def step_compress(out_dir: str, shm_archive: str, final_archive: str) -> None:
+    os.makedirs(os.path.dirname(final_archive), exist_ok=True)
+
+    print(f"[步骤四] 正在压缩为 tar.zst ...")
+    print(f"  源目录:   {out_dir}")
+    print(f"  临时文件: {shm_archive}")
+    print(f"  最终输出: {final_archive}")
+
+    tar_cmd = ["tar", "-C", out_dir, "-cf", "-", "."]
+    zstd_cmd = ["zstd", "--ultra", "-22", "-T0", "--progress", "-o", shm_archive, "-f"]
+
+    tar_proc = subprocess.Popen(tar_cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+    zstd_proc = subprocess.Popen(zstd_cmd, stdin=tar_proc.stdout)
+    tar_proc.stdout.close()
+
+    zstd_proc.wait()
+    tar_proc.wait()
+
+    if zstd_proc.returncode != 0:
+        raise RuntimeError(f"zstd 压缩失败，返回码: {zstd_proc.returncode}")
+    if tar_proc.returncode != 0:
+        raise RuntimeError(f"tar 打包失败，返回码: {tar_proc.returncode}")
+
+    size_mb = os.path.getsize(shm_archive) / (1024 * 1024)
+    print(f"\n[步骤四] 压缩完成！文件大小: {size_mb:.1f} MB")
+
+    print(f"[步骤四] 正在移动至最终路径...")
+    shutil.move(shm_archive, final_archive)
+    print(f"[步骤四] 移动完成！")
 
 
 # ─────────────────────────── 主流程 ───────────────────────────
@@ -267,34 +314,69 @@ def main():
     parser.add_argument("module", help="模块名，如 linux-nvme")
     parser.add_argument("volume", help="卷号，如 0、1、2")
     parser.add_argument(
-        "--keep", action="store_true", help="保留 /dev/shm 中的中间文件（默认清理）"
+        "-o", "--output",
+        default=DEFAULT_OUTPUT,
+        help=f"输出根目录 (默认: {DEFAULT_OUTPUT})"
+    )
+    parser.add_argument(
+        "--keep", action="store_true", help="保留 /dev/shm 中的中间文件（默认逐级清理）"
     )
     args = parser.parse_args()
 
     module = args.module
     volume = args.volume
+    output_base = args.output
+    keep = args.keep
 
-    # 路径规划
+    # 路径规划（全部中间数据在 /dev/shm）
     work_dir = os.path.join(SHM_BASE, f"{module}_{volume}")
     git_dir = os.path.join(work_dir, "git", f"{volume}.git")
     raw_dir = os.path.join(work_dir, "raw_emails")
-    output_dir = os.path.join(OUTPUT_BASE, module, volume, "out")
+    out_dir = os.path.join(work_dir, "out")
+    shm_archive = os.path.join(work_dir, f"{volume}.tar.zst")
+
+    # 最终输出：用户目录下的 tar.zst
+    final_archive = os.path.join(output_base, module, f"{volume}.tar.zst")
 
     print(f"{'=' * 60}")
-    print(f"  模块:   {module}")
-    print(f"  卷号:   {volume}")
-    print(f"  工作区: {work_dir}")
-    print(f"  输出:   {output_dir}")
+    print(f"  模块:       {module}")
+    print(f"  卷号:       {volume}")
+    print(f"  工作区:     {work_dir}")
+    print(f"  输出根目录: {output_base}")
+    print(f"  归档输出:   {final_archive}")
     print(f"{'=' * 60}\n")
 
     try:
+        # 步骤一：克隆
         step_clone(module, volume, git_dir)
         print()
+
+        # 步骤二：提取原始邮件
         step_extract_emails(git_dir, raw_dir)
         print()
-        step_build_threads(raw_dir, output_dir)
+        if not keep:
+            print(f"🧹 清理 git 仓库释放空间: {git_dir}")
+            shutil.rmtree(git_dir, ignore_errors=True)
+            print()
+
+        # 步骤三：线程归档
+        step_build_threads(raw_dir, out_dir)
         print()
-        print(f"✅ 全部完成！结果已保存至: {output_dir}")
+        if not keep:
+            print(f"🧹 清理原始邮件释放空间: {raw_dir}")
+            shutil.rmtree(raw_dir, ignore_errors=True)
+            print()
+
+        # 步骤四：压缩归档
+        step_compress(out_dir, shm_archive, final_archive)
+        print()
+        if not keep:
+            print(f"🧹 清理线程文件释放空间: {out_dir}")
+            shutil.rmtree(out_dir, ignore_errors=True)
+            print()
+
+        print(f"✅ 全部完成！归档文件: {final_archive}")
+
     except subprocess.CalledProcessError as e:
         print(f"\n❌ 命令执行失败: {e}", file=sys.stderr)
         sys.exit(1)
@@ -302,8 +384,9 @@ def main():
         print(f"\n❌ 发生错误: {e}", file=sys.stderr)
         sys.exit(1)
     finally:
-        if not args.keep and os.path.exists(work_dir):
-            print(f"\n🧹 正在清理工作区: {work_dir}")
+        # 兜底清理：无论成功、失败还是异常，只要没加 --keep，就确保不残留
+        if not keep and os.path.exists(work_dir):
+            print(f"\n🧹 清理残留工作区: {work_dir}")
             shutil.rmtree(work_dir, ignore_errors=True)
             print("🧹 清理完成。")
 
