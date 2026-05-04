@@ -12,9 +12,7 @@
 
 #include <tuple>
 #include <utility>
-
-template <auto N>
-using m = std::make_index_sequence<N>;
+#include <iostream>
 
 template <auto First, auto Last>
 constexpr auto constexpr_for = [](auto &&f) {
@@ -26,22 +24,11 @@ constexpr auto constexpr_for = [](auto &&f) {
     }.template operator()<First>();
 };
 
-constexpr int retries = 10;
+constexpr int retries = 32;
 
-// 每种 (N,E) 组合实例化 8 个 make_index_sequence
-template <int N, typename E>
-struct heavy_op {
-    using type = std::tuple<
-        E,
-        m<N * 1>,
-        m<N * 2>,
-        m<N * 3>,
-        m<N * 4>,
-        m<N * 5>,
-        m<N * 6>,
-        m<N * 7>,
-        m<N * 8>
-    >;
+template <int N, typename Env>
+struct op {
+    using type = Env;
     static constexpr int value = N;
 };
 
@@ -50,61 +37,45 @@ struct env {
     static constexpr int layer = I;
 };
 
-struct dummy_tag {};
+struct fixed_tag {};
 
 template <int N, typename Tag>
 consteval int compute_impl() {
-    typename heavy_op<N, Tag>::type t;
-    [[maybe_unused]] auto sz = sizeof(t);
     if constexpr (N > 0) {
-        return heavy_op<N, Tag>::value + compute_impl<N - 1, Tag>();
+        return op<N, Tag>::value + compute_impl<N - 1, Tag>();
     }
-    return heavy_op<0, Tag>::value;
+    return op<0, Tag>::value;
 }
 
-// 无缓存：Tag = E
-template <int N, typename E>
-consteval int compute_no_cache(int) {
-    return compute_impl<N, E>();
+// 无缓存：tag = 每次单独计算的 env
+template <int N, typename>
+consteval int compute_without_cache(int) {
+    using real_env = decltype([]{});
+    return compute_impl<N, real_env>();
 }
 
-// 有缓存：Tag = dummy_tag，结果缓存到变量模板
-template <int N>
-constexpr auto cached = compute_impl<N, dummy_tag>();
-
-template <int N, typename E>
+// 有缓存：需要通过某种方式，使得类型实例化前抛掉 E
+// 具体做法我还没想好，但是目前可以看到编译性能差距
+template <int N, typename>
 consteval int compute_with_cache(int) {
-    return cached<N>;
-}
-
-template <int D>
-consteval int chain_no_cache() {
-    int s = 0;
-    constexpr_for<0, retries>([&s]<auto i> {
-        s += compute_no_cache<D, env<i>>(0);
-    });
-    return s;
-}
-
-template <int D>
-consteval int chain_with_cache() {
-    int s = 0;
-    constexpr_for<0, retries>([&s]<auto i> {
-        s += compute_with_cache<D, env<i>>(0);
-    });
-    return s;
+    return compute_impl<N, fixed_tag>();
 }
 
 int main() {
     int s = 0;
-    constexpr_for<61, 120>([&s]<auto n> {
-        #ifdef NOCACHE
-        s += chain_no_cache<n>();
-        #elifdef CACHE
-        s += chain_with_cache<n>();
-        #else
-        #error "MUST define CACHE or NOCACHE!"
-        #endif
+    constexpr int first = 60;
+    constexpr int last = 120;
+    constexpr_for<first, last>([&s]<auto n> {
+        constexpr_for<0, retries>([&s]<auto i> {
+            #ifdef NOCACHE
+            s += compute_without_cache<n, env<i>>(0);
+            #elifdef CACHE
+            s += compute_with_cache<n, env<i>>(0);
+            #else
+            #error "MUST define CACHE or NOCACHE!"
+            #endif
+        });
     });
-    return s;
+    std::cout << s << std::endl;
+    return 0;
 }
