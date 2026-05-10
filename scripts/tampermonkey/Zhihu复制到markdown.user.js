@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Zhihu Markdown 导出（含原图）
 // @namespace    https://yourname.dev/
-// @version      0.3.3
+// @version      0.3.5
 // @description  导出知乎专栏文章和问答为 Markdown，支持表格、删除线、数学公式等
 // @author       you
 // @match        https://www.zhihu.com/*
@@ -28,6 +28,14 @@
     filter: 'br',
     replacement: function () {
       return '  \n';
+    }
+  });
+
+  // 分割线：<hr> → -------
+  turndownService.addRule('horizontalRule', {
+    filter: 'hr',
+    replacement: function () {
+      return '\n\n-------\n\n';
     }
   });
 
@@ -138,7 +146,7 @@
 
   // --------- 工具函数 ---------
 
-  // 清理 Markdown 输出中多余的转义
+  // 清理 Markdown 输出中多余的转义和格式
   function cleanMarkdown(md) {
     if (!md) return md;
 
@@ -165,6 +173,18 @@
     cleaned = cleaned.replace(/\\\*\\\*/g, '\x00DS\x00');
     cleaned = cleaned.replace(/\\\*/g, '*');
     cleaned = cleaned.replace(/\x00DS\x00/g, '**');
+
+    // 无序列表标记后只保留一个空格：-   → -
+    cleaned = cleaned.replace(/^(\s*)([-*+])\s{2,}/gm, '$1$2 ');
+
+    // 有序列表标记后只保留一个空格：1.  → 1.
+    cleaned = cleaned.replace(/^(\s*)(\d+\.)\s{2,}/gm, '$1$2 ');
+
+    // 列表项之间去除多余空行（无序）
+    cleaned = cleaned.replace(/(\n\s*[-*+] [^\n]*)\n{2,}(?=\s*[-*+] )/g, '$1\n');
+
+    // 列表项之间去除多余空行（有序）
+    cleaned = cleaned.replace(/(\n\s*\d+\. [^\n]*)\n{2,}(?=\s*\d+\. )/g, '$1\n');
 
     // 还原保护区域
     cleaned = cleaned.replace(/\x00P(\d+)\x00/g, function (_, i) {
@@ -406,12 +426,7 @@
     content.appendChild(textarea);
     modal.appendChild(content);
 
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) {
-        modal.remove();
-      }
-    });
-
+    // 只通过关闭按钮和 ESC 关闭，点击遮罩不关闭
     const handleEsc = (e) => {
       if (e.key === 'Escape') {
         modal.remove();
@@ -428,15 +443,6 @@
   // --------- 专栏文章导出 ---------
 
   function exportColumnArticle() {
-    const titleEl =
-      document.querySelector('h1.Post-Title') ||
-      document.querySelector('h1.ArticleHeader-title') ||
-      document.querySelector('h1');
-
-    const title = titleEl
-      ? titleEl.innerText.trim()
-      : document.title.replace(/ - 专栏 - 知乎$| - 知乎$/, '');
-
     const contentEl =
       document.querySelector('.Post-RichTextContainer .RichText.ztext') ||
       document.querySelector('article .RichText.ztext') ||
@@ -450,13 +456,7 @@
     const clone = contentEl.cloneNode(true);
     normalizeContent(clone);
 
-    const bodyMd = turndownService.turndown(clone.innerHTML).trim();
-
-    const mdParts = [];
-    if (title) mdParts.push('# ' + title, '');
-    mdParts.push(bodyMd);
-
-    return mdParts.join('\n');
+    return turndownService.turndown(clone.innerHTML).trim();
   }
 
   // --------- 从 AnswerItem 提取回答信息 ---------
@@ -465,43 +465,14 @@
     const contentEl = item.querySelector('.RichText.ztext');
     if (!contentEl) return null;
 
-    const authorEl =
-      item.querySelector('.AuthorInfo-head .UserLink-link') ||
-      item.querySelector('.AuthorInfo-content .UserLink-link') ||
-      item.querySelector('.UserLink-link');
-
-    const authorName = authorEl
-      ? authorEl.innerText.trim()
-      : '回答者 ' + (idx + 1);
-
-    const voteEl =
-      item.querySelector('.VoteButton--up .VoteButton--count') ||
-      item.querySelector('.VoteButton--count');
-    const voteText = voteEl ? voteEl.innerText.trim() : '';
-
     const clone = contentEl.cloneNode(true);
     normalizeContent(clone);
-    const ansMd = turndownService.turndown(clone.innerHTML).trim();
-
-    const header =
-      '## 回答 ' + (idx + 1) + ' - ' + authorName +
-      (voteText ? '（赞同 ' + voteText + '）' : '');
-
-    return header + '\n\n' + ansMd;
+    return turndownService.turndown(clone.innerHTML).trim();
   }
 
   // --------- 问题 + 全部回答导出 ---------
 
   function exportQuestionWithAnswers() {
-    const titleEl =
-      document.querySelector('h1.QuestionHeader-title') ||
-      document.querySelector('.QuestionHeader-title') ||
-      document.querySelector('h1');
-
-    const title = titleEl
-      ? titleEl.innerText.trim()
-      : document.title.replace(/ - 知乎$/, '');
-
     const descEl =
       document.querySelector('.QuestionHeader-detail .RichText.ztext') ||
       document.querySelector('.QuestionHeader-detail .RichContent-inner .RichText.ztext') ||
@@ -530,14 +501,12 @@
 
     const md = [];
 
-    if (title) md.push('# ' + title, '');
-
     if (descMd) {
-      md.push('> ' + descMd.replace(/\n/g, '\n> '), '', '---', '');
+      md.push(descMd, '', '-------', '');
     }
 
     if (answerMdParts.length) {
-      md.push(answerMdParts.join('\n\n---\n\n'));
+      md.push(answerMdParts.join('\n\n-------\n\n'));
     }
 
     return md.join('\n');
@@ -593,46 +562,9 @@
       return '';
     }
 
-    const titleEl =
-      document.querySelector('h1.QuestionHeader-title') ||
-      document.querySelector('.QuestionHeader-title') ||
-      document.querySelector('h1');
-
-    const questionTitle = titleEl
-      ? titleEl.innerText.trim()
-      : document.title.replace(/ - 知乎$/, '');
-
-    const authorEl =
-      item.querySelector('.AuthorInfo-head .UserLink-link') ||
-      item.querySelector('.AuthorInfo-content .UserLink-link') ||
-      item.querySelector('.UserLink-link');
-
-    const authorName = authorEl
-      ? authorEl.innerText.trim()
-      : '回答者';
-
-    const voteEl =
-      item.querySelector('.VoteButton--up .VoteButton--count') ||
-      item.querySelector('.VoteButton--count');
-    const voteText = voteEl ? voteEl.innerText.trim() : '';
-
     const clone = contentEl.cloneNode(true);
     normalizeContent(clone);
-    const ansMd = turndownService.turndown(clone.innerHTML).trim();
-
-    const md = [];
-
-    if (questionTitle) md.push('# ' + questionTitle, '');
-
-    md.push(
-      '> 回答者：' + authorName +
-        (voteText ? '（赞同 ' + voteText + '）' : ''),
-      ''
-    );
-
-    md.push(ansMd);
-
-    return md.join('\n');
+    return turndownService.turndown(clone.innerHTML).trim();
   }
 
   // --------- 页面类型判断 + 导出入口 ---------
