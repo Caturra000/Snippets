@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Zhihu Markdown 导出（含原图）
 // @namespace    https://yourname.dev/
-// @version      0.3.5
-// @description  导出知乎专栏文章和问答为 Markdown，支持表格、删除线、数学公式等
+// @version      0.5.1
+// @description  导出知乎专栏文章和问答为 Markdown，支持表格、删除线、数学公式等；支持导出评论区
 // @author       you
 // @match        https://www.zhihu.com/*
 // @match        https://zhuanlan.zhihu.com/*
@@ -23,7 +23,6 @@
 
   // ---- 自定义 Turndown 规则 ----
 
-  // 换行
   turndownService.addRule('lineBreak', {
     filter: 'br',
     replacement: function () {
@@ -31,7 +30,6 @@
     }
   });
 
-  // 分割线：<hr> → -------
   turndownService.addRule('horizontalRule', {
     filter: 'hr',
     replacement: function () {
@@ -39,7 +37,6 @@
     }
   });
 
-  // 表格：<table> → GFM Markdown 表格
   turndownService.addRule('zhihuTable', {
     filter: 'table',
     replacement: function (content, node) {
@@ -82,7 +79,6 @@
     }
   });
 
-  // 删除线
   turndownService.addRule('strikethrough', {
     filter: ['del', 's', 'strike'],
     replacement: function (content) {
@@ -90,7 +86,6 @@
     }
   });
 
-  // 数学公式：<img eeimg>
   turndownService.addRule('mathFormula', {
     filter: function (node) {
       return node.nodeName === 'IMG' && node.hasAttribute('eeimg');
@@ -104,7 +99,6 @@
     }
   });
 
-  // .ztext-math 元素
   turndownService.addRule('ztextMath', {
     filter: function (node) {
       return node.classList && node.classList.contains('ztext-math');
@@ -117,7 +111,6 @@
     }
   });
 
-  // 脚注引用
   turndownService.addRule('footnoteRef', {
     filter: function (node) {
       return node.nodeName === 'SUP' && node.getAttribute('data-draft-type') === 'reference';
@@ -128,7 +121,6 @@
     }
   });
 
-  // 下划线
   turndownService.addRule('underline', {
     filter: 'u',
     replacement: function (content) {
@@ -136,7 +128,6 @@
     }
   });
 
-  // 高亮
   turndownService.addRule('highlightMark', {
     filter: 'mark',
     replacement: function (content) {
@@ -146,47 +137,34 @@
 
   // --------- 工具函数 ---------
 
-  // 清理 Markdown 输出中多余的转义和格式
   function cleanMarkdown(md) {
     if (!md) return md;
 
-    // 保护代码块、行内代码、数学公式，避免误改其内容
     var protectedBlocks = [];
     var ph = function (match) {
       protectedBlocks.push(match);
       return '\x00P' + (protectedBlocks.length - 1) + '\x00';
     };
 
-    // 代码块
     var cleaned = md.replace(/```[\s\S]*?```/g, ph);
-    // 行内代码
     cleaned = cleaned.replace(/`[^`]+`/g, ph);
-    // 块级数学
     cleaned = cleaned.replace(/\$\$[\s\S]*?\$\$/g, ph);
-    // 行内数学
     cleaned = cleaned.replace(/\$[^$\n]+?\$/g, ph);
 
-    // \_ → _（词内下划线不需要转义）
     cleaned = cleaned.replace(/\\_/g, '_');
 
-    // \* → *，但保留 \*\*
     cleaned = cleaned.replace(/\\\*\\\*/g, '\x00DS\x00');
     cleaned = cleaned.replace(/\\\*/g, '*');
     cleaned = cleaned.replace(/\x00DS\x00/g, '**');
 
-    // 无序列表标记后只保留一个空格：-   → -
     cleaned = cleaned.replace(/^(\s*)([-*+])\s{2,}/gm, '$1$2 ');
-
-    // 有序列表标记后只保留一个空格：1.  → 1.
     cleaned = cleaned.replace(/^(\s*)(\d+\.)\s{2,}/gm, '$1$2 ');
 
-    // 列表项之间去除多余空行（无序）
     cleaned = cleaned.replace(/(\n\s*[-*+] [^\n]*)\n{2,}(?=\s*[-*+] )/g, '$1\n');
-
-    // 列表项之间去除多余空行（有序）
     cleaned = cleaned.replace(/(\n\s*\d+\. [^\n]*)\n{2,}(?=\s*\d+\. )/g, '$1\n');
 
-    // 还原保护区域
+    cleaned = cleaned.replace(/\)\s*!\[/g, ')\n\n![');
+
     cleaned = cleaned.replace(/\x00P(\d+)\x00/g, function (_, i) {
       return protectedBlocks[parseInt(i)];
     });
@@ -194,7 +172,6 @@
     return cleaned;
   }
 
-  // 尽量还原为原图 URL
   function getBestImageUrl(img) {
     if (!img) return '';
 
@@ -227,7 +204,6 @@
     return '';
   }
 
-  // 清理知乎图片 URL
   function cleanupZhihuImageUrl(url, token) {
     try {
       const u = new URL(url, location.href);
@@ -256,7 +232,6 @@
     }
   }
 
-  // 规范化内容
   function normalizeContent(root) {
     if (!root) return;
 
@@ -267,6 +242,13 @@
     root.querySelectorAll('figure').forEach(fig => {
       const img = fig.querySelector('img');
       if (img && fig.parentNode) {
+        const figcaption = fig.querySelector('figcaption');
+        if (figcaption) {
+          const captionText = figcaption.textContent.trim();
+          if (captionText) {
+            img.setAttribute('data-figcaption', captionText);
+          }
+        }
         fig.parentNode.insertBefore(img, fig);
       }
       fig.remove();
@@ -284,6 +266,7 @@
       img.removeAttribute('srcset');
 
       const caption =
+        img.getAttribute('data-figcaption') ||
         img.getAttribute('data-caption') ||
         img.getAttribute('data-original-caption') ||
         img.getAttribute('alt') ||
@@ -294,7 +277,6 @@
     });
   }
 
-  // 显示 Markdown 弹窗
   function showMarkdownModal(markdown) {
     const existing = document.getElementById('zhihu-md-modal');
     if (existing) existing.remove();
@@ -426,7 +408,6 @@
     content.appendChild(textarea);
     modal.appendChild(content);
 
-    // 只通过关闭按钮和 ESC 关闭，点击遮罩不关闭
     const handleEsc = (e) => {
       if (e.key === 'Escape') {
         modal.remove();
@@ -521,24 +502,21 @@
     let item = null;
 
     if (answerId) {
-      // 方式1：name 属性
       item = document.querySelector('.AnswerItem[name="' + answerId + '"]');
 
-      // 方式2：data-zop 中的 itemId
       if (!item) {
         item = document.querySelector(
           '.AnswerItem[data-zop*="\\"itemId\\":\\"' + answerId + '\\""]'
         );
       }
 
-      // 方式3：meta[itemprop="url"]
       if (!item) {
         const metas = document.querySelectorAll(
           '.AnswerItem meta[itemprop="url"]'
         );
         for (const meta of metas) {
-          const content = meta.getAttribute('content') || '';
-          if (content.includes('/answer/' + answerId)) {
+          const c = meta.getAttribute('content') || '';
+          if (c.includes('/answer/' + answerId)) {
             item = meta.closest('.AnswerItem');
             break;
           }
@@ -546,7 +524,6 @@
       }
     }
 
-    // fallback
     if (!item) {
       item = document.querySelector('.Question-main .AnswerItem');
     }
@@ -567,12 +544,153 @@
     return turndownService.turndown(clone.innerHTML).trim();
   }
 
+  // --------- 评论区导出 ---------
+
+  function exportComments() {
+    var container = document.querySelector('.Comments-container') ||
+                    document.querySelector('.Modal-content') ||
+                    document.querySelector('[data-za-detail-view-path-module="CommentList"]');
+
+    if (!container) {
+      alert('找不到评论区，请先展开评论。');
+      return '';
+    }
+
+    var contentEls = container.querySelectorAll('.CommentContent');
+    if (!contentEls.length) {
+      alert('当前没有评论。');
+      return '';
+    }
+
+    // 预建 [data-id] 块列表，用于隐式回复检测
+    var dataIdBlocks = Array.from(container.querySelectorAll('[data-id]'));
+
+    // 从单个 [data-id] 块提取评论数据
+    function extractBlockData(block) {
+      var contentEl = block.querySelector('.CommentContent');
+      if (!contentEl) return null;
+
+      var commentBody = contentEl.parentElement;
+      if (!commentBody) return null;
+
+      // 判断是否为回复层：css-1kwt8l8 = 回复，css-jp43l4 = 顶级
+      var commentWrapper = commentBody.parentElement;
+      var isReply = commentWrapper && commentWrapper.classList.contains('css-1kwt8l8');
+
+      // 用户名链接
+      var userLinks = Array.from(commentBody.querySelectorAll('a[href*="/people/"]'))
+        .filter(function (a) { return a.textContent.trim() && !a.querySelector('img'); });
+      if (!userLinks.length) return null;
+
+      var username = userLinks[0].textContent.trim();
+
+      // "作者"标记
+      var isAuthor = false;
+      commentBody.querySelectorAll('span').forEach(function (span) {
+        if (span.closest('.CommentContent')) return;
+        if (span.childElementCount === 0 && span.textContent.trim() === '作者') {
+          isAuthor = true;
+        }
+      });
+      if (isAuthor) username += ' (作者)';
+
+      // 回复目标检测
+      var replyTo = '';
+      var hasArrow = commentBody.querySelector('svg.ZDI--ArrowRightAlt16');
+
+      if (hasArrow && userLinks.length > 1) {
+        // 显式回复：有箭头 + 第二个用户链接
+        replyTo = userLinks[1].textContent.trim();
+      } else if (!hasArrow && isReply) {
+        // 隐式回复：无箭头，但样式为回复层，取前一个 [data-id] 块的用户名
+        var myIndex = dataIdBlocks.indexOf(block);
+        if (myIndex > 0) {
+          var prevBlock = dataIdBlocks[myIndex - 1];
+          var prevLinks = Array.from(prevBlock.querySelectorAll('a[href*="/people/"]'))
+            .filter(function (a) { return a.textContent.trim() && !a.querySelector('img'); });
+          if (prevLinks.length) {
+            replyTo = prevLinks[0].textContent.trim();
+          }
+        }
+      }
+
+      // 时间
+      var time = '';
+      var timeSpan = commentBody.querySelector('span.css-12cl38p');
+      if (timeSpan && !timeSpan.closest('.CommentContent')) {
+        time = timeSpan.textContent.trim();
+      }
+
+      // 内容：替换表情贴图为 alt 文本
+      var clone = contentEl.cloneNode(true);
+      clone.querySelectorAll('img.sticker').forEach(function (img) {
+        var alt = img.getAttribute('alt') || '';
+        if (alt) {
+          img.parentNode.replaceChild(document.createTextNode(alt), img);
+        } else {
+          img.remove();
+        }
+      });
+      var contentMd = turndownService.turndown(clone.innerHTML).trim();
+
+      // 拼装头部
+      var header = '**' + username + '** | ' + time;
+      if (replyTo) {
+        header += ' | 回复 **' + replyTo + '**';
+      }
+
+      return {
+        isReply: isReply,
+        header: header,
+        content: contentMd
+      };
+    }
+
+    // 提取所有 [data-id] 块数据
+    var blockDataMap = new Map();
+    dataIdBlocks.forEach(function (block) {
+      var data = extractBlockData(block);
+      if (data) blockDataMap.set(block, data);
+    });
+
+    // 分组：每个顶级评论 + 紧随其后的回复评论
+    var groups = [];
+    var currentGroup = null;
+
+    dataIdBlocks.forEach(function (block) {
+      var data = blockDataMap.get(block);
+      if (!data) return;
+
+      if (!data.isReply) {
+        // 新的顶级评论，开启新分组
+        currentGroup = { top: data, replies: [] };
+        groups.push(currentGroup);
+      } else if (currentGroup) {
+        // 回复评论归入当前分组
+        currentGroup.replies.push(data);
+      }
+    });
+
+    // 输出：顶级保持 DOM 原序，回复按 DOM 倒序（最旧在前）
+    var lines = [];
+    groups.forEach(function (group) {
+      lines.push(group.top.header, '', group.top.content, '');
+
+      var reversedReplies = group.replies.slice().reverse();
+      reversedReplies.forEach(function (reply) {
+        lines.push(reply.header, '', reply.content, '');
+      });
+    });
+
+    var result = lines.join('\n').trim();
+    return cleanMarkdown(result);
+  }
+
   // --------- 页面类型判断 + 导出入口 ---------
 
   function doExport() {
-    const href = location.href;
-
-    let markdown = '';
+    var href = location.href;
+    var markdown = '';
 
     if (/^https:\/\/zhuanlan\.zhihu\.com\/p\//.test(href)) {
       markdown = exportColumnArticle();
@@ -591,8 +709,14 @@
     }
 
     markdown = cleanMarkdown(markdown);
-
     showMarkdownModal(markdown);
+  }
+
+  function doExportComments() {
+    var markdown = exportComments();
+    if (markdown) {
+      showMarkdownModal(markdown);
+    }
   }
 
   // --------- 按钮 UI ---------
@@ -600,7 +724,7 @@
   function addExportButton() {
     if (document.getElementById('zhihu-md-export-btn')) return;
 
-    const btn = document.createElement('button');
+    var btn = document.createElement('button');
     btn.id = 'zhihu-md-export-btn';
     btn.textContent = '导出 Markdown';
 
@@ -623,14 +747,14 @@
       'pointer-events: auto !important'
     ].join('; ');
 
-    btn.addEventListener('mouseenter', () => {
+    btn.addEventListener('mouseenter', function () {
       btn.style.backgroundColor = '#0070e0';
     });
-    btn.addEventListener('mouseleave', () => {
+    btn.addEventListener('mouseleave', function () {
       btn.style.backgroundColor = '#0084ff';
     });
 
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', function () {
       try {
         doExport();
       } catch (e) {
@@ -640,7 +764,51 @@
     });
 
     document.body.appendChild(btn);
-    console.log('[知乎MD导出] 按钮已添加');
+  }
+
+  function addExportCommentsButton() {
+    if (document.getElementById('zhihu-md-comments-btn')) return;
+
+    var btn = document.createElement('button');
+    btn.id = 'zhihu-md-comments-btn';
+    btn.textContent = '导出评论';
+
+    btn.style.cssText = [
+      'position: fixed !important',
+      'right: 20px !important',
+      'bottom: 120px !important',
+      'z-index: 2147483647 !important',
+      'padding: 8px 12px !important',
+      'background-color: #0084ff !important',
+      'color: #fff !important',
+      'border: none !important',
+      'border-radius: 4px !important',
+      'font-size: 14px !important',
+      'cursor: pointer !important',
+      'box-shadow: 0 2px 8px rgba(0,0,0,.2) !important',
+      'display: block !important',
+      'visibility: visible !important',
+      'opacity: 1 !important',
+      'pointer-events: auto !important'
+    ].join('; ');
+
+    btn.addEventListener('mouseenter', function () {
+      btn.style.backgroundColor = '#0070e0';
+    });
+    btn.addEventListener('mouseleave', function () {
+      btn.style.backgroundColor = '#0084ff';
+    });
+
+    btn.addEventListener('click', function () {
+      try {
+        doExportComments();
+      } catch (e) {
+        console.error('[知乎MD导出] 评论导出错误：', e);
+        alert('导出评论时出错：' + e.message);
+      }
+    });
+
+    document.body.appendChild(btn);
   }
 
   function ready(fn) {
@@ -651,8 +819,9 @@
     }
   }
 
-  ready(() => {
+  ready(function () {
     addExportButton();
+    addExportCommentsButton();
   });
 
 })();
