@@ -223,7 +223,7 @@
             <table class="summary-table">
                 <tr>
                     <td>综合最优</td>
-                    <td><strong>DistMutex+Combining</strong> — 高竞争吞吐领先 (32线程150%，64线程140%)，尾延迟可控，公平性最佳</td>
+                    <td><strong>DistMutex+Combining</strong> — 高竞争吞吐领先 (32线程130%，64线程140%)，尾延迟可控，公平性最佳</td>
                 </tr>
                 <tr>
                     <td>稳妥之选</td>
@@ -251,7 +251,7 @@
                 <strong>关键发现</strong>
                 • 分水岭在 8 线程：8线程以下自旋锁领先，8线程以上 DistributedMutex 系列反超<br>
                 • std::shared_mutex 在64线程严重崩溃，吞吐仅为 std::mutex 的 17%<br>
-                • DistMutex+Combining 在32-64线程保持领先
+                • DistMutex+Combining 在16-64线程保持领先
             </div>
         </section>
 
@@ -274,7 +274,7 @@
                 </div>
             </div>
             <div class="note">
-                <strong>⚠️ 自旋锁警告</strong>
+                <strong>自旋锁警告</strong>
                 MicroSpinLock 64线程尾延迟 382ms，PicoSpinLock 达 618ms。云环境 vCPU 抢占会放大此问题。
             </div>
         </section>
@@ -386,7 +386,7 @@
                 <div class="rec-box">
                     <h4>高竞争场景 (16-64 线程)</h4>
                     <ul>
-                        <li><strong>DistMutex+Combining</strong> — 32线程 150%，64线程 96%</li>
+                        <li><strong>DistMutex+Combining</strong> — 32线程 130%，64线程 140%</li>
                         <li><strong>FlatCombining</strong> — 32线程 135%</li>
                         <li><strong>DistributedMutex</strong> — 64线程仍稳定</li>
                     </ul>
@@ -526,17 +526,17 @@
 
         // 配色
         const colors = {
-            'std::mutex': '#2563eb',
-            'std::shared_mutex': '#7c3aed',
-            'MicroSpinLock': '#dc2626',
-            'PicoSpinLock': '#ea580c',
-            'MicroLock': '#ca8a04',
-            'SharedMutex': '#16a34a',
-            'DistributedMutex': '#0891b2',
-            'DistMutex+Combining': '#0284c7',
-            'RWSpinLock': '#db2777',
-            'FlatComb-NoCache': '#06b6d4',
-            'FlatComb-Caching': '#65a30d'
+            'std::mutex': '#000000',
+            'std::shared_mutex': '#888888',
+            'MicroSpinLock': '#0070F3',
+            'PicoSpinLock': '#00E5FF',
+            'MicroLock': '#7928CA',
+            'SharedMutex': '#FF0080',
+            'DistributedMutex': '#00534C',
+            'DistMutex+Combining': '#50E3C2',
+            'RWSpinLock': '#6366F1',
+            'FlatComb-NoCache': '#555555',
+            'FlatComb-Caching': '#F5A623'
         };
 
         Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, sans-serif';
@@ -544,26 +544,45 @@
         Chart.defaults.color = '#666';
 
         // 吞吐量图表
+        const mutexSum = fairnessData['std::mutex'].sum; // std::mutex 的绝对值
         new Chart(document.getElementById('throughputChart'), {
             type: 'bar',
             data: {
                 labels: fairnessThreads.map(t => t + ' 线程'),
-                datasets: Object.entries(fairnessData).map(([name, data]) => ({
-                    label: name,
-                    data: data.sum,
-                    backgroundColor: colors[name],
-                    borderWidth: 0,
-                    borderRadius: 2
-                }))
+                datasets: Object.entries(fairnessData).map(([name, data]) => {
+                    // 计算百分比数据，同时保留原始绝对值
+                    const percentData = data.sum.map((val, i) => (val / mutexSum[i]) * 100);
+                    return {
+                        label: name,
+                        data: percentData,
+                        originalSum: data.sum,
+                        backgroundColor: colors[name],
+                        borderWidth: 0,
+                        borderRadius: 2
+                    };
+                })
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12 } }
+                    legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12 } },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const orig = context.dataset.originalSum[context.dataIndex];
+                                const pct = context.parsed.y.toFixed(1);
+                                return `${context.dataset.label}: ${orig.toFixed(1)} M (${pct}%)`;
+                            }
+                        }
+                    }
                 },
                 scales: {
-                    y: { beginAtZero: true, title: { display: true, text: 'Sum (M)' }, grid: { color: '#f0f0f0' } },
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: '% (std::mutex = 100%)' },
+                        grid: { color: '#f0f0f0' }
+                    },
                     x: { grid: { display: false } }
                 }
             }
