@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>设置自定义标签页</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    input { width: 100%; max-width: 500px; padding: 8px; margin-bottom: 10px; }
+    button { padding: 8px 15px; cursor: pointer; }
+    .hint { color: #666; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <h2>设置新标签页跳转链接</h2>
+  <p class="hint">支持常规网页 (https://...) 或 本地文件 (例如: file:///D:/your/path/index.html)</p>
+  <input type="text" id="urlInput" placeholder="请输入完整链接...">
+  <br>
+  <button id="saveBtn">保存</button>
+  <span id="status" style="color: green; margin-left: 10px;"></span>
+  <script src="options.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "自定义新标签页 (支持本地文件)",
+  "version": "1.0",
+  "description": "接管新建标签页，并跳转到自定义的链接或本地文件。",
+  "chrome_url_overrides": {
+    "newtab": "newtab.html"
+  },
+  "permissions": [
+    "tabs",
+    "storage"
+  ],
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  }
+}
