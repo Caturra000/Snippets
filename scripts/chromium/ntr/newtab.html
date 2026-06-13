@@ -32,8 +32,7 @@
             --expand-icon-bg: #e8eaed;
             --expand-icon-bg-hover: #d2d4d7;
             
-            /* 三点按钮隐蔽色 */
-            --more-btn-color: #dadce0; 
+            --more-btn-color: #dadce0;
             --more-btn-hover-color: #5f6368;
         }
 
@@ -65,7 +64,6 @@
                 --expand-icon-bg: #303134;
                 --expand-icon-bg-hover: #3c4043;
                 
-                /* 黑暗模式三点按钮隐蔽色 */
                 --more-btn-color: #3c4043;
                 --more-btn-hover-color: #9aa0a6;
             }
@@ -757,9 +755,7 @@
         (function() {
             const STORAGE_KEY = 'custom_nav_page_bookmarks';
             const TOAST_DURATION = 8000;
-            // 缓存相关
-            const FAVICON_CACHE_KEY = 'favicon_cache_data';
-            const FAVICON_CACHE_INDEX_KEY = 'favicon_cache_index';
+            const FAVICON_CACHE_KEY = 'favicon_cache_v3';
             const MAX_CACHE_ENTRIES = 200;
 
             const gridContainer = document.getElementById('gridContainer');
@@ -783,60 +779,44 @@
             let lastRemovedBookmark = null;
             let lastRemovedIndex = null;
 
-            // 图标缓存数据结构
             let faviconCache = {};
-            let faviconCacheIndex = [];
 
             function loadFaviconCache() {
                 try {
-                    const data = localStorage.getItem(FAVICON_CACHE_KEY);
-                    const index = localStorage.getItem(FAVICON_CACHE_INDEX_KEY);
-                    if (data) faviconCache = JSON.parse(data);
-                    if (index) faviconCacheIndex = JSON.parse(index);
+                    const stored = localStorage.getItem(FAVICON_CACHE_KEY);
+                    if (stored) {
+                        faviconCache = JSON.parse(stored);
+                    }
                 } catch(e) {
                     faviconCache = {};
-                    faviconCacheIndex = [];
                 }
             }
 
             function saveFaviconCache() {
                 try {
                     localStorage.setItem(FAVICON_CACHE_KEY, JSON.stringify(faviconCache));
-                    localStorage.setItem(FAVICON_CACHE_INDEX_KEY, JSON.stringify(faviconCacheIndex));
                 } catch(e) {
-                    // 存储空间不足时清除缓存
                     faviconCache = {};
-                    faviconCacheIndex = [];
+                    localStorage.setItem(FAVICON_CACHE_KEY, JSON.stringify({}));
                 }
             }
 
-            function getDomainFromUrl(url) {
-                try {
-                    return new URL(url).hostname;
-                } catch(e) {
-                    return url;
-                }
+            function getDomain(url) {
+                try { return new URL(url).hostname; } catch(e) { return url; }
             }
 
             function getCachedFavicon(url) {
-                const domain = getDomainFromUrl(url);
-                return faviconCache[domain] || null;
+                return faviconCache[getDomain(url)] || null;
             }
 
             function setCachedFavicon(url, base64) {
-                const domain = getDomainFromUrl(url);
+                const domain = getDomain(url);
                 if (faviconCache[domain]) return;
-                
-                faviconCache[domain] = base64;
-                // 维护顺序用于淘汰
-                faviconCacheIndex = faviconCacheIndex.filter(d => d !== domain);
-                faviconCacheIndex.push(domain);
-                
-                // 超过上限则移除最早的缓存
-                while (faviconCacheIndex.length > MAX_CACHE_ENTRIES) {
-                    const oldDomain = faviconCacheIndex.shift();
-                    delete faviconCache[oldDomain];
+                const keys = Object.keys(faviconCache);
+                if (keys.length >= MAX_CACHE_ENTRIES) {
+                    delete faviconCache[keys[0]];
                 }
+                faviconCache[domain] = base64;
                 saveFaviconCache();
             }
 
@@ -850,19 +830,13 @@
                             return;
                         }
                     }
-                } catch (e) {
-                    console.warn('无法解析本地存储的书签数据。');
-                }
+                } catch (e) {}
                 bookmarks = [];
                 saveBookmarks();
             }
 
             function saveBookmarks() {
-                try {
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(bookmarks));
-                } catch (e) {
-                    console.warn('无法保存书签数据。');
-                }
+                try { localStorage.setItem(STORAGE_KEY, JSON.stringify(bookmarks)); } catch(e) {}
             }
 
             function getDynamicDefaultVisibleCount() {
@@ -873,10 +847,7 @@
 
             function getVisibleBookmarks() {
                 const threshold = getDynamicDefaultVisibleCount();
-                if (isExpanded || bookmarks.length <= threshold) {
-                    return bookmarks;
-                }
-                return bookmarks.slice(0, threshold);
+                return (isExpanded || bookmarks.length <= threshold) ? bookmarks : bookmarks.slice(0, threshold);
             }
 
             function updateToggleButtons() {
@@ -897,13 +868,16 @@
                 }
             }
 
-            function getFaviconUrl(url) {
+            // 多个 favicon 源，依次尝试
+            function getFaviconSources(url) {
                 try {
-                    const urlObj = new URL(url);
-                    const domain = urlObj.hostname;
-                    return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=64`;
-                } catch (e) {
-                    return '';
+                    const domain = new URL(url).hostname;
+                    return [
+                        `https://www.google.com/s2/favicons?domain=${domain}&sz=64`,
+                        `https://icons.duckduckgo.com/ip3/${domain}.ico`
+                    ];
+                } catch(e) {
+                    return [];
                 }
             }
 
@@ -912,11 +886,26 @@
                     const urlObj = new URL(url);
                     const hostname = urlObj.hostname.replace(/^www\./, '');
                     const firstChar = hostname.charAt(0);
-                    if (/[a-zA-Z]/.test(firstChar)) return firstChar.toUpperCase();
-                    return hostname.substring(0, 1).toUpperCase();
-                } catch (e) {
+                    return /[a-zA-Z]/.test(firstChar) ? firstChar.toUpperCase() : hostname.substring(0, 1).toUpperCase();
+                } catch(e) {
                     return '?';
                 }
+            }
+
+            // 将图片转为 Base64（需要图片已完成跨域设置）
+            function convertImageToBase64(img) {
+                return new Promise((resolve) => {
+                    try {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.naturalWidth;
+                        canvas.height = img.naturalHeight;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+                        resolve(canvas.toDataURL('image/png'));
+                    } catch(e) {
+                        resolve(null); // 跨域污染则放弃缓存
+                    }
+                });
             }
 
             function createTileElement(bookmark, index) {
@@ -951,44 +940,67 @@
                 const img = document.createElement('img');
                 img.alt = '';
                 img.setAttribute('draggable', 'false');
-                // 移除 lazy 加载，改为立即加载
                 img.loading = 'eager';
 
                 const fallback = document.createElement('div');
                 fallback.className = 'fallback-icon hidden';
                 fallback.textContent = getDomainInitial(bookmark.url);
 
-                // 检查缓存
-                const cachedFavicon = getCachedFavicon(bookmark.url);
-                if (cachedFavicon) {
-                    img.src = cachedFavicon;
-                    img.addEventListener('load', () => {
+                const cachedBase64 = getCachedFavicon(bookmark.url);
+                if (cachedBase64) {
+                    // 优先使用缓存，立即显示
+                    img.src = cachedBase64;
+                    img.onload = () => {
                         img.classList.remove('hidden');
                         fallback.classList.add('hidden');
-                    });
-                    img.addEventListener('error', () => {
+                    };
+                    img.onerror = () => {
                         img.classList.add('hidden');
                         fallback.classList.remove('hidden');
-                    });
+                    };
                 } else {
-                    const faviconUrl = getFaviconUrl(bookmark.url);
-                    if (!faviconUrl) {
+                    const sources = getFaviconSources(bookmark.url);
+                    if (sources.length === 0) {
                         img.classList.add('hidden');
                         fallback.classList.remove('hidden');
                     } else {
-                        img.src = faviconUrl;
-                        img.addEventListener('load', () => {
+                        let sourceIndex = 0;
+                        img.onload = async () => {
                             if (img.naturalWidth > 0) {
                                 img.classList.remove('hidden');
                                 fallback.classList.add('hidden');
-                                // 尝试缓存（通过fetch获取并转base64）
-                                tryCacheFavicon(faviconUrl, bookmark.url);
+                                // 尝试缓存（只有成功加载的源才可能被缓存）
+                                try {
+                                    // 为了 canvas 转换，需要确保图片允许跨域
+                                    // 我们使用一个新的 Image 对象来加载并转换，避免影响当前显示的 img
+                                    const cacheImg = new Image();
+                                    cacheImg.crossOrigin = 'anonymous';
+                                    cacheImg.src = img.src;
+                                    await new Promise((resolve, reject) => {
+                                        cacheImg.onload = resolve;
+                                        cacheImg.onerror = reject;
+                                    });
+                                    const base64 = await convertImageToBase64(cacheImg);
+                                    if (base64) {
+                                        setCachedFavicon(bookmark.url, base64);
+                                    }
+                                } catch(e) {
+                                    // 忽略缓存失败
+                                }
                             }
-                        });
-                        img.addEventListener('error', () => {
-                            img.classList.add('hidden');
-                            fallback.classList.remove('hidden');
-                        });
+                        };
+                        img.onerror = () => {
+                            sourceIndex++;
+                            if (sourceIndex < sources.length) {
+                                // 尝试下一个源
+                                img.src = sources[sourceIndex];
+                            } else {
+                                // 所有源都失败，显示回退
+                                img.classList.add('hidden');
+                                fallback.classList.remove('hidden');
+                            }
+                        };
+                        img.src = sources[0];
                     }
                 }
 
@@ -1003,7 +1015,6 @@
 
                 const actions = document.createElement('div');
                 actions.className = 'tile-actions';
-
                 const moreBtn = document.createElement('button');
                 moreBtn.className = 'tile-action-btn more-btn';
                 moreBtn.title = '更多操作';
@@ -1014,7 +1025,6 @@
                     e.preventDefault();
                     openEditDialog(bookmark.id);
                 });
-
                 actions.appendChild(moreBtn);
 
                 tile.appendChild(link);
@@ -1027,30 +1037,9 @@
                 tile.addEventListener('dragleave', handleDragLeave);
                 tile.addEventListener('drop', handleDrop);
                 tile.addEventListener('dragend', handleDragEnd);
-                tile.addEventListener('mousedown', () => {
-                    delete tile.dataset.wasDragged;
-                });
+                tile.addEventListener('mousedown', () => { delete tile.dataset.wasDragged; });
 
                 return tile;
-            }
-
-            function tryCacheFavicon(faviconUrl, bookmarkUrl) {
-                // 异步缓存，不影响当前显示
-                fetch(faviconUrl, { mode: 'cors' })
-                    .then(response => {
-                        if (!response.ok) throw new Error('Fetch failed');
-                        return response.blob();
-                    })
-                    .then(blob => {
-                        const reader = new FileReader();
-                        reader.onloadend = () => {
-                            setCachedFavicon(bookmarkUrl, reader.result);
-                        };
-                        reader.readAsDataURL(blob);
-                    })
-                    .catch(() => {
-                        // 静默失败，下次仍然使用远程链接
-                    });
             }
 
             function createAddTileElement() {
@@ -1078,18 +1067,14 @@
 
             function renderAll() {
                 gridContainer.innerHTML = '';
-                const visibleBookmarks = getVisibleBookmarks();
-                visibleBookmarks.forEach((bookmark, index) => {
-                    const tile = createTileElement(bookmark, index);
-                    gridContainer.appendChild(tile);
+                getVisibleBookmarks().forEach((bookmark, index) => {
+                    gridContainer.appendChild(createTileElement(bookmark, index));
                 });
-                const addTile = createAddTileElement();
-                gridContainer.appendChild(addTile);
+                gridContainer.appendChild(createAddTileElement());
                 updateToggleButtons();
             }
 
-            let dragSourceId = null;
-            let dragSourceIndex = null;
+            let dragSourceId = null, dragSourceIndex = null;
 
             function handleDragStart(e) {
                 dragSourceId = this.getAttribute('data-id');
@@ -1097,22 +1082,16 @@
                 this.classList.add('dragging');
                 e.dataTransfer.effectAllowed = 'move';
                 e.dataTransfer.setData('text/plain', dragSourceId);
-                setTimeout(() => {
-                    if (this.classList.contains('dragging')) this.style.opacity = '0.4';
-                }, 0);
+                setTimeout(() => { if (this.classList.contains('dragging')) this.style.opacity = '0.4'; }, 0);
             }
 
             function handleDragOver(e) {
                 e.preventDefault();
                 e.dataTransfer.dropEffect = 'move';
-                if (this.getAttribute('data-id') !== dragSourceId) {
-                    this.classList.add('drag-over');
-                }
+                if (this.getAttribute('data-id') !== dragSourceId) this.classList.add('drag-over');
             }
 
-            function handleDragLeave(e) {
-                this.classList.remove('drag-over');
-            }
+            function handleDragLeave(e) { this.classList.remove('drag-over'); }
 
             function handleDrop(e) {
                 e.preventDefault();
@@ -1124,11 +1103,11 @@
                 const draggedTile = gridContainer.querySelector(`[data-id="${dragSourceId}"]`);
                 if (draggedTile) draggedTile.dataset.wasDragged = 'true';
 
-                const sourceIndex = bookmarks.findIndex(b => b.id === dragSourceId);
-                const targetIndex = bookmarks.findIndex(b => b.id === targetId);
-                if (sourceIndex !== -1 && targetIndex !== -1) {
-                    const [moved] = bookmarks.splice(sourceIndex, 1);
-                    bookmarks.splice(targetIndex, 0, moved);
+                const srcIdx = bookmarks.findIndex(b => b.id === dragSourceId);
+                const tgtIdx = bookmarks.findIndex(b => b.id === targetId);
+                if (srcIdx !== -1 && tgtIdx !== -1) {
+                    const [moved] = bookmarks.splice(srcIdx, 1);
+                    bookmarks.splice(tgtIdx, 0, moved);
                     saveBookmarks();
                     renderAll();
                 }
@@ -1153,7 +1132,6 @@
                 dialogSaveBtn.textContent = '保存';
                 dialogRemoveBtn.classList.add('hidden');
                 dialogButtonsRow.classList.remove('has-remove');
-                
                 showDialog();
                 setTimeout(() => dialogInputName.focus(), 150);
             }
@@ -1169,23 +1147,20 @@
                 dialogSaveBtn.textContent = '保存';
                 dialogRemoveBtn.classList.remove('hidden');
                 dialogButtonsRow.classList.add('has-remove');
-
                 showDialog();
                 setTimeout(() => { dialogInputName.focus(); dialogInputName.select(); }, 150);
             }
 
-            function showDialog() {
-                dialogOverlay.classList.remove('hidden', 'closing');
-            }
+            function showDialog() { dialogOverlay.classList.remove('hidden', 'closing'); }
 
             function hideDialog() {
                 dialogOverlay.classList.add('closing');
-                const handleAnimationEnd = () => {
+                const handler = () => {
                     dialogOverlay.classList.add('hidden');
                     dialogOverlay.classList.remove('closing');
-                    dialogOverlay.removeEventListener('animationend', handleAnimationEnd);
+                    dialogOverlay.removeEventListener('animationend', handler);
                 };
-                dialogOverlay.addEventListener('animationend', handleAnimationEnd);
+                dialogOverlay.addEventListener('animationend', handler);
                 editingId = null;
             }
 
@@ -1202,15 +1177,10 @@
                     }
                 }
 
-                try {
-                    new URL(url);
-                } catch (e) {
+                try { new URL(url); } catch(e) {
                     if (!/^https?:\/\//i.test(url)) {
                         url = 'https://' + url;
-                        try { new URL(url); } catch (e2) {
-                            alert('请输入有效的网址。');
-                            return;
-                        }
+                        try { new URL(url); } catch(e2) { alert('请输入有效的网址。'); return; }
                     } else {
                         alert('请输入有效的网址。');
                         return;
@@ -1219,17 +1189,13 @@
 
                 if (editingId) {
                     const bookmark = bookmarks.find(b => b.id === editingId);
-                    if (bookmark) {
-                        bookmark.title = name;
-                        bookmark.url = url;
-                    }
+                    if (bookmark) { bookmark.title = name; bookmark.url = url; }
                 } else {
-                    const newBookmark = {
+                    bookmarks.push({
                         id: Date.now().toString(36) + Math.random().toString(36).substring(2, 8),
                         title: name,
-                        url: url,
-                    };
-                    bookmarks.push(newBookmark);
+                        url: url
+                    });
                 }
                 saveBookmarks();
                 hideDialog();
@@ -1237,26 +1203,18 @@
             }
 
             function updateSaveButtonState() {
-                const name = dialogInputName.value.trim();
-                const url = dialogInputUrl.value.trim();
-                dialogSaveBtn.disabled = !(name && url);
+                dialogSaveBtn.disabled = !(dialogInputName.value.trim() && dialogInputUrl.value.trim());
             }
 
             dialogInputName.addEventListener('input', updateSaveButtonState);
             dialogInputUrl.addEventListener('input', updateSaveButtonState);
             dialogSaveBtn.addEventListener('click', handleSaveDialog);
             dialogCancelBtn.addEventListener('click', hideDialog);
-            
             dialogRemoveBtn.addEventListener('click', () => {
-                if (editingId) {
-                    removeBookmark(editingId);
-                    hideDialog();
-                }
+                if (editingId) { removeBookmark(editingId); hideDialog(); }
             });
 
-            dialogOverlay.addEventListener('click', (e) => {
-                if (e.target === dialogOverlay) hideDialog();
-            });
+            dialogOverlay.addEventListener('click', (e) => { if (e.target === dialogOverlay) hideDialog(); });
             document.addEventListener('keydown', (e) => {
                 if (dialogOverlay.classList.contains('hidden')) return;
                 if (e.key === 'Escape') { e.preventDefault(); hideDialog(); }
@@ -1305,15 +1263,15 @@
             function dismissToast(toastEl) {
                 if (!toastEl || toastEl.classList.contains('removing')) return;
                 toastEl.classList.add('removing');
-                const handleAnimEnd = () => {
+                const handler = () => {
                     if (toastEl.parentNode) toastEl.parentNode.removeChild(toastEl);
-                    toastEl.removeEventListener('animationend', handleAnimEnd);
+                    toastEl.removeEventListener('animationend', handler);
                     if (toastContainer.children.length === 0) {
                         lastRemovedBookmark = null;
                         lastRemovedIndex = null;
                     }
                 };
-                toastEl.addEventListener('animationend', handleAnimEnd);
+                toastEl.addEventListener('animationend', handler);
                 toastTimer = null;
             }
 
@@ -1342,10 +1300,10 @@
                 }
             });
 
-            let resizeDebounceTimer;
+            let resizeTimer;
             window.addEventListener('resize', () => {
-                clearTimeout(resizeDebounceTimer);
-                resizeDebounceTimer = setTimeout(() => {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(() => {
                     if (!isExpanded && bookmarks.length > getDynamicDefaultVisibleCount()) {
                         renderAll();
                     } else {
@@ -1355,7 +1313,7 @@
             });
 
             function init() {
-                loadFaviconCache();   // 先加载图标缓存
+                loadFaviconCache();
                 loadBookmarks();
                 isExpanded = false;
                 renderAll();
