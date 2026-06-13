@@ -108,7 +108,7 @@
         }
         html::-webkit-scrollbar-thumb {
             background: var(--scrollbar-thumb);
-            border-radius: 0; /* 直角 */
+            border-radius: 0;
         }
 
         .main-container {
@@ -171,7 +171,7 @@
             align-items: center;
             width: 112px;
             padding: 16px 8px 12px;
-            border-radius: 0; /* 直角 */
+            border-radius: 0;
             cursor: pointer;
             background-color: transparent;
             user-select: none;
@@ -179,12 +179,10 @@
             outline: none;
             text-decoration: none;
             color: var(--text-primary);
-            /* 取消过渡动画 */
         }
 
         .tile:hover {
             background-color: var(--tile-hover-bg);
-            /* 移除了阴影 */
         }
 
         .tile:focus-visible {
@@ -201,14 +199,14 @@
         .tile.drag-over {
             background-color: var(--tile-hover-bg);
             box-shadow: inset 0 0 0 2px #1a73e8;
-            border-radius: 0; /* 直角 */
+            border-radius: 0;
         }
 
         .tile-icon-container {
             position: relative;
             width: 48px;
             height: 48px;
-            border-radius: 50%; /* 图标圆圈保留 */
+            border-radius: 50%;
             background-color: var(--tile-icon-bg);
             display: flex;
             align-items: center;
@@ -216,7 +214,6 @@
             margin-bottom: 10px;
             flex-shrink: 0;
             overflow: hidden;
-            /* 取消动画 */
         }
 
         .tile:hover .tile-icon-container {
@@ -273,7 +270,6 @@
             opacity: 0;
             pointer-events: none;
             z-index: 5;
-            /* 取消了透明度的过渡动画 */
         }
 
         .tile:hover .tile-actions {
@@ -284,22 +280,21 @@
         .tile-action-btn {
             width: 24px;
             height: 24px;
-            border-radius: 0; /* 直角 */
+            border-radius: 0;
             border: none;
-            background: transparent; /* 无背景 */
+            background: transparent;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: none; /* 无阴影 */
+            box-shadow: none;
             padding: 0;
-            color: var(--more-btn-color); /* 极度隐蔽色 */
+            color: var(--more-btn-color);
             flex-shrink: 0;
-            /* 无过渡动画 */
         }
 
         .tile-action-btn:hover {
-            color: var(--more-btn-hover-color); /* hover时才变得清晰 */
+            color: var(--more-btn-hover-color);
             background: transparent;
         }
 
@@ -316,7 +311,7 @@
             align-items: center;
             width: 112px;
             padding: 16px 8px 12px;
-            border-radius: 0; /* 直角 */
+            border-radius: 0;
             cursor: pointer;
             background-color: transparent;
             border: none;
@@ -324,7 +319,6 @@
             color: var(--text-secondary);
             outline: none;
             -webkit-appearance: none;
-            /* 无动画 */
         }
 
         .add-tile:hover {
@@ -371,7 +365,7 @@
             flex-direction: column;
             align-items: center;
             padding: 12px 10px 8px;
-            border-radius: 0; /* 直角 */
+            border-radius: 0;
             cursor: pointer;
             background-color: transparent;
             border: none;
@@ -430,7 +424,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            /* 弹窗遮罩保留动画比较自然 */
             animation: fadeIn 0.18s ease;
         }
 
@@ -450,7 +443,7 @@
 
         .dialog {
             background: var(--dialog-bg);
-            border-radius: 0; /* 直角 */
+            border-radius: 0;
             padding: 24px 28px 20px;
             width: 90%;
             max-width: 420px;
@@ -499,7 +492,7 @@
             width: 100%;
             padding: 11px 14px;
             border: 1.5px solid var(--input-border);
-            border-radius: 0; /* 直角 */
+            border-radius: 0;
             font-size: 14px;
             background: var(--input-bg);
             color: var(--text-primary);
@@ -541,7 +534,7 @@
 
         .dialog-btn {
             padding: 10px 20px;
-            border-radius: 0; /* 直角 */
+            border-radius: 0;
             font-size: 14px;
             font-weight: 500;
             cursor: pointer;
@@ -618,7 +611,7 @@
             background: var(--toast-bg);
             color: var(--toast-text);
             padding: 12px 20px;
-            border-radius: 0; /* 直角 */
+            border-radius: 0;
             font-size: 13px;
             font-weight: 400;
             letter-spacing: 0.02em;
@@ -654,7 +647,7 @@
             font-weight: 600;
             font-size: 13px;
             padding: 4px 8px;
-            border-radius: 0; /* 直角 */
+            border-radius: 0;
             font-family: inherit;
             letter-spacing: 0.01em;
             white-space: nowrap;
@@ -688,7 +681,7 @@
             z-index: 1;
             text-decoration: none;
             color: transparent;
-            border-radius: 0; /* 直角 */
+            border-radius: 0;
             outline: none;
         }
 
@@ -764,6 +757,10 @@
         (function() {
             const STORAGE_KEY = 'custom_nav_page_bookmarks';
             const TOAST_DURATION = 8000;
+            // 缓存相关
+            const FAVICON_CACHE_KEY = 'favicon_cache_data';
+            const FAVICON_CACHE_INDEX_KEY = 'favicon_cache_index';
+            const MAX_CACHE_ENTRIES = 200;
 
             const gridContainer = document.getElementById('gridContainer');
             const toggleRow = document.getElementById('toggleRow');
@@ -785,6 +782,63 @@
             let toastTimer = null;
             let lastRemovedBookmark = null;
             let lastRemovedIndex = null;
+
+            // 图标缓存数据结构
+            let faviconCache = {};
+            let faviconCacheIndex = [];
+
+            function loadFaviconCache() {
+                try {
+                    const data = localStorage.getItem(FAVICON_CACHE_KEY);
+                    const index = localStorage.getItem(FAVICON_CACHE_INDEX_KEY);
+                    if (data) faviconCache = JSON.parse(data);
+                    if (index) faviconCacheIndex = JSON.parse(index);
+                } catch(e) {
+                    faviconCache = {};
+                    faviconCacheIndex = [];
+                }
+            }
+
+            function saveFaviconCache() {
+                try {
+                    localStorage.setItem(FAVICON_CACHE_KEY, JSON.stringify(faviconCache));
+                    localStorage.setItem(FAVICON_CACHE_INDEX_KEY, JSON.stringify(faviconCacheIndex));
+                } catch(e) {
+                    // 存储空间不足时清除缓存
+                    faviconCache = {};
+                    faviconCacheIndex = [];
+                }
+            }
+
+            function getDomainFromUrl(url) {
+                try {
+                    return new URL(url).hostname;
+                } catch(e) {
+                    return url;
+                }
+            }
+
+            function getCachedFavicon(url) {
+                const domain = getDomainFromUrl(url);
+                return faviconCache[domain] || null;
+            }
+
+            function setCachedFavicon(url, base64) {
+                const domain = getDomainFromUrl(url);
+                if (faviconCache[domain]) return;
+                
+                faviconCache[domain] = base64;
+                // 维护顺序用于淘汰
+                faviconCacheIndex = faviconCacheIndex.filter(d => d !== domain);
+                faviconCacheIndex.push(domain);
+                
+                // 超过上限则移除最早的缓存
+                while (faviconCacheIndex.length > MAX_CACHE_ENTRIES) {
+                    const oldDomain = faviconCacheIndex.shift();
+                    delete faviconCache[oldDomain];
+                }
+                saveFaviconCache();
+            }
 
             function loadBookmarks() {
                 try {
@@ -894,30 +948,48 @@
                 const iconContainer = document.createElement('div');
                 iconContainer.className = 'tile-icon-container';
 
-                const faviconUrl = getFaviconUrl(bookmark.url);
                 const img = document.createElement('img');
-                img.src = faviconUrl;
                 img.alt = '';
                 img.setAttribute('draggable', 'false');
-                img.loading = 'lazy';
+                // 移除 lazy 加载，改为立即加载
+                img.loading = 'eager';
 
                 const fallback = document.createElement('div');
                 fallback.className = 'fallback-icon hidden';
                 fallback.textContent = getDomainInitial(bookmark.url);
 
-                img.addEventListener('error', () => {
-                    img.classList.add('hidden');
-                    fallback.classList.remove('hidden');
-                });
-                img.addEventListener('load', () => {
-                    if (img.naturalWidth > 0) {
+                // 检查缓存
+                const cachedFavicon = getCachedFavicon(bookmark.url);
+                if (cachedFavicon) {
+                    img.src = cachedFavicon;
+                    img.addEventListener('load', () => {
                         img.classList.remove('hidden');
                         fallback.classList.add('hidden');
+                    });
+                    img.addEventListener('error', () => {
+                        img.classList.add('hidden');
+                        fallback.classList.remove('hidden');
+                    });
+                } else {
+                    const faviconUrl = getFaviconUrl(bookmark.url);
+                    if (!faviconUrl) {
+                        img.classList.add('hidden');
+                        fallback.classList.remove('hidden');
+                    } else {
+                        img.src = faviconUrl;
+                        img.addEventListener('load', () => {
+                            if (img.naturalWidth > 0) {
+                                img.classList.remove('hidden');
+                                fallback.classList.add('hidden');
+                                // 尝试缓存（通过fetch获取并转base64）
+                                tryCacheFavicon(faviconUrl, bookmark.url);
+                            }
+                        });
+                        img.addEventListener('error', () => {
+                            img.classList.add('hidden');
+                            fallback.classList.remove('hidden');
+                        });
                     }
-                });
-                if (!faviconUrl) {
-                    img.classList.add('hidden');
-                    fallback.classList.remove('hidden');
                 }
 
                 iconContainer.appendChild(img);
@@ -960,6 +1032,25 @@
                 });
 
                 return tile;
+            }
+
+            function tryCacheFavicon(faviconUrl, bookmarkUrl) {
+                // 异步缓存，不影响当前显示
+                fetch(faviconUrl, { mode: 'cors' })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Fetch failed');
+                        return response.blob();
+                    })
+                    .then(blob => {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                            setCachedFavicon(bookmarkUrl, reader.result);
+                        };
+                        reader.readAsDataURL(blob);
+                    })
+                    .catch(() => {
+                        // 静默失败，下次仍然使用远程链接
+                    });
             }
 
             function createAddTileElement() {
@@ -1264,6 +1355,7 @@
             });
 
             function init() {
+                loadFaviconCache();   // 先加载图标缓存
                 loadBookmarks();
                 isExpanded = false;
                 renderAll();
