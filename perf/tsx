@@ -1,0 +1,18 @@
+来源：https://www.reddit.com/r/cpp/comments/1tzey4h/performance_battle_mutex_vs_cas_vs_tas_vs_intel/
+总结：TSX 死得不冤
+
+High Contention: idle time = 0.6 us
+| Algorithm | sum_critical_section | sum_atomic | elapsed seconds |
+|-----------|----------------------|------------|-----------------|
+| Mutex     | 1.04M                | 21.0M      | 0.521           |
+| CAS       | 2.06M                | 19.9M      | 0.333           |
+| TAS       | 2.00M                | 20.0M      | 0.335           |
+| TSX       | 746K                 | 21.2M      | 0.492           |
+
+Low Contention: idle time = 3.0 us
+| Algorithm | sum_critical_section | sum_atomic | elapsed seconds |
+|-----------|----------------------|------------|-----------------|
+| Mutex     | 6.93M                | 15.1M      | 1.216           |
+| CAS       | 8.51M                | 13.5M      | 1.122           |
+| TAS       | 8.61M                | 13.4M      | 1.107           |
+| TSX       | 10.2M                | 11.7M      | 1.142           |
