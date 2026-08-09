@@ -1,0 +1,288 @@
+digraph ContainerChoice {
+    // 全局布局设置
+    rankdir = TB;
+    splines = ortho;
+    nodesep = 0.6;
+    ranksep = 0.8;
+    fontname = "WenQuanYi Zen Hei";  // 中文字体，若没有可改为 "Noto Sans CJK SC" 或 "Arial Unicode MS"
+    fontsize = 11;
+    compound = true;
+
+    // 节点默认样式
+    node [shape = box, style = "rounded, filled", fillcolor = "#ffffff", fontname = "WenQuanYi Zen Hei", fontsize = 11];
+    edge [fontname = "WenQuanYi Zen Hei", fontsize = 10, color = "#4a5568", arrowsize = 0.8];
+    node [margin = "0.55,0.15", width = 2.5];
+
+    // ==================== 问题节点样式（圆角矩形，浅黄背景） ====================
+    node [fillcolor = "#fff3cd", margin = "0.3,0.2"];
+
+    Q0     [label = "0. 你处理的元素数量是固定的吗？"];
+    Q0a    [label = "0a. 你所做的只是指向和/或迭代元素吗？"];
+    Q0ab   [label = "0ab. 你能改变数据布局或处理策略，\n使得指向和/或迭代元素成为唯一要做的事情吗？"];
+    Q0b    [label = "0b. 你所做的只是插入到/擦除从容器的后部，\n并指向元素和/或迭代吗？"];
+    Q0ba   [label = "0ba. 你知道这个容器将来可能达到的最大容量吗？\n并且可能的最小最大容量是否离那个不太远？"];
+    Q0bb   [label = "0bb. 你能改变数据布局或处理策略，\n使得后部插入/擦除和指向/迭代成为唯一要做的事情吗？"];
+
+    Q1     [label = "1. 容器的使用是栈式、队列式或环式吗？"];
+    Q2     [label = "2. 每个元素是否需要通过标识符（即键）访问？\n即数据是否是关联的。"];
+    Q2a    [label = "2a. 元素数量是否很小且类型 sizeof 不大？"];
+    Q2aa   [label = "2aa. 元素的值也是键吗？"];
+    Q2ab   [label = "2ab. 元素是否需要顺序？"];
+    Q2aba  [label = "2aba. 元素的值也是键吗？"];
+    Q2abaa [label = "2abaa. 多个键可以有相同的值吗？"];
+    Q2abab [label = "2abab. 多个键可以有相同的值吗？"];
+    Q2abb  [label = "2abb. 元素的值也是键吗？"];
+    Q2abba [label = "2abba. 多个键可以有相同的值吗？"];
+    Q2abbab[label = "2abbab. 是否需要指向元素的指针稳定性？"];
+    Q2abbb [label = "2abbb. 多个键可以有相同的值吗？"];
+    Q2abbbb[label = "2abbbb. 在您的用例中，实时插入和擦除是否常见，\n而主要是查找？"];
+    Q2abbbbb[label = "2abbbbb. 是否需要指向元素的指针稳定性？"];
+
+    Q3     [label = "3. 是否需要指向元素的稳定指针/迭代器/引用，\n这些在非后部插入/擦除后保持有效，\n和/或是否需要排序不可移动/不可复制的元素？"];
+    Q3a    [label = "3a. 元素顺序是否重要，\n和/或是否需要排序不可移动/不可复制的元素？"];
+    Q3aa   [label = "3aa. 这个容器是否会经常被多个线程同时访问和修改？"];
+    Q3aab  [label = "3aab. 你是否需要两个或多个容器之间的基于范围的拼接\n（而不是整个容器的拼接，或将元素拼接到同一容器内的不同位置）？"];
+
+    Q4     [label = "4. 元素顺序是否重要？"];
+    Q4a    [label = "4a. 你是否几乎完全插入到/擦除从容器的后部？"];
+    Q4ab   [label = "4ab. 你是否主要插入到/擦除从容器的前部？"];
+    Q4abb  [label = "4abb. 与迭代或后部擦除/插入相比，\n插入到/擦除从容器中间是否频繁？"];
+    Q4abba [label = "4abba. 主要是擦除而不是插入，\n并且可以将多个擦除的处理延迟到处理的稍后时间点，\n例如视频游戏中的帧结束？"];
+    Q4abbb [label = "4abbb. 元素很大或元素数量非常大吗？"];
+    Q4abbbb[label = "4abbbb. 你是否经常需要插入到/擦除从容器的前部？"];
+
+    Q5     [label = "5. 与迭代相比，非后部擦除是否频繁？"];
+    Q5a    [label = "5a. 非后部擦除总是在容器的前部吗？"];
+    Q5ab   [label = "5ab. 类型是否很大、非平凡可复制/可移动或不可复制/不可移动？"];
+    Q5abb  [label = "5abb. 元素数量非常大吗？"];
+
+    Q6     [label = "6. 非后部擦除能否延迟到处理的稍后时间点，\n例如视频游戏帧结束？"];
+    Q6a    [label = "6a. 类型很大或元素数量很大吗？"];
+    Q6ab   [label = "6ab. 一致的延迟比较低的平均延迟更重要吗？"];
+
+    // ==================== 结论节点样式（圆角矩形，浅绿背景） ====================
+    node [shape = box, style = "rounded, filled", fillcolor = "#d1e7dd", fontname = "WenQuanYi Zen Hei"];
+
+    A0aa      [label = "0aa. 使用数组（静态或动态分配）"];
+    A0baa     [label = "0baa. 使用 vector 并 reserve() 最高可能的最大容量。\n或者对于可以在栈上初始化的少量数据使用 boost::static_vector。"];
+    A0bab     [label = "0bab. 使用 vector 并 reserve() 可能的最小或最常见的最大容量。\n或者 boost::static_vector。"];
+
+    A1        [label = "1a. 栈式: plf::stack\n队列式: plf::queue\n环式: ring_span 或 ring_span lite"];
+
+    A2aaa     [label = "2aaa. 只需创建一个元素数组或 vector，\n并顺序扫描以查找元素。\n与 absl::set 进行基准测试。"];
+    A2aab     [label = "2aab. 创建一个键/元素结构的 vector 或数组，\n并基于键顺序扫描以查找元素。\n与 absl::map 进行基准测试。"];
+    A2abaaa   [label = "2abaaa. 使用 absl::btree_multiset"];
+    A2abaab   [label = "2abaab. 使用 absl::btree_set"];
+    A2ababa   [label = "2ababa. 使用 absl::btree_multimap"];
+    A2ababb   [label = "2ababb. 使用 absl::btree_map"];
+    A2abbaa   [label = "2abbaa. 使用 std::unordered_multiset 或 absl::btree_multiset"];
+    A2abbaba  [label = "2abbaba. 使用 absl::node_hash_set"];
+    A2abbabb  [label = "2abbabb. 使用 absl::flat_hash_set"];
+    A2abbba   [label = "2abbba. 使用 std::unordered_multimap 或 absl::btree_multimap"];
+    A2abbbba  [label = "2abbbba. 使用 robin-map"];
+    A2abbbbba [label = "2abbbbba. 使用 absl::flat_hash_map<Key, std::unique_ptr<Value>>。\n如果还需要指向键的指针稳定性，使用 absl::node_hash_map。"];
+    A2abbbbbb [label = "2abbbbbb. 使用 absl::flat_hash_map"];
+
+    A3aaa     [label = "3aaa. 使用 forward_list（因为它在擦除和插入时副作用较小）"];
+    A3aaba    [label = "3aaba. 使用 std::list"];
+    A3aabb    [label = "3aabb. 使用 plf::list"];
+    A3ab      [label = "3ab. 使用 hive"];
+
+    A4aa      [label = "4aa. 使用 vector，如果事先知道最大容量，使用 reserve()"];
+    A4aba     [label = "4aba. 使用 deque"];
+    A4abbaa   [label = "4abbaa. 尝试 vector 的 erase_if 配对方法，\n并与 plf::list 进行基准测试。\n如果元素数量非常大，使用 deque 配合 erase_if 配对。"];
+    A4abbba   [label = "4abbba. 将 vector 与 plf::list 进行基准测试，\n或者如果元素数量非常大，将 deque 与 plf::list 进行基准测试。"];
+    A4abbbba  [label = "4abbbba. 使用 deque"];
+    A4abbbbb  [label = "4abbbbb. 使用 vector"];
+
+    A5aa      [label = "5aa. 使用 deque"];
+    A5aba     [label = "5aba. 使用 hive"];
+    A5abba    [label = "5abba. 使用采用 swap-and-pop 方法的 deque（与 vector 相比节省内存）\n与 hive 进行基准测试。"];
+    A5abbb    [label = "5abbb. 使用采用 swap-and-pop 方法的 vector\n并与 hive 进行基准测试。"];
+
+    A6aa      [label = "6aa. 使用 hive"];
+    A6aba     [label = "6aba. 使用 hive"];
+    A6abb     [label = "6abb. 尝试 vector 的 erase_if 配对方法，\n如果元素数量很大，则使用 deque。\n将此方法与 hive 进行基准测试。"];
+    A6b       [label = "6b. 使用 hive"];
+
+    // ==================== 跳转节点（灰色） ====================
+    node [shape = box, style = "rounded, filled", fillcolor = "#e9ecef", fontname = "WenQuanYi Zen Hei", color = "#6c757d"];
+
+    GOTO1_from0ab  [label = "转到 1"];
+    GOTO1_from0bb  [label = "转到 1"];
+    GOTO2          [label = "转到 2"];
+    GOTO3          [label = "转到 3"];
+    GOTO4          [label = "转到 4"];
+    GOTO5          [label = "转到 5"];
+    GOTO6          [label = "转到 6"];
+    GOTO3aa        [label = "转到 3aa"];
+
+    // 伪节点用于汇聚边（不可见）
+    node [shape = point, width = 0, height = 0, style = invis];
+    M1; M2; M3; M4; M5; M6;
+
+    // ==================== 边连接 ====================
+    // ---------- 分支 0 ----------
+    Q0 -> Q0a    [xlabel = " 是 "];
+    Q0 -> Q0b    [xlabel = " 否 "];
+    Q0a -> A0aa  [xlabel = " 是 "];
+    Q0a -> Q0ab  [xlabel = " 否 "];
+    Q0ab -> A0aa [xlabel = " 是 ", minlen = 2];
+    Q0ab -> GOTO1_from0ab [xlabel = " 否 "];
+    GOTO1_from0ab -> M1 [style = dashed, arrowhead = none];
+    M1 -> Q1 [style = dashed];
+
+    Q0b -> Q0ba  [xlabel = " 是 "];
+    Q0b -> Q0bb  [xlabel = " 否 "];
+    Q0ba -> A0baa [xlabel = " 是 "];
+    Q0ba -> A0bab [xlabel = " 否 "];
+    Q0bb -> Q0ba [xlabel = " 是 ", minlen = 2];
+    Q0bb -> GOTO1_from0bb [xlabel = " 否 "];
+    GOTO1_from0bb -> M1 [style = dashed];
+
+    // ---------- 分支 1 ----------
+    Q1 -> A1     [xlabel = " 是 "];
+    Q1 -> GOTO2  [xlabel = " 否 "];
+    GOTO2 -> M2 [style = dashed];
+    M2 -> Q2 [style = dashed];
+
+    // ---------- 分支 2 ----------
+    Q2 -> Q2a    [xlabel = " 是 "];
+    Q2 -> GOTO3  [xlabel = " 否 "];
+    GOTO3 -> M3 [style = dashed];
+    M3 -> Q3 [style = dashed];
+
+    // 2a 是 -> 小且不大
+    Q2a -> Q2aa  [xlabel = " 是 "];
+    Q2a -> Q2ab  [xlabel = " 否 "];
+
+    Q2aa -> A2aaa [xlabel = " 是 "];
+    Q2aa -> A2aab [xlabel = " 否 "];
+
+    // 2ab 需要顺序？
+    Q2ab -> Q2aba [xlabel = " 是 "];
+    Q2ab -> Q2abb [xlabel = " 否 "];
+
+    Q2aba -> Q2abaa [xlabel = " 是 "];
+    Q2aba -> Q2abab [xlabel = " 否 "];
+
+    Q2abaa -> A2abaaa [xlabel = " 是 "];
+    Q2abaa -> A2abaab [xlabel = " 否 "];
+    Q2abab -> A2ababa [xlabel = " 是 "];
+    Q2abab -> A2ababb [xlabel = " 否 "];
+
+    // 2abb 无顺序，值也是键？
+    Q2abb -> Q2abba [xlabel = " 是 "];
+    Q2abb -> Q2abbb [xlabel = " 否 "];
+
+    Q2abba -> A2abbaa [xlabel = " 是 "];
+    Q2abba -> Q2abbab [xlabel = " 否 "];
+
+    Q2abbab -> A2abbaba [xlabel = " 是 "];
+    Q2abbab -> A2abbabb [xlabel = " 否 "];
+
+    // 2abbb 非键
+    Q2abbb -> A2abbba [xlabel = " 是 "];
+    Q2abbb -> Q2abbbb [xlabel = " 否 "];
+
+    Q2abbbb -> A2abbbba [xlabel = " 是 "];
+    Q2abbbb -> Q2abbbbb [xlabel = " 否 "];
+
+    Q2abbbbb -> A2abbbbba [xlabel = " 是 "];
+    Q2abbbbb -> A2abbbbbb [xlabel = " 否 "];
+
+    // ---------- 分支 3 ----------
+    Q3 -> Q3a    [xlabel = " 是 "];
+    Q3 -> GOTO4  [xlabel = " 否 "];
+    GOTO4 -> M4 [style = dashed];
+    M4 -> Q4 [style = dashed];
+
+    Q3a -> Q3aa  [xlabel = " 是 "];
+    Q3a -> A3ab  [xlabel = " 否 "];
+
+    Q3aa -> A3aaa [xlabel = " 是 "];
+    Q3aa -> Q3aab [xlabel = " 否 "];
+
+    Q3aab -> A3aaba [xlabel = " 是 "];
+    Q3aab -> A3aabb [xlabel = " 否 "];
+
+    // ---------- 分支 4 ----------
+    Q4 -> Q4a    [xlabel = " 是 "];
+    Q4 -> GOTO5  [xlabel = " 否 "];
+    GOTO5 -> M5 [style = dashed];
+    M5 -> Q5 [style = dashed];
+
+    Q4a -> A4aa  [xlabel = " 是 "];
+    Q4a -> Q4ab  [xlabel = " 否 "];
+
+    Q4ab -> A4aba [xlabel = " 是 "];
+    Q4ab -> Q4abb [xlabel = " 否 "];
+
+    Q4abb -> Q4abba [xlabel = " 是 "];
+    Q4abb -> Q4abbb [xlabel = " 否 "];
+
+    Q4abba -> A4abbaa [xlabel = " 是 "];
+    Q4abba -> GOTO3aa [xlabel = " 否 "];
+    GOTO3aa -> Q3aa [style = dashed];
+
+    Q4abbb -> A4abbba [xlabel = " 是 "];
+    Q4abbb -> Q4abbbb [xlabel = " 否 "];
+
+    Q4abbbb -> A4abbbba [xlabel = " 是 "];
+    Q4abbbb -> A4abbbbb [xlabel = " 否 "];
+
+    // ---------- 分支 5 ----------
+    Q5 -> Q5a    [xlabel = " 是 "];
+    Q5 -> GOTO6  [xlabel = " 否 "];
+    GOTO6 -> M6 [style = dashed];
+    M6 -> Q6 [style = dashed];
+
+    Q5a -> A5aa  [xlabel = " 是 "];
+    Q5a -> Q5ab  [xlabel = " 否 "];
+
+    Q5ab -> A5aba [xlabel = " 是 "];
+    Q5ab -> Q5abb [xlabel = " 否 "];
+
+    Q5abb -> A5abba [xlabel = " 是 "];
+    Q5abb -> A5abbb [xlabel = " 否 "];
+
+    // ---------- 分支 6 ----------
+    Q6 -> Q6a    [xlabel = " 是 "];
+    Q6 -> A6b    [xlabel = " 否 "];
+
+    Q6a -> A6aa  [xlabel = " 是 "];
+    Q6a -> Q6ab  [xlabel = " 否 "];
+
+    Q6ab -> A6aba [xlabel = " 是 "];
+    Q6ab -> A6abb [xlabel = " 否 "];
+
+    // ==================== 备注框（erase_if 方法） ====================
+    subgraph cluster_legend {
+        label = "📌 Vector erase_if 配对方法";
+        style = "filled";
+        color = "#3b82f6";
+        bgcolor = "#f8f9fa";
+        penwidth = 2.0;
+        fontname = "WenQuanYi Zen Hei";
+        fontsize = 12;
+        fontcolor = "#1e293b";
+        labelloc = "t";
+        labeljust = "c";
+        margin = 16;
+
+        node [shape = plaintext, fillcolor = "#f8f9fa", style = "solid, rounded", margin = 0.2];
+        legend [label = <
+            <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#f8f9fa">
+                <TR><TD ALIGN="LEFT">尝试将类型与布尔值配对，放在 vector 中，</TD></TR>
+                <TR><TD ALIGN="LEFT">然后在处理期间标记此布尔值以进行擦除，</TD></TR>
+                <TR><TD ALIGN="LEFT">然后在指定的稍后时间点使用 erase_if 与布尔值一次性移除多个元素。</TD></TR>
+                <TR><TD ALIGN="LEFT">或者，如果元素本身中有一个条件标识它需要被擦除，</TD></TR>
+                <TR><TD ALIGN="LEFT">尝试直接使用它配合 erase_if 并跳过布尔值配对。</TD></TR>
+                <TR><TD ALIGN="LEFT">如果事先知道最大元素数量，使用带有 reserve() 的 vector。</TD></TR>
+            </TABLE>
+        >, shape = plaintext];
+    }
+
+    // 将备注框放在底部
+    { rank = sink; legend; }
+}
