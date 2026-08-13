@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
     <title>新标签页</title>
     <style>
         :root {
@@ -31,7 +32,7 @@
             --scrollbar-track: transparent;
             --expand-icon-bg: #e8eaed;
             --expand-icon-bg-hover: #d2d4d7;
-            
+
             --more-btn-color: #dadce0;
             --more-btn-hover-color: #5f6368;
         }
@@ -63,7 +64,7 @@
                 --scrollbar-track: transparent;
                 --expand-icon-bg: #303134;
                 --expand-icon-bg-hover: #3c4043;
-                
+
                 --more-btn-color: #3c4043;
                 --more-btn-hover-color: #9aa0a6;
             }
@@ -98,16 +99,9 @@
             -moz-osx-font-smoothing: grayscale;
         }
 
-        html::-webkit-scrollbar {
-            width: 8px;
-        }
-        html::-webkit-scrollbar-track {
-            background: var(--scrollbar-track);
-        }
-        html::-webkit-scrollbar-thumb {
-            background: var(--scrollbar-thumb);
-            border-radius: 0;
-        }
+        html::-webkit-scrollbar { width: 8px; }
+        html::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+        html::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 0; }
 
         .main-container {
             display: flex;
@@ -119,9 +113,7 @@
             padding: 0 16px;
         }
 
-        .grid-wrapper {
-            width: 100%;
-        }
+        .grid-wrapper { width: 100%; }
 
         .grid {
             display: grid;
@@ -140,26 +132,16 @@
                 max-width: 820px;
                 margin: 0 auto;
             }
-            .main-container {
-                max-width: 880px;
-            }
+            .main-container { max-width: 880px; }
         }
 
         @media (max-width: 600px) {
-            .grid {
-                grid-template-columns: repeat(3, 112px);
-                gap: 0;
-            }
-            .main-container {
-                padding: 0 8px;
-            }
+            .grid { grid-template-columns: repeat(3, 112px); gap: 0; }
+            .main-container { padding: 0 8px; }
         }
 
         @media (max-width: 400px) {
-            .grid {
-                grid-template-columns: repeat(2, 112px);
-                gap: 0;
-            }
+            .grid { grid-template-columns: repeat(2, 112px); gap: 0; }
         }
 
         .tile {
@@ -179,9 +161,7 @@
             color: var(--text-primary);
         }
 
-        .tile:hover {
-            background-color: var(--tile-hover-bg);
-        }
+        .tile:hover { background-color: var(--tile-hover-bg); }
 
         .tile:focus-visible {
             background-color: var(--tile-hover-bg);
@@ -189,10 +169,7 @@
             outline: none;
         }
 
-        .tile.dragging {
-            opacity: 0.5;
-            box-shadow: none;
-        }
+        .tile.dragging { opacity: 0.5; box-shadow: none; }
 
         .tile.drag-over {
             background-color: var(--tile-hover-bg);
@@ -214,9 +191,7 @@
             overflow: hidden;
         }
 
-        .tile:hover .tile-icon-container {
-            background-color: var(--tile-icon-bg-hover);
-        }
+        .tile:hover .tile-icon-container { background-color: var(--tile-icon-bg-hover); }
 
         .tile-icon-container img {
             width: 24px;
@@ -270,10 +245,7 @@
             z-index: 5;
         }
 
-        .tile:hover .tile-actions {
-            opacity: 1;
-            pointer-events: auto;
-        }
+        .tile:hover .tile-actions { opacity: 1; pointer-events: auto; }
 
         .tile-action-btn {
             width: 24px;
@@ -291,16 +263,8 @@
             flex-shrink: 0;
         }
 
-        .tile-action-btn:hover {
-            color: var(--more-btn-hover-color);
-            background: transparent;
-        }
-
-        .tile-action-btn svg {
-            width: 18px;
-            height: 18px;
-            pointer-events: none;
-        }
+        .tile-action-btn:hover { color: var(--more-btn-hover-color); background: transparent; }
+        .tile-action-btn svg { width: 18px; height: 18px; pointer-events: none; }
 
         .add-tile {
             position: relative;
@@ -319,10 +283,7 @@
             -webkit-appearance: none;
         }
 
-        .add-tile:hover {
-            background-color: var(--tile-hover-bg);
-            box-shadow: none;
-        }
+        .add-tile:hover { background-color: var(--tile-hover-bg); box-shadow: none; }
 
         .add-tile:focus-visible {
             background-color: var(--tile-hover-bg);
@@ -330,25 +291,11 @@
             outline: none;
         }
 
-        .add-tile .tile-icon-container {
-            background-color: var(--tile-icon-bg);
-        }
-
-        .add-tile:hover .tile-icon-container {
-            background-color: var(--tile-icon-bg-hover);
-        }
-
-        .add-tile .plus-icon {
-            color: var(--text-secondary);
-        }
-
-        .add-tile:hover .plus-icon {
-            color: var(--text-primary);
-        }
-
-        .add-tile .tile-title {
-            color: var(--text-secondary);
-        }
+        .add-tile .tile-icon-container { background-color: var(--tile-icon-bg); }
+        .add-tile:hover .tile-icon-container { background-color: var(--tile-icon-bg-hover); }
+        .add-tile .plus-icon { color: var(--text-secondary); }
+        .add-tile:hover .plus-icon { color: var(--text-primary); }
+        .add-tile .tile-title { color: var(--text-secondary); }
 
         .toggle-row {
             display: flex;
@@ -376,10 +323,7 @@
             min-width: 70px;
         }
 
-        .toggle-btn:hover {
-            background-color: var(--tile-hover-bg);
-            color: var(--text-primary);
-        }
+        .toggle-btn:hover { background-color: var(--tile-hover-bg); color: var(--text-primary); }
 
         .toggle-btn:focus-visible {
             background-color: var(--tile-hover-bg);
@@ -397,19 +341,31 @@
             justify-content: center;
         }
 
-        .toggle-btn:hover .toggle-icon-circle {
-            background-color: var(--expand-icon-bg-hover);
-        }
+        .toggle-btn:hover .toggle-icon-circle { background-color: var(--expand-icon-bg-hover); }
+        .toggle-btn svg { width: 18px; height: 18px; color: var(--text-secondary); }
+        .toggle-btn:hover svg { color: var(--text-primary); }
 
-        .toggle-btn svg {
-            width: 18px;
-            height: 18px;
+        /* ---- 底部工具条 ---- */
+        .footer-tools {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 2px;
+            opacity: 0.55;
+        }
+        .footer-tools:hover { opacity: 1; }
+        .footer-tools button {
+            background: none;
+            border: none;
+            font-family: inherit;
+            font-size: 12px;
             color: var(--text-secondary);
+            padding: 6px 10px;
+            cursor: pointer;
+            letter-spacing: 0.02em;
         }
-
-        .toggle-btn:hover svg {
-            color: var(--text-primary);
-        }
+        .footer-tools button:hover { color: var(--text-primary); background: var(--tile-hover-bg); }
 
         .dialog-overlay {
             position: fixed;
@@ -425,19 +381,10 @@
             animation: fadeIn 0.18s ease;
         }
 
-        .dialog-overlay.closing {
-            animation: fadeOut 0.15s ease forwards;
-        }
+        .dialog-overlay.closing { animation: fadeOut 0.15s ease forwards; }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes fadeOut {
-            from { opacity: 1; }
-            to { opacity: 0; }
-        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
 
         .dialog {
             background: var(--dialog-bg);
@@ -450,9 +397,7 @@
             position: relative;
         }
 
-        .dialog-overlay.closing .dialog {
-            animation: slideOut 0.15s cubic-bezier(0.4, 0, 1, 1) forwards;
-        }
+        .dialog-overlay.closing .dialog { animation: slideOut 0.15s cubic-bezier(0.4, 0, 1, 1) forwards; }
 
         @keyframes slideIn {
             from { opacity: 0; transform: translateY(20px) scale(0.96); }
@@ -472,9 +417,7 @@
             letter-spacing: 0.01em;
         }
 
-        .dialog-field {
-            margin-bottom: 16px;
-        }
+        .dialog-field { margin-bottom: 16px; }
 
         .dialog-field label {
             display: block;
@@ -486,7 +429,8 @@
             text-transform: none;
         }
 
-        .dialog-field input {
+        .dialog-field input[type="text"],
+        .dialog-field input[type="url"] {
             width: 100%;
             padding: 11px 14px;
             border: 1.5px solid var(--input-border);
@@ -505,14 +449,46 @@
         }
 
         @media (prefers-color-scheme: dark) {
-            .dialog-field input:focus {
-                box-shadow: 0 0 0 2px rgba(138, 180, 248, 0.2);
-            }
+            .dialog-field input:focus { box-shadow: 0 0 0 2px rgba(138, 180, 248, 0.2); }
         }
 
-        .dialog-field input::placeholder {
-            color: #9aa0a6;
+        .dialog-field input::placeholder { color: #9aa0a6; }
+
+        .icon-field-row { display: flex; align-items: center; gap: 14px; }
+
+        .icon-preview {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--tile-icon-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
         }
+        .icon-preview img { width: 26px; height: 26px; object-fit: contain; }
+        .icon-preview .fallback-icon {
+            width: 28px; height: 28px; border-radius: 50%;
+            background-color: #d2d4d7; color: #5f6368;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; font-weight: 600;
+        }
+        @media (prefers-color-scheme: dark) {
+            .icon-preview .fallback-icon { background-color: #5f6368; color: #e8eaed; }
+        }
+
+        .icon-btns { display: flex; flex-wrap: wrap; gap: 6px; }
+        .icon-btns button {
+            background: transparent;
+            border: 1.5px solid var(--input-border);
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-size: 12px;
+            padding: 6px 10px;
+            cursor: pointer;
+        }
+        .icon-btns button:hover { color: var(--text-primary); border-color: var(--text-secondary); }
 
         .dialog-buttons {
             display: flex;
@@ -520,15 +496,9 @@
             justify-content: flex-end;
             margin-top: 20px;
         }
-        
-        .dialog-buttons.has-remove {
-            justify-content: space-between;
-        }
-        
-        .right-buttons {
-            display: flex;
-            gap: 10px;
-        }
+
+        .dialog-buttons.has-remove { justify-content: space-between; }
+        .right-buttons { display: flex; gap: 10px; }
 
         .dialog-btn {
             padding: 10px 20px;
@@ -543,18 +513,9 @@
             -webkit-appearance: none;
         }
 
-        .dialog-btn:focus-visible {
-            box-shadow: inset 0 0 0 2px rgba(26, 115, 232, 0.5);
-        }
-
-        .dialog-btn.cancel-btn {
-            background: var(--btn-secondary-bg);
-            color: var(--btn-secondary-text);
-        }
-
-        .dialog-btn.cancel-btn:hover {
-            background: var(--btn-secondary-hover);
-        }
+        .dialog-btn:focus-visible { box-shadow: inset 0 0 0 2px rgba(26, 115, 232, 0.5); }
+        .dialog-btn.cancel-btn { background: var(--btn-secondary-bg); color: var(--btn-secondary-text); }
+        .dialog-btn.cancel-btn:hover { background: var(--btn-secondary-hover); }
 
         .dialog-btn.save-btn {
             background: var(--btn-primary-bg);
@@ -564,15 +525,8 @@
             text-align: center;
         }
 
-        .dialog-btn.save-btn:hover {
-            background: var(--btn-primary-hover);
-        }
-
-        .dialog-btn.save-btn:disabled {
-            opacity: 0.45;
-            cursor: not-allowed;
-            pointer-events: none;
-        }
+        .dialog-btn.save-btn:hover { background: var(--btn-primary-hover); }
+        .dialog-btn.save-btn:disabled { opacity: 0.45; cursor: not-allowed; pointer-events: none; }
 
         .dialog-btn.remove-dialog-btn {
             background: transparent;
@@ -580,16 +534,10 @@
             padding: 10px 16px;
         }
 
-        .dialog-btn.remove-dialog-btn:hover {
-            background: #fce8e6;
-            color: #d93025;
-        }
+        .dialog-btn.remove-dialog-btn:hover { background: #fce8e6; color: #d93025; }
 
         @media (prefers-color-scheme: dark) {
-            .dialog-btn.remove-dialog-btn:hover {
-                background: #5c1e1a;
-                color: #f28b82;
-            }
+            .dialog-btn.remove-dialog-btn:hover { background: #5c1e1a; color: #f28b82; }
         }
 
         .toast-container {
@@ -623,9 +571,7 @@
             white-space: nowrap;
         }
 
-        .toast.removing {
-            animation: toastOut 0.22s ease forwards;
-        }
+        .toast.removing { animation: toastOut 0.22s ease forwards; }
 
         @keyframes toastIn {
             from { opacity: 0; transform: translateY(16px) scale(0.9); }
@@ -652,23 +598,14 @@
             -webkit-appearance: none;
         }
 
-        .toast-undo-btn:hover {
-            background: rgba(138, 180, 248, 0.2);
-        }
+        .toast-undo-btn:hover { background: rgba(138, 180, 248, 0.2); }
 
         @media (prefers-color-scheme: dark) {
-            .toast-undo-btn {
-                color: #202124;
-                background: rgba(0, 0, 0, 0.08);
-            }
-            .toast-undo-btn:hover {
-                background: rgba(0, 0, 0, 0.18);
-            }
+            .toast-undo-btn { color: #202124; background: rgba(0, 0, 0, 0.08); }
+            .toast-undo-btn:hover { background: rgba(0, 0, 0, 0.18); }
         }
 
-        .hidden {
-            display: none !important;
-        }
+        .hidden { display: none !important; }
 
         .tile-link {
             position: absolute;
@@ -683,17 +620,10 @@
             outline: none;
         }
 
-        .tile-link:focus-visible {
-            box-shadow: inset 0 0 0 2px rgba(26, 115, 232, 0.5);
-        }
+        .tile-link:focus-visible { box-shadow: inset 0 0 0 2px rgba(26, 115, 232, 0.5); }
 
-        .tile-actions {
-            z-index: 5;
-        }
-
-        .tile-link {
-            z-index: 1;
-        }
+        .tile-actions { z-index: 5; }
+        .tile-link { z-index: 1; }
         .tile-icon-container,
         .tile-title {
             position: relative;
@@ -726,6 +656,13 @@
                 <span>收起</span>
             </button>
         </div>
+
+        <div class="footer-tools" id="footerTools">
+            <button id="exportHtmlBtn" title="生成一个把所有图标 base64 内嵌进去的 HTML 文件，换电脑/清缓存也不丢">导出内嵌HTML</button>
+            <button id="exportJsonBtn" title="导出书签与图标为 JSON 备份">导出备份</button>
+            <button id="importJsonBtn" title="从 JSON 备份恢复">导入备份</button>
+            <button id="repairIconBtn" title="为还没有本地图标的书签重新抓取一次">补全图标</button>
+        </div>
     </div>
 
     <div class="dialog-overlay hidden" id="dialogOverlay">
@@ -739,6 +676,18 @@
                 <label for="dialogInputUrl">网址</label>
                 <input type="url" id="dialogInputUrl" placeholder="输入网址" autocomplete="off" spellcheck="false">
             </div>
+            <div class="dialog-field">
+                <label>图标（已永久保存在本地，不会联网）</label>
+                <div class="icon-field-row">
+                    <div class="icon-preview" id="iconPreview"></div>
+                    <div class="icon-btns">
+                        <button type="button" id="iconUploadBtn">上传图片</button>
+                        <button type="button" id="iconUrlBtn">图标网址</button>
+                        <button type="button" id="iconRefetchBtn">重新抓取</button>
+                        <button type="button" id="iconResetBtn">恢复默认</button>
+                    </div>
+                </div>
+            </div>
             <div class="dialog-buttons" id="dialogButtonsRow">
                 <button class="dialog-btn remove-dialog-btn hidden" id="dialogRemoveBtn">移除</button>
                 <div class="right-buttons">
@@ -751,13 +700,27 @@
 
     <div class="toast-container" id="toastContainer"></div>
 
-    <script>
-        (function() {
-            const STORAGE_KEY = 'custom_nav_page_bookmarks';
-            const TOAST_DURATION = 8000;
-            const FAVICON_CACHE_KEY = 'favicon_cache_v3';
-            const MAX_CACHE_ENTRIES = 200;
+    <input type="file" id="hiddenIconFile" accept="image/*" class="hidden">
+    <input type="file" id="hiddenJsonFile" accept="application/json,.json" class="hidden">
 
+    <script>
+        (function () {
+            'use strict';
+
+            /* ================= 常量 ================= */
+            const STORAGE_KEY = 'custom_nav_page_bookmarks';
+            const ICON_LS_KEY = 'nav_icon_store_v4';
+            const IDB_NAME = 'nav_icon_store';
+            const IDB_STORE = 'icons';
+            const TOAST_DURATION = 8000;
+            const MAX_ICON_ENTRIES = 800;
+            const FETCH_TIMEOUT = 9000;
+            const MAX_PARALLEL = 3;
+            const ICON_SIZE = 64;
+
+            const SEED = (window.__NAV_SEED__ && typeof window.__NAV_SEED__ === 'object') ? window.__NAV_SEED__ : null;
+
+            /* ================= DOM ================= */
             const gridContainer = document.getElementById('gridContainer');
             const toggleRow = document.getElementById('toggleRow');
             const showMoreBtn = document.getElementById('showMoreBtn');
@@ -771,77 +734,374 @@
             const dialogRemoveBtn = document.getElementById('dialogRemoveBtn');
             const dialogButtonsRow = document.getElementById('dialogButtonsRow');
             const toastContainer = document.getElementById('toastContainer');
+            const iconPreview = document.getElementById('iconPreview');
+            const iconUploadBtn = document.getElementById('iconUploadBtn');
+            const iconUrlBtn = document.getElementById('iconUrlBtn');
+            const iconRefetchBtn = document.getElementById('iconRefetchBtn');
+            const iconResetBtn = document.getElementById('iconResetBtn');
+            const hiddenIconFile = document.getElementById('hiddenIconFile');
+            const hiddenJsonFile = document.getElementById('hiddenJsonFile');
+            const exportHtmlBtn = document.getElementById('exportHtmlBtn');
+            const exportJsonBtn = document.getElementById('exportJsonBtn');
+            const importJsonBtn = document.getElementById('importJsonBtn');
+            const repairIconBtn = document.getElementById('repairIconBtn');
 
+            /* ================= 状态 ================= */
             let bookmarks = [];
             let isExpanded = false;
             let editingId = null;
             let toastTimer = null;
             let lastRemovedBookmark = null;
             let lastRemovedIndex = null;
+            let pendingIcon = undefined;      // 编辑弹窗里待保存的自定义图标
+            let storeReady = false;
 
-            let faviconCache = {};
+            /* ============================================================
+               图标持久化仓库：localStorage（同步、首屏即可用）
+                                + IndexedDB（容量大、作为镜像）
+               任一存储挂掉，另一份仍然保住图标。
+               ============================================================ */
+            const IconStore = (function () {
+                let mem = Object.create(null);   // domain -> dataURL(PNG)
+                let idb = null;
+                let saveTimer = null;
 
-            function loadFaviconCache() {
-                try {
-                    const stored = localStorage.getItem(FAVICON_CACHE_KEY);
-                    if (stored) {
-                        faviconCache = JSON.parse(stored);
+                function readLS() {
+                    try {
+                        const raw = localStorage.getItem(ICON_LS_KEY);
+                        if (!raw) return Object.create(null);
+                        const obj = JSON.parse(raw);
+                        return (obj && typeof obj === 'object') ? obj : Object.create(null);
+                    } catch (e) { return Object.create(null); }
+                }
+
+                function writeLS() {
+                    try {
+                        localStorage.setItem(ICON_LS_KEY, JSON.stringify(mem));
+                    } catch (e) {
+                        // 配额不足：丢掉最早的一批，保住最近使用的；IndexedDB 里仍是全量
+                        try {
+                            const keys = Object.keys(mem);
+                            const keep = keys.slice(Math.floor(keys.length / 3));
+                            const trimmed = Object.create(null);
+                            keep.forEach(k => { trimmed[k] = mem[k]; });
+                            localStorage.setItem(ICON_LS_KEY, JSON.stringify(trimmed));
+                        } catch (e2) { /* localStorage 不可用，静默降级到 IDB */ }
                     }
-                } catch(e) {
-                    faviconCache = {};
                 }
-            }
 
-            function saveFaviconCache() {
-                try {
-                    localStorage.setItem(FAVICON_CACHE_KEY, JSON.stringify(faviconCache));
-                } catch(e) {
-                    faviconCache = {};
-                    localStorage.setItem(FAVICON_CACHE_KEY, JSON.stringify({}));
+                function scheduleWriteLS() {
+                    clearTimeout(saveTimer);
+                    saveTimer = setTimeout(writeLS, 300);
                 }
-            }
 
+                function openIDB() {
+                    return new Promise(function (resolve) {
+                        let settled = false;
+                        const finish = v => { if (!settled) { settled = true; resolve(v); } };
+                        try {
+                            if (!('indexedDB' in window) || !window.indexedDB) return finish(null);
+                            const req = indexedDB.open(IDB_NAME, 1);
+                            req.onupgradeneeded = function () {
+                                const db = req.result;
+                                if (!db.objectStoreNames.contains(IDB_STORE)) db.createObjectStore(IDB_STORE);
+                            };
+                            req.onsuccess = () => finish(req.result);
+                            req.onerror = () => finish(null);
+                            req.onblocked = () => finish(null);
+                            setTimeout(() => finish(null), 3000);   // file:// 下可能永远不回调
+                        } catch (e) { finish(null); }
+                    });
+                }
+
+                function idbAll() {
+                    return new Promise(function (resolve) {
+                        if (!idb) return resolve(Object.create(null));
+                        const out = Object.create(null);
+                        try {
+                            const tx = idb.transaction(IDB_STORE, 'readonly');
+                            const cur = tx.objectStore(IDB_STORE).openCursor();
+                            cur.onsuccess = function (e) {
+                                const c = e.target.result;
+                                if (c) { out[c.key] = c.value; c.continue(); } else resolve(out);
+                            };
+                            cur.onerror = () => resolve(out);
+                        } catch (e) { resolve(out); }
+                    });
+                }
+
+                function idbPut(k, v) {
+                    if (!idb) return;
+                    try { idb.transaction(IDB_STORE, 'readwrite').objectStore(IDB_STORE).put(v, k); } catch (e) {}
+                }
+
+                function idbDel(k) {
+                    if (!idb) return;
+                    try { idb.transaction(IDB_STORE, 'readwrite').objectStore(IDB_STORE).delete(k); } catch (e) {}
+                }
+
+                function prune() {
+                    const keys = Object.keys(mem);
+                    if (keys.length <= MAX_ICON_ENTRIES) return;
+                    keys.slice(0, keys.length - MAX_ICON_ENTRIES).forEach(function (k) {
+                        delete mem[k];
+                        idbDel(k);
+                    });
+                }
+
+                return {
+                    bootSync: function () { mem = readLS(); },
+
+                    syncIDB: async function () {
+                        idb = await openIDB();
+                        if (!idb) return [];
+                        const all = await idbAll();
+                        const added = [];
+                        Object.keys(all).forEach(function (k) {
+                            if (!mem[k] && typeof all[k] === 'string' && all[k].indexOf('data:image') === 0) {
+                                mem[k] = all[k];
+                                added.push(k);
+                            }
+                        });
+                        // 反向补齐：LS 有、IDB 没有的写回 IDB
+                        Object.keys(mem).forEach(function (k) { if (!all[k]) idbPut(k, mem[k]); });
+                        if (added.length) writeLS();
+                        return added;
+                    },
+
+                    get: function (domain) { return mem[domain] || null; },
+                    has: function (domain) { return !!mem[domain]; },
+
+                    set: function (domain, dataURL) {
+                        if (!domain || !dataURL) return;
+                        mem[domain] = dataURL;
+                        prune();
+                        idbPut(domain, dataURL);
+                        scheduleWriteLS();
+                    },
+
+                    remove: function (domain) {
+                        delete mem[domain];
+                        idbDel(domain);
+                        scheduleWriteLS();
+                    },
+
+                    mergeMissing: function (obj) {
+                        if (!obj) return 0;
+                        let n = 0;
+                        Object.keys(obj).forEach(function (k) {
+                            const v = obj[k];
+                            if (!mem[k] && typeof v === 'string' && v.indexOf('data:image') === 0) {
+                                mem[k] = v; idbPut(k, v); n++;
+                            }
+                        });
+                        if (n) scheduleWriteLS();
+                        return n;
+                    },
+
+                    exportAll: function () { return JSON.parse(JSON.stringify(mem)); }
+                };
+            })();
+
+            /* ================= 工具函数 ================= */
             function getDomain(url) {
-                try { return new URL(url).hostname; } catch(e) { return url; }
+                try { return new URL(url).hostname.toLowerCase(); } catch (e) { return String(url).toLowerCase(); }
             }
 
-            function getCachedFavicon(url) {
-                return faviconCache[getDomain(url)] || null;
+            function getDomainInitial(url) {
+                try {
+                    const host = new URL(url).hostname.replace(/^www\./, '');
+                    const c = host.charAt(0);
+                    return /[a-zA-Z]/.test(c) ? c.toUpperCase() : host.substring(0, 1).toUpperCase();
+                } catch (e) { return '?'; }
             }
 
-            function setCachedFavicon(url, base64) {
-                const domain = getDomain(url);
-                if (faviconCache[domain]) return;
-                const keys = Object.keys(faviconCache);
-                if (keys.length >= MAX_CACHE_ENTRIES) {
-                    delete faviconCache[keys[0]];
+            function loadImage(src, crossOrigin) {
+                return new Promise(function (resolve, reject) {
+                    const img = new Image();
+                    if (crossOrigin) img.crossOrigin = 'anonymous';
+                    img.referrerPolicy = 'no-referrer';
+                    img.decoding = 'async';
+                    const timer = setTimeout(function () { reject(new Error('img timeout')); }, FETCH_TIMEOUT);
+                    img.onload = function () { clearTimeout(timer); resolve(img); };
+                    img.onerror = function () { clearTimeout(timer); reject(new Error('img error')); };
+                    img.src = src;
+                });
+            }
+
+            function blobToDataURL(blob) {
+                return new Promise(function (resolve, reject) {
+                    const fr = new FileReader();
+                    fr.onload = () => resolve(fr.result);
+                    fr.onerror = () => reject(new Error('read fail'));
+                    fr.readAsDataURL(blob);
+                });
+            }
+
+            // 统一成小尺寸 PNG data URL；全透明 / 解码失败视为无效
+            async function toPngDataURL(source, size) {
+                size = size || ICON_SIZE;
+                const img = (typeof source === 'string') ? await loadImage(source, false) : source;
+                const w = img.naturalWidth || img.width;
+                const h = img.naturalHeight || img.height;
+                if (!w || !h) throw new Error('zero size');
+                const scale = Math.min(1, size / Math.max(w, h));
+                const cw = Math.max(1, Math.round(w * scale));
+                const ch = Math.max(1, Math.round(h * scale));
+                const cv = document.createElement('canvas');
+                cv.width = cw; cv.height = ch;
+                const ctx = cv.getContext('2d', { willReadFrequently: true });
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
+                ctx.drawImage(img, 0, 0, cw, ch);
+                const data = ctx.getImageData(0, 0, cw, ch).data;   // 同源 data URL 不会污染画布
+                let opaque = 0;
+                for (let i = 3; i < data.length; i += 4) { if (data[i] > 8) { opaque++; if (opaque > 8) break; } }
+                if (opaque <= 8) throw new Error('blank icon');
+                return cv.toDataURL('image/png');
+            }
+
+            async function fetchAsDataURL(src) {
+                const ctrl = new AbortController();
+                const timer = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT);
+                try {
+                    const resp = await fetch(src, {
+                        mode: 'cors',
+                        credentials: 'omit',
+                        redirect: 'follow',
+                        referrerPolicy: 'no-referrer',
+                        signal: ctrl.signal
+                    });
+                    if (!resp.ok) throw new Error('http ' + resp.status);
+                    const blob = await resp.blob();
+                    if (!blob || blob.size < 70) throw new Error('empty');
+                    if (blob.type && !/^image\//i.test(blob.type) && blob.type !== 'application/octet-stream') {
+                        throw new Error('not image: ' + blob.type);
+                    }
+                    return await blobToDataURL(blob);
+                } finally { clearTimeout(timer); }
+            }
+
+            // wsrv.nl 是带 Access-Control-Allow-Origin:* 的图片代理，
+            // 用来绕开 Google / DuckDuckGo 不给 CORS 头的问题，并顺便把 ico 转成 png
+            function viaProxy(src) {
+                return 'https://wsrv.nl/?url=' + encodeURIComponent(src) +
+                       '&w=' + ICON_SIZE + '&h=' + ICON_SIZE + '&fit=inside&we&output=png&n=1';
+            }
+
+            function buildSources(pageUrl) {
+                let u;
+                try { u = new URL(pageUrl); } catch (e) { return []; }
+                const host = u.hostname;
+                const origin = u.origin;
+                return [
+                    'https://t1.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&size=64&url=' + encodeURIComponent(origin),
+                    'https://www.google.com/s2/favicons?domain=' + encodeURIComponent(host) + '&sz=64',
+                    'https://icons.duckduckgo.com/ip3/' + host + '.ico',
+                    origin + '/favicon.ico'
+                ];
+            }
+
+            // 四层降级：直连 fetch → 代理 fetch → 代理 <img crossorigin> → 直连 <img crossorigin>
+            async function acquireIcon(pageUrl) {
+                const direct = buildSources(pageUrl);
+                if (!direct.length) return null;
+                const proxied = direct.map(viaProxy);
+
+                for (const src of direct) {
+                    try { return await toPngDataURL(await fetchAsDataURL(src)); } catch (e) {}
                 }
-                faviconCache[domain] = base64;
-                saveFaviconCache();
+                for (const src of proxied) {
+                    try { return await toPngDataURL(await fetchAsDataURL(src)); } catch (e) {}
+                }
+                for (const src of proxied) {
+                    try { return await toPngDataURL(await loadImage(src, true)); } catch (e) {}
+                }
+                for (const src of direct) {
+                    try { return await toPngDataURL(await loadImage(src, true)); } catch (e) {}
+                }
+                return null;
             }
 
+            /* ================= 抓取队列（仅在本地无图标时才会触发） ================= */
+            const fetchQueue = [];
+            const queued = new Set();
+            let activeCount = 0;
+
+            function scheduleIcon(bookmark) {
+                if (bookmark.icon) return;
+                const domain = getDomain(bookmark.url);
+                if (!domain || IconStore.has(domain) || queued.has(domain)) return;
+                queued.add(domain);
+                fetchQueue.push({ domain: domain, url: bookmark.url });
+                pumpQueue();
+            }
+
+            function pumpQueue() {
+                if (!storeReady) return;
+                while (activeCount < MAX_PARALLEL && fetchQueue.length) {
+                    const job = fetchQueue.shift();
+                    activeCount++;
+                    acquireIcon(job.url).then(function (png) {
+                        if (png) {
+                            IconStore.set(job.domain, png);
+                            applyIconToTiles(job.domain, png);
+                        } else {
+                            queued.delete(job.domain);   // 允许下次（或联网后）再试
+                        }
+                    }).catch(function () {
+                        queued.delete(job.domain);
+                    }).then(function () {
+                        activeCount--;
+                        pumpQueue();
+                    });
+                }
+            }
+
+            function applyIconToTiles(domain, dataURL) {
+                const tiles = gridContainer.querySelectorAll('.tile[data-domain="' + domain.replace(/"/g, '\\"') + '"]');
+                tiles.forEach(function (tile) {
+                    if (tile.dataset.customIcon === '1') return;
+                    const img = tile.querySelector('img');
+                    const fb = tile.querySelector('.fallback-icon');
+                    if (!img) return;
+                    img.src = dataURL;
+                    img.classList.remove('hidden');
+                    if (fb) fb.classList.add('hidden');
+                });
+            }
+
+            function resolveIcon(bookmark) {
+                if (bookmark.icon) return bookmark.icon;
+                return IconStore.get(getDomain(bookmark.url));
+            }
+
+            /* ================= 书签存储 ================= */
             function loadBookmarks() {
                 try {
                     const stored = localStorage.getItem(STORAGE_KEY);
                     if (stored) {
                         const parsed = JSON.parse(stored);
-                        if (Array.isArray(parsed) && parsed.length > 0) {
-                            bookmarks = parsed;
-                            return;
-                        }
+                        if (Array.isArray(parsed)) { bookmarks = parsed; return; }
                     }
                 } catch (e) {}
+                if (SEED && Array.isArray(SEED.bookmarks)) {
+                    bookmarks = SEED.bookmarks.slice();
+                    saveBookmarks();
+                    return;
+                }
                 bookmarks = [];
                 saveBookmarks();
             }
 
             function saveBookmarks() {
-                try { localStorage.setItem(STORAGE_KEY, JSON.stringify(bookmarks)); } catch(e) {}
+                try { localStorage.setItem(STORAGE_KEY, JSON.stringify(bookmarks)); } catch (e) {}
             }
 
+            /* ================= 布局 / 渲染 ================= */
             function getDynamicDefaultVisibleCount() {
                 const gridStyle = window.getComputedStyle(gridContainer);
-                const columns = gridStyle.gridTemplateColumns.split(' ').length;
+                const columns = gridStyle.gridTemplateColumns.split(' ').filter(Boolean).length || 4;
                 return columns * 2;
             }
 
@@ -868,52 +1128,14 @@
                 }
             }
 
-            // 多个 favicon 源，依次尝试
-            function getFaviconSources(url) {
-                try {
-                    const domain = new URL(url).hostname;
-                    return [
-                        `https://www.google.com/s2/favicons?domain=${domain}&sz=64`,
-                        `https://icons.duckduckgo.com/ip3/${domain}.ico`
-                    ];
-                } catch(e) {
-                    return [];
-                }
-            }
-
-            function getDomainInitial(url) {
-                try {
-                    const urlObj = new URL(url);
-                    const hostname = urlObj.hostname.replace(/^www\./, '');
-                    const firstChar = hostname.charAt(0);
-                    return /[a-zA-Z]/.test(firstChar) ? firstChar.toUpperCase() : hostname.substring(0, 1).toUpperCase();
-                } catch(e) {
-                    return '?';
-                }
-            }
-
-            // 将图片转为 Base64（需要图片已完成跨域设置）
-            function convertImageToBase64(img) {
-                return new Promise((resolve) => {
-                    try {
-                        const canvas = document.createElement('canvas');
-                        canvas.width = img.naturalWidth;
-                        canvas.height = img.naturalHeight;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0);
-                        resolve(canvas.toDataURL('image/png'));
-                    } catch(e) {
-                        resolve(null); // 跨域污染则放弃缓存
-                    }
-                });
-            }
-
             function createTileElement(bookmark, index) {
                 const tile = document.createElement('div');
                 tile.className = 'tile';
                 tile.setAttribute('draggable', 'true');
                 tile.setAttribute('data-id', bookmark.id);
                 tile.setAttribute('data-index', index);
+                tile.setAttribute('data-domain', getDomain(bookmark.url));
+                if (bookmark.icon) tile.dataset.customIcon = '1';
                 tile.title = bookmark.title;
 
                 const link = document.createElement('a');
@@ -921,17 +1143,14 @@
                 link.href = bookmark.url;
                 link.setAttribute('aria-label', bookmark.title);
                 link.setAttribute('draggable', 'false');
-                link.addEventListener('click', (e) => {
+                link.addEventListener('click', function (e) {
                     if (tile.classList.contains('dragging') || tile.dataset.wasDragged === 'true') {
                         e.preventDefault();
                         delete tile.dataset.wasDragged;
                     }
                 });
-                link.addEventListener('auxclick', (e) => {
-                    if (e.button === 1) {
-                        e.preventDefault();
-                        window.open(bookmark.url, '_blank');
-                    }
+                link.addEventListener('auxclick', function (e) {
+                    if (e.button === 1) { e.preventDefault(); window.open(bookmark.url, '_blank'); }
                 });
 
                 const iconContainer = document.createElement('div');
@@ -940,68 +1159,24 @@
                 const img = document.createElement('img');
                 img.alt = '';
                 img.setAttribute('draggable', 'false');
-                img.loading = 'eager';
+                img.decoding = 'async';
 
                 const fallback = document.createElement('div');
-                fallback.className = 'fallback-icon hidden';
+                fallback.className = 'fallback-icon';
                 fallback.textContent = getDomainInitial(bookmark.url);
 
-                const cachedBase64 = getCachedFavicon(bookmark.url);
-                if (cachedBase64) {
-                    // 优先使用缓存，立即显示
-                    img.src = cachedBase64;
-                    img.onload = () => {
-                        img.classList.remove('hidden');
-                        fallback.classList.add('hidden');
-                    };
-                    img.onerror = () => {
+                const local = resolveIcon(bookmark);
+                if (local) {
+                    // 纯本地 data URL，不产生任何网络请求，离线也一定显示
+                    img.src = local;
+                    fallback.classList.add('hidden');
+                    img.onerror = function () {
                         img.classList.add('hidden');
                         fallback.classList.remove('hidden');
                     };
                 } else {
-                    const sources = getFaviconSources(bookmark.url);
-                    if (sources.length === 0) {
-                        img.classList.add('hidden');
-                        fallback.classList.remove('hidden');
-                    } else {
-                        let sourceIndex = 0;
-                        img.onload = async () => {
-                            if (img.naturalWidth > 0) {
-                                img.classList.remove('hidden');
-                                fallback.classList.add('hidden');
-                                // 尝试缓存（只有成功加载的源才可能被缓存）
-                                try {
-                                    // 为了 canvas 转换，需要确保图片允许跨域
-                                    // 我们使用一个新的 Image 对象来加载并转换，避免影响当前显示的 img
-                                    const cacheImg = new Image();
-                                    cacheImg.crossOrigin = 'anonymous';
-                                    cacheImg.src = img.src;
-                                    await new Promise((resolve, reject) => {
-                                        cacheImg.onload = resolve;
-                                        cacheImg.onerror = reject;
-                                    });
-                                    const base64 = await convertImageToBase64(cacheImg);
-                                    if (base64) {
-                                        setCachedFavicon(bookmark.url, base64);
-                                    }
-                                } catch(e) {
-                                    // 忽略缓存失败
-                                }
-                            }
-                        };
-                        img.onerror = () => {
-                            sourceIndex++;
-                            if (sourceIndex < sources.length) {
-                                // 尝试下一个源
-                                img.src = sources[sourceIndex];
-                            } else {
-                                // 所有源都失败，显示回退
-                                img.classList.add('hidden');
-                                fallback.classList.remove('hidden');
-                            }
-                        };
-                        img.src = sources[0];
-                    }
+                    img.classList.add('hidden');
+                    scheduleIcon(bookmark);
                 }
 
                 iconContainer.appendChild(img);
@@ -1019,8 +1194,8 @@
                 moreBtn.className = 'tile-action-btn more-btn';
                 moreBtn.title = '更多操作';
                 moreBtn.setAttribute('aria-label', '更多操作');
-                moreBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>`;
-                moreBtn.addEventListener('click', (e) => {
+                moreBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>';
+                moreBtn.addEventListener('click', function (e) {
                     e.stopPropagation();
                     e.preventDefault();
                     openEditDialog(bookmark.id);
@@ -1037,7 +1212,7 @@
                 tile.addEventListener('dragleave', handleDragLeave);
                 tile.addEventListener('drop', handleDrop);
                 tile.addEventListener('dragend', handleDragEnd);
-                tile.addEventListener('mousedown', () => { delete tile.dataset.wasDragged; });
+                tile.addEventListener('mousedown', function () { delete tile.dataset.wasDragged; });
 
                 return tile;
             }
@@ -1051,7 +1226,7 @@
 
                 const iconContainer = document.createElement('div');
                 iconContainer.className = 'tile-icon-container';
-                iconContainer.innerHTML = `<svg class="plus-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`;
+                iconContainer.innerHTML = '<svg class="plus-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>';
 
                 const titleEl = document.createElement('div');
                 titleEl.className = 'tile-title';
@@ -1061,28 +1236,29 @@
 
                 addTile.appendChild(iconContainer);
                 addTile.appendChild(titleEl);
-                addTile.addEventListener('click', () => openAddDialog());
+                addTile.addEventListener('click', function () { openAddDialog(); });
                 return addTile;
             }
 
             function renderAll() {
                 gridContainer.innerHTML = '';
-                getVisibleBookmarks().forEach((bookmark, index) => {
+                getVisibleBookmarks().forEach(function (bookmark, index) {
                     gridContainer.appendChild(createTileElement(bookmark, index));
                 });
                 gridContainer.appendChild(createAddTileElement());
                 updateToggleButtons();
             }
 
-            let dragSourceId = null, dragSourceIndex = null;
+            /* ================= 拖拽排序 ================= */
+            let dragSourceId = null;
 
             function handleDragStart(e) {
                 dragSourceId = this.getAttribute('data-id');
-                dragSourceIndex = parseInt(this.getAttribute('data-index'));
                 this.classList.add('dragging');
                 e.dataTransfer.effectAllowed = 'move';
                 e.dataTransfer.setData('text/plain', dragSourceId);
-                setTimeout(() => { if (this.classList.contains('dragging')) this.style.opacity = '0.4'; }, 0);
+                const self = this;
+                setTimeout(function () { if (self.classList.contains('dragging')) self.style.opacity = '0.4'; }, 0);
             }
 
             function handleDragOver(e) {
@@ -1091,7 +1267,7 @@
                 if (this.getAttribute('data-id') !== dragSourceId) this.classList.add('drag-over');
             }
 
-            function handleDragLeave(e) { this.classList.remove('drag-over'); }
+            function handleDragLeave() { this.classList.remove('drag-over'); }
 
             function handleDrop(e) {
                 e.preventDefault();
@@ -1100,38 +1276,65 @@
                 const targetId = this.getAttribute('data-id');
                 if (!targetId || targetId === dragSourceId) return;
 
-                const draggedTile = gridContainer.querySelector(`[data-id="${dragSourceId}"]`);
+                const draggedTile = gridContainer.querySelector('[data-id="' + dragSourceId + '"]');
                 if (draggedTile) draggedTile.dataset.wasDragged = 'true';
 
                 const srcIdx = bookmarks.findIndex(b => b.id === dragSourceId);
                 const tgtIdx = bookmarks.findIndex(b => b.id === targetId);
                 if (srcIdx !== -1 && tgtIdx !== -1) {
-                    const [moved] = bookmarks.splice(srcIdx, 1);
+                    const moved = bookmarks.splice(srcIdx, 1)[0];
                     bookmarks.splice(tgtIdx, 0, moved);
                     saveBookmarks();
                     renderAll();
                 }
                 dragSourceId = null;
-                dragSourceIndex = null;
             }
 
-            function handleDragEnd(e) {
+            function handleDragEnd() {
                 this.classList.remove('dragging');
                 this.style.opacity = '';
                 gridContainer.querySelectorAll('.tile.drag-over').forEach(t => t.classList.remove('drag-over'));
                 dragSourceId = null;
-                dragSourceIndex = null;
+            }
+
+            /* ================= 弹窗 ================= */
+            function renderIconPreview(dataURL, urlForInitial) {
+                iconPreview.innerHTML = '';
+                if (dataURL) {
+                    const im = document.createElement('img');
+                    im.src = dataURL;
+                    iconPreview.appendChild(im);
+                } else {
+                    const fb = document.createElement('div');
+                    fb.className = 'fallback-icon';
+                    fb.textContent = urlForInitial ? getDomainInitial(urlForInitial) : '?';
+                    iconPreview.appendChild(fb);
+                }
+            }
+
+            function currentDialogIcon() {
+                if (pendingIcon !== undefined) return pendingIcon;
+                const url = dialogInputUrl.value.trim();
+                if (!url) return null;
+                const bm = editingId ? bookmarks.find(b => b.id === editingId) : null;
+                if (bm && bm.icon) return bm.icon;
+                return IconStore.get(getDomain(normalizeUrl(url) || url));
+            }
+
+            function refreshDialogIcon() {
+                renderIconPreview(currentDialogIcon(), dialogInputUrl.value.trim());
             }
 
             function openAddDialog() {
                 editingId = null;
+                pendingIcon = undefined;
                 dialogTitle.textContent = '添加快捷方式';
                 dialogInputName.value = '';
                 dialogInputUrl.value = '';
                 dialogSaveBtn.disabled = true;
-                dialogSaveBtn.textContent = '保存';
                 dialogRemoveBtn.classList.add('hidden');
                 dialogButtonsRow.classList.remove('has-remove');
+                refreshDialogIcon();
                 showDialog();
                 setTimeout(() => dialogInputName.focus(), 150);
             }
@@ -1140,62 +1343,61 @@
                 const bookmark = bookmarks.find(b => b.id === bookmarkId);
                 if (!bookmark) return;
                 editingId = bookmarkId;
+                pendingIcon = undefined;
                 dialogTitle.textContent = '编辑快捷方式';
                 dialogInputName.value = bookmark.title;
                 dialogInputUrl.value = bookmark.url;
                 dialogSaveBtn.disabled = false;
-                dialogSaveBtn.textContent = '保存';
                 dialogRemoveBtn.classList.remove('hidden');
                 dialogButtonsRow.classList.add('has-remove');
+                refreshDialogIcon();
                 showDialog();
-                setTimeout(() => { dialogInputName.focus(); dialogInputName.select(); }, 150);
+                setTimeout(function () { dialogInputName.focus(); dialogInputName.select(); }, 150);
             }
 
             function showDialog() { dialogOverlay.classList.remove('hidden', 'closing'); }
 
             function hideDialog() {
                 dialogOverlay.classList.add('closing');
-                const handler = () => {
+                const handler = function () {
                     dialogOverlay.classList.add('hidden');
                     dialogOverlay.classList.remove('closing');
                     dialogOverlay.removeEventListener('animationend', handler);
                 };
                 dialogOverlay.addEventListener('animationend', handler);
                 editingId = null;
+                pendingIcon = undefined;
+            }
+
+            function normalizeUrl(input) {
+                let url = String(input || '').trim();
+                if (!url) return null;
+                if (!/^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//.test(url)) url = 'https://' + url;
+                try { new URL(url); return url; } catch (e) { return null; }
             }
 
             function handleSaveDialog() {
                 const name = dialogInputName.value.trim();
-                let url = dialogInputUrl.value.trim();
-                if (!name || !url) return;
-
-                if (!/^https?:\/\//i.test(url)) {
-                    if (/^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/.test(url) || url.includes('.')) {
-                        url = 'https://' + url;
-                    } else if (!url.startsWith('/') && !url.startsWith('#')) {
-                        url = 'https://' + url;
-                    }
-                }
-
-                try { new URL(url); } catch(e) {
-                    if (!/^https?:\/\//i.test(url)) {
-                        url = 'https://' + url;
-                        try { new URL(url); } catch(e2) { alert('请输入有效的网址。'); return; }
-                    } else {
-                        alert('请输入有效的网址。');
-                        return;
-                    }
-                }
+                const url = normalizeUrl(dialogInputUrl.value);
+                if (!name || !url) { alert('请输入有效的名称和网址。'); return; }
 
                 if (editingId) {
                     const bookmark = bookmarks.find(b => b.id === editingId);
-                    if (bookmark) { bookmark.title = name; bookmark.url = url; }
+                    if (bookmark) {
+                        bookmark.title = name;
+                        bookmark.url = url;
+                        if (pendingIcon !== undefined) {
+                            if (pendingIcon) bookmark.icon = pendingIcon; else delete bookmark.icon;
+                        }
+                    }
                 } else {
-                    bookmarks.push({
+                    const nb = {
                         id: Date.now().toString(36) + Math.random().toString(36).substring(2, 8),
                         title: name,
                         url: url
-                    });
+                    };
+                    if (pendingIcon) nb.icon = pendingIcon;
+                    bookmarks.push(nb);
                 }
                 saveBookmarks();
                 hideDialog();
@@ -1207,20 +1409,85 @@
             }
 
             dialogInputName.addEventListener('input', updateSaveButtonState);
-            dialogInputUrl.addEventListener('input', updateSaveButtonState);
+            dialogInputUrl.addEventListener('input', function () {
+                updateSaveButtonState();
+                if (pendingIcon === undefined) refreshDialogIcon();
+            });
             dialogSaveBtn.addEventListener('click', handleSaveDialog);
             dialogCancelBtn.addEventListener('click', hideDialog);
-            dialogRemoveBtn.addEventListener('click', () => {
+            dialogRemoveBtn.addEventListener('click', function () {
                 if (editingId) { removeBookmark(editingId); hideDialog(); }
             });
 
-            dialogOverlay.addEventListener('click', (e) => { if (e.target === dialogOverlay) hideDialog(); });
-            document.addEventListener('keydown', (e) => {
-                if (dialogOverlay.classList.contains('hidden')) return;
-                if (e.key === 'Escape') { e.preventDefault(); hideDialog(); }
-                else if (e.key === 'Enter' && !dialogSaveBtn.disabled) { e.preventDefault(); handleSaveDialog(); }
+            dialogOverlay.addEventListener('click', function (e) { if (e.target === dialogOverlay) hideDialog(); });
+
+            /* ---- 图标：上传 / 指定网址 / 重新抓取 / 恢复默认 ---- */
+            iconUploadBtn.addEventListener('click', function () { hiddenIconFile.click(); });
+
+            hiddenIconFile.addEventListener('change', async function () {
+                const file = hiddenIconFile.files && hiddenIconFile.files[0];
+                hiddenIconFile.value = '';
+                if (!file) return;
+                try {
+                    const raw = await blobToDataURL(file);
+                    pendingIcon = await toPngDataURL(raw, 128);
+                    refreshDialogIcon();
+                } catch (e) { alert('这张图片无法读取，请换一张。'); }
             });
 
+            iconUrlBtn.addEventListener('click', async function () {
+                const input = prompt('请输入图标图片的网址（会立即下载并永久保存在本地）：');
+                if (!input) return;
+                const src = normalizeUrl(input);
+                if (!src) { alert('网址无效。'); return; }
+                try {
+                    let raw;
+                    try { raw = await fetchAsDataURL(src); }
+                    catch (e) { raw = await fetchAsDataURL(viaProxy(src)); }
+                    pendingIcon = await toPngDataURL(raw, 128);
+                    refreshDialogIcon();
+                } catch (e) { alert('这个图标下载失败，可以改用“上传图片”。'); }
+            });
+
+            iconRefetchBtn.addEventListener('click', async function () {
+                const url = normalizeUrl(dialogInputUrl.value);
+                if (!url) { alert('请先填写网址。'); return; }
+                const domain = getDomain(url);
+                iconRefetchBtn.textContent = '抓取中…';
+                iconRefetchBtn.disabled = true;
+                try {
+                    IconStore.remove(domain);
+                    queued.delete(domain);
+                    const png = await acquireIcon(url);
+                    if (png) {
+                        IconStore.set(domain, png);
+                        pendingIcon = null;              // 用域名缓存，不做自定义
+                        applyIconToTiles(domain, png);
+                        renderIconPreview(png, url);
+                    } else {
+                        alert('几个来源都没抓到图标，可以用“上传图片”手动指定。');
+                    }
+                } finally {
+                    iconRefetchBtn.textContent = '重新抓取';
+                    iconRefetchBtn.disabled = false;
+                }
+            });
+
+            iconResetBtn.addEventListener('click', function () {
+                pendingIcon = null;
+                refreshDialogIcon();
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (dialogOverlay.classList.contains('hidden')) return;
+                if (e.key === 'Escape') { e.preventDefault(); hideDialog(); }
+                else if (e.key === 'Enter' && !dialogSaveBtn.disabled) {
+                    const tag = (e.target && e.target.tagName) || '';
+                    if (tag === 'INPUT') { e.preventDefault(); handleSaveDialog(); }
+                }
+            });
+
+            /* ================= 删除 / 撤销 / Toast ================= */
             function removeBookmark(bookmarkId) {
                 const index = bookmarks.findIndex(b => b.id === bookmarkId);
                 if (index === -1) return;
@@ -1229,14 +1496,12 @@
                 bookmarks.splice(index, 1);
                 saveBookmarks();
                 renderAll();
-                showUndoToast(lastRemovedBookmark.title, () => {
-                    if (lastRemovedBookmark && lastRemovedIndex !== null) {
-                        bookmarks.splice(lastRemovedIndex, 0, lastRemovedBookmark);
-                        saveBookmarks();
-                        renderAll();
-                        lastRemovedBookmark = null;
-                        lastRemovedIndex = null;
-                    }
+                const removed = lastRemovedBookmark;
+                const at = lastRemovedIndex;
+                showUndoToast(removed.title, function () {
+                    bookmarks.splice(at, 0, removed);
+                    saveBookmarks();
+                    renderAll();
                 });
             }
 
@@ -1244,13 +1509,22 @@
                 clearToast();
                 const toast = document.createElement('div');
                 toast.className = 'toast';
-                toast.innerHTML = `<span>已移除"<strong>${escapeHtml(title)}</strong>"</span><button class="toast-undo-btn" id="toastUndoBtn">撤销</button>`;
+                toast.innerHTML = '<span>已移除“<strong>' + escapeHtml(title) + '</strong>”</span><button class="toast-undo-btn">撤销</button>';
                 toastContainer.appendChild(toast);
-                toast.querySelector('#toastUndoBtn').addEventListener('click', () => {
+                toast.querySelector('.toast-undo-btn').addEventListener('click', function () {
                     undoCallback();
                     clearToast();
                 });
-                toastTimer = setTimeout(() => dismissToast(toast), TOAST_DURATION);
+                toastTimer = setTimeout(function () { dismissToast(toast); }, TOAST_DURATION);
+            }
+
+            function showToast(message) {
+                clearToast();
+                const toast = document.createElement('div');
+                toast.className = 'toast';
+                toast.textContent = message;
+                toastContainer.appendChild(toast);
+                toastTimer = setTimeout(function () { dismissToast(toast); }, 3200);
             }
 
             function clearToast() {
@@ -1263,7 +1537,7 @@
             function dismissToast(toastEl) {
                 if (!toastEl || toastEl.classList.contains('removing')) return;
                 toastEl.classList.add('removing');
-                const handler = () => {
+                const handler = function () {
                     if (toastEl.parentNode) toastEl.parentNode.removeChild(toastEl);
                     toastEl.removeEventListener('animationend', handler);
                     if (toastContainer.children.length === 0) {
@@ -1281,11 +1555,115 @@
                 return div.innerHTML;
             }
 
-            showMoreBtn.addEventListener('click', () => { isExpanded = true; renderAll(); });
-            showLessBtn.addEventListener('click', () => { isExpanded = false; renderAll(); gridContainer.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+            /* ================= 备份 / 内嵌导出 ================= */
+            function download(content, filename, mime) {
+                const blob = new Blob([content], { type: mime + ';charset=utf-8' });
+                const a = document.createElement('a');
+                const objUrl = URL.createObjectURL(blob);
+                a.href = objUrl;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(function () {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(objUrl);
+                }, 1000);
+            }
 
-            document.addEventListener('keydown', (e) => {
-                if (e.ctrlKey && e.key === 'z' && dialogOverlay.classList.contains('hidden')) {
+            function stamp() {
+                const d = new Date();
+                const p = n => String(n).padStart(2, '0');
+                return d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + '-' + p(d.getHours()) + p(d.getMinutes());
+            }
+
+            function safeJSON(obj) {
+                return JSON.stringify(obj)
+                    .replace(/</g, '\\u003c')
+                    .replace(/>/g, '\\u003e')
+                    .replace(/\u2028/g, '\\u2028')
+                    .replace(/\u2029/g, '\\u2029');
+            }
+
+            exportJsonBtn.addEventListener('click', function () {
+                const payload = { version: 1, exportedAt: new Date().toISOString(), bookmarks: bookmarks, icons: IconStore.exportAll() };
+                download(JSON.stringify(payload, null, 2), '导航页备份-' + stamp() + '.json', 'application/json');
+                showToast('已导出备份');
+            });
+
+            importJsonBtn.addEventListener('click', function () { hiddenJsonFile.click(); });
+
+            hiddenJsonFile.addEventListener('change', function () {
+                const file = hiddenJsonFile.files && hiddenJsonFile.files[0];
+                hiddenJsonFile.value = '';
+                if (!file) return;
+                const fr = new FileReader();
+                fr.onload = function () {
+                    try {
+                        const data = JSON.parse(fr.result);
+                        let added = 0;
+                        if (Array.isArray(data.bookmarks)) {
+                            const known = new Set(bookmarks.map(b => b.url));
+                            data.bookmarks.forEach(function (b) {
+                                if (b && b.url && !known.has(b.url)) {
+                                    bookmarks.push({
+                                        id: Date.now().toString(36) + Math.random().toString(36).substring(2, 8),
+                                        title: b.title || getDomain(b.url),
+                                        url: b.url,
+                                        icon: (typeof b.icon === 'string' && b.icon.indexOf('data:image') === 0) ? b.icon : undefined
+                                    });
+                                    known.add(b.url);
+                                    added++;
+                                }
+                            });
+                            saveBookmarks();
+                        }
+                        const iconAdded = IconStore.mergeMissing(data.icons);
+                        renderAll();
+                        showToast('已导入 ' + added + ' 个书签、' + iconAdded + ' 个图标');
+                    } catch (e) { alert('这个文件不是有效的备份 JSON。'); }
+                };
+                fr.readAsText(file);
+            });
+
+            // 把当前页面 + 全部图标 base64 打包成一个独立 HTML，彻底不依赖浏览器存储
+            exportHtmlBtn.addEventListener('click', function () {
+                try {
+                    const clone = document.documentElement.cloneNode(true);
+                    const g = clone.querySelector('#gridContainer'); if (g) g.innerHTML = '';
+                    const t = clone.querySelector('#toastContainer'); if (t) t.innerHTML = '';
+                    const ov = clone.querySelector('#dialogOverlay'); if (ov) ov.classList.add('hidden');
+                    clone.querySelectorAll('script[data-seed]').forEach(s => s.remove());
+
+                    const seed = document.createElement('script');
+                    seed.setAttribute('data-seed', '1');
+                    seed.textContent = 'window.__NAV_SEED__=' + safeJSON({ bookmarks: bookmarks, icons: IconStore.exportAll() }) + ';';
+                    clone.querySelector('head').appendChild(seed);
+
+                    download('<!DOCTYPE html>\n' + clone.outerHTML, '导航页-含图标-' + stamp() + '.html', 'text/html');
+                    showToast('已导出内嵌图标的 HTML');
+                } catch (e) { alert('导出失败：' + e.message); }
+            });
+
+            repairIconBtn.addEventListener('click', function () {
+                queued.clear();
+                let n = 0;
+                bookmarks.forEach(function (b) {
+                    if (!b.icon && !IconStore.has(getDomain(b.url))) { scheduleIcon(b); n++; }
+                });
+                showToast(n ? ('正在抓取 ' + n + ' 个图标…') : '所有图标都已在本地');
+            });
+
+            /* ================= 其它交互 ================= */
+            showMoreBtn.addEventListener('click', function () { isExpanded = true; renderAll(); });
+            showLessBtn.addEventListener('click', function () {
+                isExpanded = false;
+                renderAll();
+                gridContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (!dialogOverlay.classList.contains('hidden')) return;
+                if (e.ctrlKey && (e.key === 'z' || e.key === 'Z')) {
                     if (lastRemovedBookmark && lastRemovedIndex !== null) {
                         e.preventDefault();
                         bookmarks.splice(lastRemovedIndex, 0, lastRemovedBookmark);
@@ -1294,29 +1672,51 @@
                         clearToast();
                     }
                 }
-                if (e.ctrlKey && e.shiftKey && e.key === 'A' && dialogOverlay.classList.contains('hidden')) {
+                if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
                     e.preventDefault();
                     openAddDialog();
                 }
             });
 
             let resizeTimer;
-            window.addEventListener('resize', () => {
+            window.addEventListener('resize', function () {
                 clearTimeout(resizeTimer);
-                resizeTimer = setTimeout(() => {
-                    if (!isExpanded && bookmarks.length > getDynamicDefaultVisibleCount()) {
-                        renderAll();
-                    } else {
-                        updateToggleButtons();
-                    }
+                resizeTimer = setTimeout(function () {
+                    if (!isExpanded && bookmarks.length > getDynamicDefaultVisibleCount()) renderAll();
+                    else updateToggleButtons();
                 }, 250);
             });
 
+            // 断网时抓不到的，联网后自动补一次；已有本地图标的永远不会再联网
+            window.addEventListener('online', function () {
+                queued.clear();
+                bookmarks.forEach(function (b) { if (!b.icon && !IconStore.has(getDomain(b.url))) scheduleIcon(b); });
+            });
+
+            /* ================= 启动 ================= */
             function init() {
-                loadFaviconCache();
+                IconStore.bootSync();                       // 同步读 localStorage，首屏零延迟
+                if (SEED && SEED.icons) IconStore.mergeMissing(SEED.icons);   // 内嵌 HTML 自带的图标
                 loadBookmarks();
                 isExpanded = false;
                 renderAll();
+
+                IconStore.syncIDB().then(function (restored) {
+                    storeReady = true;
+                    // IndexedDB 里补回来的图标，直接贴到已渲染的磁贴上
+                    (restored || []).forEach(function (domain) {
+                        applyIconToTiles(domain, IconStore.get(domain));
+                        queued.delete(domain);
+                    });
+                    // 移除已经有图标的抓取任务，剩下的才真的去联网
+                    for (let i = fetchQueue.length - 1; i >= 0; i--) {
+                        if (IconStore.has(fetchQueue[i].domain)) fetchQueue.splice(i, 1);
+                    }
+                    pumpQueue();
+                }).catch(function () {
+                    storeReady = true;
+                    pumpQueue();
+                });
             }
 
             init();
