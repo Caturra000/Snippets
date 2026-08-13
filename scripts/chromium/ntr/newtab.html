@@ -345,27 +345,54 @@
         .toggle-btn svg { width: 18px; height: 18px; color: var(--text-secondary); }
         .toggle-btn:hover svg { color: var(--text-primary); }
 
-        /* ---- 底部工具条 ---- */
-        .footer-tools {
+        /* ---- + 号菜单 ---- */
+        .add-menu {
+            position: fixed;
+            z-index: 1500;
+            min-width: 190px;
+            background: var(--dialog-bg);
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.24), 0 4px 12px rgba(0, 0, 0, 0.12);
+            border: 1px solid var(--divider-color);
+            padding: 6px 0;
             display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 4px;
-            margin-top: 2px;
-            opacity: 0.55;
+            flex-direction: column;
         }
-        .footer-tools:hover { opacity: 1; }
-        .footer-tools button {
+
+        .add-menu.hidden { display: none; }
+
+        .add-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
             background: none;
             border: none;
+            padding: 10px 16px;
             font-family: inherit;
-            font-size: 12px;
-            color: var(--text-secondary);
-            padding: 6px 10px;
+            font-size: 13px;
+            color: var(--text-primary);
             cursor: pointer;
-            letter-spacing: 0.02em;
+            text-align: left;
+            letter-spacing: 0.01em;
+            white-space: nowrap;
+            -webkit-appearance: none;
         }
-        .footer-tools button:hover { color: var(--text-primary); background: var(--tile-hover-bg); }
+
+        .add-menu-item:hover { background: var(--tile-hover-bg); }
+
+        .add-menu-item svg {
+            width: 16px;
+            height: 16px;
+            color: var(--text-secondary);
+            flex-shrink: 0;
+            pointer-events: none;
+        }
+
+        .add-menu-separator {
+            height: 1px;
+            background: var(--divider-color);
+            margin: 4px 0;
+        }
 
         .dialog-overlay {
             position: fixed;
@@ -656,13 +683,48 @@
                 <span>收起</span>
             </button>
         </div>
+    </div>
 
-        <div class="footer-tools" id="footerTools">
-            <button id="exportHtmlBtn" title="生成一个把所有图标 base64 内嵌进去的 HTML 文件，换电脑/清缓存也不丢">导出内嵌HTML</button>
-            <button id="exportJsonBtn" title="导出书签与图标为 JSON 备份">导出备份</button>
-            <button id="importJsonBtn" title="从 JSON 备份恢复">导入备份</button>
-            <button id="repairIconBtn" title="为还没有本地图标的书签重新抓取一次">补全图标</button>
-        </div>
+    <div class="add-menu hidden" id="addMenu" role="menu">
+        <button type="button" class="add-menu-item" id="menuAddShortcut">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>添加快捷方式</span>
+        </button>
+        <div class="add-menu-separator"></div>
+        <button type="button" class="add-menu-item" id="menuExportHtml">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3v12"></path>
+                <path d="M8 7l4-4 4 4"></path>
+                <path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"></path>
+            </svg>
+            <span>导出内嵌HTML</span>
+        </button>
+        <button type="button" class="add-menu-item" id="menuExportJson">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3v12"></path>
+                <path d="M8 7l4-4 4 4"></path>
+                <path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"></path>
+            </svg>
+            <span>导出备份</span>
+        </button>
+        <button type="button" class="add-menu-item" id="menuImportJson">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 21V9"></path>
+                <path d="M8 13l4 4 4-4"></path>
+                <path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"></path>
+            </svg>
+            <span>导入备份</span>
+        </button>
+        <button type="button" class="add-menu-item" id="menuRepairIcon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12a9 9 0 1 1-2.64-6.36"></path>
+                <path d="M21 3v6h-6"></path>
+            </svg>
+            <span>补全图标</span>
+        </button>
     </div>
 
     <div class="dialog-overlay hidden" id="dialogOverlay">
@@ -741,10 +803,12 @@
             const iconResetBtn = document.getElementById('iconResetBtn');
             const hiddenIconFile = document.getElementById('hiddenIconFile');
             const hiddenJsonFile = document.getElementById('hiddenJsonFile');
-            const exportHtmlBtn = document.getElementById('exportHtmlBtn');
-            const exportJsonBtn = document.getElementById('exportJsonBtn');
-            const importJsonBtn = document.getElementById('importJsonBtn');
-            const repairIconBtn = document.getElementById('repairIconBtn');
+            const addMenu = document.getElementById('addMenu');
+            const menuAddShortcut = document.getElementById('menuAddShortcut');
+            const menuExportHtml = document.getElementById('menuExportHtml');
+            const menuExportJson = document.getElementById('menuExportJson');
+            const menuImportJson = document.getElementById('menuImportJson');
+            const menuRepairIcon = document.getElementById('menuRepairIcon');
 
             /* ================= 状态 ================= */
             let bookmarks = [];
@@ -954,7 +1018,7 @@
                 ctx.imageSmoothingEnabled = true;
                 ctx.imageSmoothingQuality = 'high';
                 ctx.drawImage(img, 0, 0, cw, ch);
-                const data = ctx.getImageData(0, 0, cw, ch).data;   // 同源 data URL 不会污染画布
+                const data = ctx.getImageData(0, 0, cw, ch).data;
                 let opaque = 0;
                 for (let i = 3; i < data.length; i += 4) { if (data[i] > 8) { opaque++; if (opaque > 8) break; } }
                 if (opaque <= 8) throw new Error('blank icon');
@@ -1002,7 +1066,6 @@
                 ];
             }
 
-            // 四层降级：直连 fetch → 代理 fetch → 代理 <img crossorigin> → 直连 <img crossorigin>
             async function acquireIcon(pageUrl) {
                 const direct = buildSources(pageUrl);
                 if (!direct.length) return null;
@@ -1047,7 +1110,7 @@
                             IconStore.set(job.domain, png);
                             applyIconToTiles(job.domain, png);
                         } else {
-                            queued.delete(job.domain);   // 允许下次（或联网后）再试
+                            queued.delete(job.domain);
                         }
                     }).catch(function () {
                         queued.delete(job.domain);
@@ -1167,7 +1230,6 @@
 
                 const local = resolveIcon(bookmark);
                 if (local) {
-                    // 纯本地 data URL，不产生任何网络请求，离线也一定显示
                     img.src = local;
                     fallback.classList.add('hidden');
                     img.onerror = function () {
@@ -1220,8 +1282,8 @@
             function createAddTileElement() {
                 const addTile = document.createElement('button');
                 addTile.className = 'add-tile';
-                addTile.title = '添加快捷方式';
-                addTile.setAttribute('aria-label', '添加快捷方式');
+                addTile.title = '添加 / 更多操作';
+                addTile.setAttribute('aria-label', '添加 / 更多操作');
                 addTile.type = 'button';
 
                 const iconContainer = document.createElement('div');
@@ -1231,12 +1293,22 @@
                 const titleEl = document.createElement('div');
                 titleEl.className = 'tile-title';
                 const titleSpan = document.createElement('span');
-                titleSpan.textContent = '添加快捷方式';
+                titleSpan.textContent = '添加';
                 titleEl.appendChild(titleSpan);
 
                 addTile.appendChild(iconContainer);
                 addTile.appendChild(titleEl);
-                addTile.addEventListener('click', function () { openAddDialog(); });
+
+                addTile.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    if (!addMenu.classList.contains('hidden')) {
+                        closeAddMenu();
+                    } else {
+                        openAddMenu(addTile);
+                    }
+                });
+
                 return addTile;
             }
 
@@ -1248,6 +1320,65 @@
                 gridContainer.appendChild(createAddTileElement());
                 updateToggleButtons();
             }
+
+            /* ================= + 号菜单 ================= */
+            function openAddMenu(anchor) {
+                closeAddMenu();
+                addMenu.classList.remove('hidden');
+                const rect = anchor.getBoundingClientRect();
+                const menuWidth = addMenu.offsetWidth;
+                const menuHeight = addMenu.offsetHeight;
+                let left = rect.left + rect.width / 2 - menuWidth / 2;
+                let top = rect.bottom + 8;
+
+                if (left < 8) left = 8;
+                if (left + menuWidth > window.innerWidth - 8) left = window.innerWidth - menuWidth - 8;
+                if (top + menuHeight > window.innerHeight - 8) top = rect.top - menuHeight - 8;
+                if (top < 8) top = 8;
+
+                addMenu.style.left = left + 'px';
+                addMenu.style.top = top + 'px';
+            }
+
+            function closeAddMenu() {
+                addMenu.classList.add('hidden');
+            }
+
+            menuAddShortcut.addEventListener('click', function () {
+                closeAddMenu();
+                openAddDialog();
+            });
+
+            menuExportHtml.addEventListener('click', function () {
+                closeAddMenu();
+                exportHtmlFile();
+            });
+
+            menuExportJson.addEventListener('click', function () {
+                closeAddMenu();
+                exportJsonBackup();
+            });
+
+            menuImportJson.addEventListener('click', function () {
+                closeAddMenu();
+                hiddenJsonFile.click();
+            });
+
+            menuRepairIcon.addEventListener('click', function () {
+                closeAddMenu();
+                repairIcons();
+            });
+
+            document.addEventListener('click', function (e) {
+                if (!addMenu.classList.contains('hidden')) {
+                    if (!addMenu.contains(e.target) && !e.target.closest('.add-tile')) {
+                        closeAddMenu();
+                    }
+                }
+            });
+
+            window.addEventListener('resize', closeAddMenu);
+            window.addEventListener('scroll', closeAddMenu, true);
 
             /* ================= 拖拽排序 ================= */
             let dragSourceId = null;
@@ -1461,7 +1592,7 @@
                     const png = await acquireIcon(url);
                     if (png) {
                         IconStore.set(domain, png);
-                        pendingIcon = null;              // 用域名缓存，不做自定义
+                        pendingIcon = null;
                         applyIconToTiles(domain, png);
                         renderIconPreview(png, url);
                     } else {
@@ -1479,6 +1610,9 @@
             });
 
             document.addEventListener('keydown', function (e) {
+                if (!addMenu.classList.contains('hidden')) {
+                    if (e.key === 'Escape') { e.preventDefault(); closeAddMenu(); return; }
+                }
                 if (dialogOverlay.classList.contains('hidden')) return;
                 if (e.key === 'Escape') { e.preventDefault(); hideDialog(); }
                 else if (e.key === 'Enter' && !dialogSaveBtn.disabled) {
@@ -1584,13 +1718,43 @@
                     .replace(/\u2029/g, '\\u2029');
             }
 
-            exportJsonBtn.addEventListener('click', function () {
+            function exportJsonBackup() {
                 const payload = { version: 1, exportedAt: new Date().toISOString(), bookmarks: bookmarks, icons: IconStore.exportAll() };
                 download(JSON.stringify(payload, null, 2), '导航页备份-' + stamp() + '.json', 'application/json');
                 showToast('已导出备份');
-            });
+            }
 
-            importJsonBtn.addEventListener('click', function () { hiddenJsonFile.click(); });
+            function importJsonBackup() {
+                hiddenJsonFile.click();
+            }
+
+            function repairIcons() {
+                queued.clear();
+                let n = 0;
+                bookmarks.forEach(function (b) {
+                    if (!b.icon && !IconStore.has(getDomain(b.url))) { scheduleIcon(b); n++; }
+                });
+                showToast(n ? ('正在抓取 ' + n + ' 个图标…') : '所有图标都已在本地');
+            }
+
+            function exportHtmlFile() {
+                try {
+                    const clone = document.documentElement.cloneNode(true);
+                    const g = clone.querySelector('#gridContainer'); if (g) g.innerHTML = '';
+                    const t = clone.querySelector('#toastContainer'); if (t) t.innerHTML = '';
+                    const ov = clone.querySelector('#dialogOverlay'); if (ov) ov.classList.add('hidden');
+                    const am = clone.querySelector('#addMenu'); if (am) am.classList.add('hidden');
+                    clone.querySelectorAll('script[data-seed]').forEach(s => s.remove());
+
+                    const seed = document.createElement('script');
+                    seed.setAttribute('data-seed', '1');
+                    seed.textContent = 'window.__NAV_SEED__=' + safeJSON({ bookmarks: bookmarks, icons: IconStore.exportAll() }) + ';';
+                    clone.querySelector('head').appendChild(seed);
+
+                    download('<!DOCTYPE html>\n' + clone.outerHTML, '导航页-含图标-' + stamp() + '.html', 'text/html');
+                    showToast('已导出内嵌图标的 HTML');
+                } catch (e) { alert('导出失败：' + e.message); }
+            }
 
             hiddenJsonFile.addEventListener('change', function () {
                 const file = hiddenJsonFile.files && hiddenJsonFile.files[0];
@@ -1623,34 +1787,6 @@
                     } catch (e) { alert('这个文件不是有效的备份 JSON。'); }
                 };
                 fr.readAsText(file);
-            });
-
-            // 把当前页面 + 全部图标 base64 打包成一个独立 HTML，彻底不依赖浏览器存储
-            exportHtmlBtn.addEventListener('click', function () {
-                try {
-                    const clone = document.documentElement.cloneNode(true);
-                    const g = clone.querySelector('#gridContainer'); if (g) g.innerHTML = '';
-                    const t = clone.querySelector('#toastContainer'); if (t) t.innerHTML = '';
-                    const ov = clone.querySelector('#dialogOverlay'); if (ov) ov.classList.add('hidden');
-                    clone.querySelectorAll('script[data-seed]').forEach(s => s.remove());
-
-                    const seed = document.createElement('script');
-                    seed.setAttribute('data-seed', '1');
-                    seed.textContent = 'window.__NAV_SEED__=' + safeJSON({ bookmarks: bookmarks, icons: IconStore.exportAll() }) + ';';
-                    clone.querySelector('head').appendChild(seed);
-
-                    download('<!DOCTYPE html>\n' + clone.outerHTML, '导航页-含图标-' + stamp() + '.html', 'text/html');
-                    showToast('已导出内嵌图标的 HTML');
-                } catch (e) { alert('导出失败：' + e.message); }
-            });
-
-            repairIconBtn.addEventListener('click', function () {
-                queued.clear();
-                let n = 0;
-                bookmarks.forEach(function (b) {
-                    if (!b.icon && !IconStore.has(getDomain(b.url))) { scheduleIcon(b); n++; }
-                });
-                showToast(n ? ('正在抓取 ' + n + ' 个图标…') : '所有图标都已在本地');
             });
 
             /* ================= 其它交互 ================= */
