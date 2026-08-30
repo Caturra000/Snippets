@@ -9,6 +9,15 @@ $Mpv       = Join-Path $ScriptDir 'mpv.exe'
 $Shader    = Join-Path $ScriptDir 'shaders\SSimDownscaler.glsl'
 $LuaScript = Join-Path $ScriptDir 'scripts\auto_screenshot.lua'
 
+# ── 降采样引擎与算法配置（二选一，'MPV' 或 'Magick'） ──
+$DownscaleEngine = 'MPV'
+
+# ── MPV 算法 (--dscale 参数，自动挂载 SSimDownscaler.glsl) ────
+$MpvDscale       = 'mitchell'
+
+# ── Magick 算法 (-filter 参数) ────
+$MagickFilter    = 'MagicKernelSharp2021'
+
 function Invoke-Oxipng {
     if (Test-Path $Oxipng) {
         & $Oxipng -o 3 --strip safe $ImagePath 2>$null | Out-Null
@@ -21,14 +30,85 @@ function Invoke-Oxipng {
 
 # ── 检测分辨率 ────────────────────────────────────
 $size = & magick identify -ping -format "%wx%h" "${ImagePath}[0]" 2>$null
-if (-not $size) {
-    $isBroken = $true
+$size = $size | Select-Object -First 1
+
+$isBroken = $true
+$w = 0
+$h = 0
+
+if ($size -match '^(?<Width>\d+)x(?<Height>\d+)$') {
+    $w = [int]$Matches['Width']
+    $h = [int]$Matches['Height']
+    $isBroken = $false
 }
 
-$w, $h = ($size | Select-Object -First 1) -split 'x'
-$is4K = ($w -eq '3840' -and $h -eq '2160')
+# ── 4K 降采样目标开关 ─────────────────────────────
+# 保留下面这行 -> 4K 降到 2K (2560x1440 / 2560x1600)
+# 注释掉下面这行 -> 4K 降到 1080p (1920x1080 / 1920x1200)
+# $DownscaleTo2K = $true
+
+# ── 支持的源分辨率与目标分辨率 ────────────────────
+$downscaleProfiles = @{
+    '3840x2160' = @{
+        Force2K    = $false
+        Target1080 = @(1920, 1080)
+        Target2K   = @(2560, 1440)
+    }
+
+    '3840x2400' = @{
+        Force2K    = $false
+        Target1080 = @(1920, 1200)
+        Target2K   = @(2560, 1600)
+    }
+
+    '5120x2880' = @{
+        Force2K  = $true
+        Target2K = @(2560, 1440)
+    }
+
+    '5120x3200' = @{
+        Force2K  = $true
+        Target2K = @(2560, 1600)
+    }
+}
+
+$sourceSize = "${w}x${h}"
+$profile = $downscaleProfiles[$sourceSize]
+
+$needsDownscale = (-not $isBroken) -and ($null -ne $profile)
+
+$targetW = 0
+$targetH = 0
+
+if ($needsDownscale) {
+    if ($profile.Force2K) {
+        $target = $profile.Target2K
+    }
+    else {
+        $use2KFor4K = $false
+        $downscaleVariable = Get-Variable `
+            -Name 'DownscaleTo2K' `
+            -ErrorAction SilentlyContinue
+
+        if ($null -ne $downscaleVariable) {
+            $use2KFor4K = [bool]$downscaleVariable.Value
+        }
+
+        if ($use2KFor4K) {
+            $target = $profile.Target2K
+        }
+        else {
+            $target = $profile.Target1080
+        }
+    }
+
+    $targetW = [int]$target[0]
+    $targetH = [int]$target[1]
+}
 
 # ── DPI 修正 + 隐形宿主窗口（防止 mpv 闪烁） ──────
+# ── 不要在 C# 里面追加中文注释，别问为什么 ──────
+# ── 进一步发现这里注释都不能尾置中文，总之就这样 ──────
 if (-not ('MpvHost' -as [type])) {
     Add-Type -TypeDefinition @"
 using System;
@@ -279,56 +359,69 @@ function Repair-PngMetadata {
     [PngMeta]::Fix($Path, [uint32]3780, [uint32]3780, [byte]1, [byte]0)
 }
 
-if (-not $is4K -or $isBroken) {
+if (-not $needsDownscale -or $isBroken) {
     Repair-PngMetadata $ImagePath
     Invoke-Oxipng
     exit
 }
 
-[DpiFix]::Enable()
+$tmp = Join-Path (Split-Path $ImagePath -Parent) ([IO.Path]::GetRandomFileName() + '.png')
 
-$tmp  = Join-Path (Split-Path $ImagePath -Parent) ([IO.Path]::GetRandomFileName() + '.png')
-$hwnd = [IntPtr]::Zero
+if ($DownscaleEngine -eq 'MPV') {
+    [DpiFix]::Enable()
+    $hwnd = [IntPtr]::Zero
 
-try {
-    $hwnd = [MpvHost]::Create(1920, 1080)
+    try {
+        $hwnd = [MpvHost]::Create($targetW, $targetH)
 
-    $mpvArgs = @(
-        "`"$ImagePath`""
-        '--no-config', '--idle=no', '--force-window=yes'
-        '--vo=gpu-next', '--gpu-api=vulkan'
-        '--no-hidpi-window-scale', '--osd-level=0'
-        '--pause=yes', '--hr-seek=yes', '--keep-open=yes'
-        '--deband=no', '--dither-depth=no'
-        '--correct-downscaling=yes', '--linear-downscaling=no', '--sigmoid-upscaling=no'
-        '--dscale=catmull_rom'
-        "--glsl-shader=`"$Shader`""
-        '--screenshot-format=png'
-        '--screenshot-png-compression=0', '--screenshot-png-filter=0'
-        '--screenshot-high-bit-depth=no'
-        '--screenshot-tag-colorspace=yes'
-        "--script=`"$LuaScript`""
-        "--script-opts=output_path=`"$tmp`""
-        '--msg-level=all=warn'
-    )
+        $mpvArgs = @(
+            "`"$ImagePath`""
+            '--no-config', '--idle=no', '--force-window=yes'
+            '--vo=gpu-next', '--gpu-api=vulkan'
+            '--no-hidpi-window-scale', '--osd-level=0'
+            '--pause=yes', '--hr-seek=yes', '--keep-open=yes'
+            '--deband=no', '--dither-depth=no'
+            '--correct-downscaling=yes', '--linear-downscaling=no', '--sigmoid-upscaling=no'
+            "--dscale=$MpvDscale"
+            "--glsl-shader=`"$Shader`""
+            '--screenshot-format=png'
+            '--screenshot-png-compression=0', '--screenshot-png-filter=0'
+            '--screenshot-high-bit-depth=no'
+            '--screenshot-tag-colorspace=yes'
+            "--script=`"$LuaScript`""
+            "--script-opts=output_path=`"$tmp`""
+            '--msg-level=all=warn'
+        )
 
-    if ($hwnd -ne [IntPtr]::Zero) {
-        $mpvArgs += "--wid=$($hwnd.ToInt64())"
+        if ($hwnd -ne [IntPtr]::Zero) {
+            $mpvArgs += "--wid=$($hwnd.ToInt64())"
+        }
+
+        Start-Process -FilePath $Mpv -ArgumentList $mpvArgs -Wait -WindowStyle Hidden
     }
-
-    Start-Process -FilePath $Mpv -ArgumentList $mpvArgs -Wait -WindowStyle Hidden
+    finally {
+        if ($hwnd -ne [IntPtr]::Zero) {
+            [MpvHost]::DestroyWindow($hwnd) | Out-Null
+        }
+    }
 }
-finally {
-    if ($hwnd -ne [IntPtr]::Zero) {
-        [MpvHost]::DestroyWindow($hwnd) | Out-Null
-    }
+else {
+    & magick "$ImagePath" `
+        -alpha off -colorspace RGB `
+        -filter $MagickFilter -resize "${targetW}x${targetH}!" `
+        -colorspace sRGB -set colorspace sRGB `
+        -depth 8 `
+        -define png:exclude-chunk=bKGD,cHRM,tIME,date `
+        "$tmp" 2>$null
 }
 
 if (Test-Path $tmp) {
     $outSize = & magick identify -ping -format "%wx%h" "${tmp}[0]" 2>$null
     $outSize = ($outSize | Select-Object -First 1)
 
-    if ($outSize -eq '1920x1080') {
+    $expectedSize = "${targetW}x${targetH}"
+
+    if ($outSize -eq $expectedSize) {
         try {
             Repair-PngMetadata $tmp
 
@@ -336,13 +429,13 @@ if (Test-Path $tmp) {
             Invoke-Oxipng
         }
         catch {
-            Write-Warning "PNG metadata repair failed: $($_.Exception.Message). Keeping original 4K file."
+            Write-Warning "PNG metadata repair failed: $($_.Exception.Message). Keeping original file."
             Remove-Item $tmp -Force -ErrorAction SilentlyContinue
             Invoke-Oxipng
         }
     }
     else {
-        Write-Warning "Downscale output size mismatch: expected 1920x1080, got $outSize. Keeping original 4K file."
+        Write-Warning "Downscale output size mismatch: expected $expectedSize, got $outSize. Keeping original file."
         Remove-Item $tmp -Force -ErrorAction SilentlyContinue
         Invoke-Oxipng
     }
