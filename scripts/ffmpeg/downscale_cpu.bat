@@ -101,8 +101,6 @@ echo !PIX_FMT! | findstr /i "yuvj" >nul && set "IN_RANGE=pc"
 if /i "!COLOR_RANGE!"=="pc"   set "IN_RANGE=pc"
 if /i "!COLOR_RANGE!"=="full" set "IN_RANGE=pc"
 
-:: echo 源像素格式  : !PIX_FMT!  (range=!COLOR_RANGE!  -> 视为 !IN_RANGE!)
-
 :: 2. 读取旋转角度元数据 (rotate / rotation)
 for /f "tokens=1 delims=," %%r in ('ffprobe.exe -v error -select_streams v:0 -show_entries stream_tags^=rotate:stream_side_data^=rotation -of csv^=p^=0 "%INPUT_FILE%" 2^>nul') do (
     if not "%%r"=="" set "ROT=%%r"
@@ -177,15 +175,26 @@ if !DIFF! GTR !TOLERANCE! (
     )
 )
 
-:: 6. 开始 FFmpeg 转码（libsvtav1 软解/软编参数）
+:: 6. 开始 FFmpeg 转码
 echo.
-echo 正在执行 libsvtav1 降采样转码，CPU 满载计算中，请稍候...
+echo 正在执行 libsvtav1 降采样转码...
+echo [优化] 已限制 CPU 线程数并降低进程优先级，转码期间可正常进行其他操作。
 echo ----------------------------------------------------
 
-ffmpeg.exe -hide_banner -y -i "%INPUT_FILE%" ^
+:: 获取系统逻辑处理器总数
+for /f %%i in ('powershell -NoProfile -Command "[Environment]::ProcessorCount"') do set "TOTAL_THREADS=%%i"
+:: 预留 2 个核心给系统日常使用，至少保留 1 个核心用于转码
+set /a "MAX_THREADS=!TOTAL_THREADS! - 2"
+if !MAX_THREADS! LSS 1 set "MAX_THREADS=1"
+echo [信息] 系统共 !TOTAL_THREADS! 个逻辑核心，限制 FFmpeg 最多使用 !MAX_THREADS! 个核心。
+
+:: 使用 start /wait /belownormal 降低优先级防止卡顿断网，并限制最大线程数
+start "FFmpeg_Encoding" /wait /belownormal ^
+ ffmpeg.exe -hide_banner -y -i "%INPUT_FILE%" ^
  -vf "scale=!CURR_TARGET_W!:!CURR_TARGET_H!:flags=lanczos+accurate_rnd+full_chroma_int+full_chroma_inp:in_range=!IN_RANGE!:out_range=tv,format=yuv420p10le" ^
  -c:v libsvtav1 -preset 5 -crf 28 -g 300 -pix_fmt yuv420p10le -color_range tv ^
- -svtav1-params "tune=0:enable-overlays=1:film-grain=8:film-grain-denoise=0" ^
+ -svtav1-params "tune=0:enable-overlays=1:film-grain=8:film-grain-denoise=0:lp=!MAX_THREADS!" ^
+ -threads !MAX_THREADS! ^
  -map 0 -c:a copy -c:s copy -movflags +faststart "%OUTPUT_FILE%"
 
 if %errorlevel% neq 0 (
