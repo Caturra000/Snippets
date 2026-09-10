@@ -9,6 +9,10 @@ set "TARGET_W=2560"
 set "TARGET_H=1440"
 :: =======================================================
 
+:: 可以选择 P 或者 E
+:: 因为 libsvtav1 不推荐超过 16 线程，所以要挑核心
+set "CPU_MODE=P"
+
 :: 计算长边与短边基准
 if %TARGET_W% GTR %TARGET_H% (
     set "BASE_LONG=%TARGET_W%"
@@ -181,15 +185,27 @@ echo 正在执行 libsvtav1 降采样转码...
 echo [优化] 已限制 CPU 线程数并降低进程优先级，转码期间可正常进行其他操作。
 echo ----------------------------------------------------
 
-:: 获取系统逻辑处理器总数
 for /f %%i in ('powershell -NoProfile -Command "[Environment]::ProcessorCount"') do set "TOTAL_THREADS=%%i"
-:: 预留 2 个核心给系统日常使用，至少保留 1 个核心用于转码
-set /a "MAX_THREADS=!TOTAL_THREADS! - 2"
-if !MAX_THREADS! LSS 1 set "MAX_THREADS=1"
-echo [信息] 系统共 !TOTAL_THREADS! 个逻辑核心，限制 FFmpeg 最多使用 !MAX_THREADS! 个核心。
 
-:: 使用 start /wait /belownormal 降低优先级防止卡顿断网，并限制最大线程数
-start "FFmpeg_Encoding" /wait /belownormal ^
+set "AFF_ARG="
+if "!TOTAL_THREADS!"=="32" (
+    set "MAX_THREADS=16"
+    if /i "!CPU_MODE!"=="E" (
+        set "AFF_ARG=/affinity FFFF0000"
+        set "CPU_MODE_TEXT=16 个 E-core，CPU 16-31"
+    ) else (
+        set "AFF_ARG=/affinity FFFF"
+        set "CPU_MODE_TEXT=8 个 P-core 共 16 线程，CPU 0-15"
+    )
+) else (
+    set /a "MAX_THREADS=!TOTAL_THREADS! - 2"
+    if !MAX_THREADS! GTR 16 set "MAX_THREADS=16"
+    if !MAX_THREADS! LSS 1 set "MAX_THREADS=1"
+    set "CPU_MODE_TEXT=未识别为 13900HX 布局，不设置亲和性"
+)
+echo [信息] 系统共 !TOTAL_THREADS! 个逻辑核心，FFmpeg 使用 !MAX_THREADS! 个线程，绑定: !CPU_MODE_TEXT!
+
+start "FFmpeg_Encoding" /wait /belownormal !AFF_ARG! ^
  ffmpeg.exe -hide_banner -y -i "%INPUT_FILE%" ^
  -vf "scale=!CURR_TARGET_W!:!CURR_TARGET_H!:flags=lanczos+accurate_rnd+full_chroma_int+full_chroma_inp:in_range=!IN_RANGE!:out_range=tv,format=yuv420p10le" ^
  -c:v libsvtav1 -preset 5 -crf 28 -g 300 -pix_fmt yuv420p10le -color_range tv ^
