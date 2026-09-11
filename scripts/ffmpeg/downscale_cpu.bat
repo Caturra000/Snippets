@@ -206,7 +206,7 @@ echo ----------------------------------------------------
 
 start "FFmpeg_Encoding" /wait %PRIORITY% !AFF_ARG! ^
  ffmpeg.exe -hide_banner -y -filter_threads !FF_THREADS! -i "%INPUT_FILE%" ^
- -vf "scale=!CURR_TARGET_W!:!CURR_TARGET_H!:flags=lanczos+accurate_rnd+full_chroma_int+full_chroma_inp:in_range=!IN_RANGE!:out_range=tv,format=yuv420p10le" ^
+ -vf "scale=!CURR_TARGET_W!:!CURR_TARGET_H!:flags=lanczos+accurate_rnd+full_chroma_int+full_chroma_inp:param0=2:in_range=!IN_RANGE!:out_range=tv,format=yuv420p10le" ^
  -c:v libsvtav1 -preset 5 -crf 28 -g 300 -pix_fmt yuv420p10le -color_range tv ^
  -svtav1-params "tune=0:enable-overlays=1:film-grain=8:film-grain-denoise=0!SVT_EXTRA!" ^
  -threads !FF_THREADS! ^
