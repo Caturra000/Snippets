@@ -2,6 +2,9 @@ param([string]$ImagePath)
 
 if (-not $ImagePath -or -not (Test-Path $ImagePath)) { exit }
 
+# ── 记录原始修改时间 ────────────────────────────────────
+$OrigWriteTime = (Get-Item -LiteralPath $ImagePath).LastWriteTime
+
 # ── 工具路径 ──────────────────────────────────────
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $Oxipng    = Join-Path $ScriptDir 'oxipng.exe'
@@ -13,7 +16,7 @@ $LuaScript = Join-Path $ScriptDir 'scripts\auto_screenshot.lua'
 $DownscaleEngine = 'MPV'
 
 # ── MPV 算法 (--dscale 参数，自动挂载 SSimDownscaler.glsl) ────
-$MpvDscale       = 'mitchell'
+$MpvDscale       = 'catmull_rom'
 
 # ── Magick 算法 (-filter 参数) ────
 $MagickFilter    = 'MagicKernelSharp2021'
@@ -21,6 +24,10 @@ $MagickFilter    = 'MagicKernelSharp2021'
 function Invoke-Oxipng {
     if (Test-Path $Oxipng) {
         & $Oxipng -o 3 --strip safe $ImagePath 2>$null | Out-Null
+    }
+
+    if (Test-Path -LiteralPath $ImagePath) {
+        (Get-Item -LiteralPath $ImagePath).LastWriteTime = $OrigWriteTime
     }
 }
 
