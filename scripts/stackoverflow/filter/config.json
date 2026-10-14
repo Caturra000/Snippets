@@ -1,0 +1,41 @@
+{
+  "input": {
+    "posts": "Posts.xml",
+    "comments": "Comments.xml",
+    "tags": "Tags.xml"
+  },
+  "output": {
+    "posts": "FilteredPosts.xml",
+    "comments": "FilteredComments.xml",
+    "tags": "FilteredTags.xml"
+  },
+  "filter": {
+    "tags": [
+      "c",
+      "c++",
+      "gcc",
+      "clang",
+      "llvm",
+      "c++11",
+      "c++14",
+      "c++17",
+      "c++20",
+      "c++23",
+      "c++26",
+      "c++-coroutine",
+      "c++-modules",
+      "libc++",
+      "libstdc++",
+      "libc",
+      "glibc"
+    ],
+    "question_post_type": 1,
+    "answer_post_type": 2,
+    "include_answers": true,
+    "export_tags": true,
+    "require_answers": true,
+    "min_score": 0,
+    "apply_score_filter_to_answers": true,
+    "assume_posts_sorted_by_id": false
+  }
+}

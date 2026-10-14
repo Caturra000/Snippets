@@ -1,0 +1,3 @@
+按照用户配置筛选数据，输出过滤后的 xml 文件。
+
+需要准备 StackOverflow 官方离线归档，大概 120G 大小。具体来说需要 Posts.xml、Comments.xml 和 Tags.xml。
